@@ -17,5 +17,4 @@ Follow me on Twitter: @Bobbyloujo
 
 
 Benjamin Blaszczak
-
 a.k.a. Bobby Lou jo
