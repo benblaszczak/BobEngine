@@ -12,8 +12,10 @@ BobEngine 1.0 Thingama is free for use in both commercial and non-commercial gam
 More examples and tutorials are coming soon, as my schedule permits.
 
 For updates on me and my projects visit my website at: www.bobbyloujo.com
+
 Follow me on Twitter: @Bobbyloujo
 
 
 Benjamin Blaszczak
+
 a.k.a. Bobby Lou jo
