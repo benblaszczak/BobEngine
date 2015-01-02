@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="unspecified"><source path="D:\AndroidstudioProjects\BobEngine\bobEngineTest\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\res"><file name="fadeout" path="D:\AndroidstudioProjects\BobEngine\bobEngineTest\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\res\anim\fadeout.xml" qualifiers="" type="anim"/><file name="ic_launcher" path="D:\AndroidstudioProjects\BobEngine\bobEngineTest\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\res\drawable\ic_launcher.png" qualifiers="" type="drawable"/><file name="logo" path="D:\AndroidstudioProjects\BobEngine\bobEngineTest\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\res\drawable\logo.png" qualifiers="" type="drawable"/><file name="numbers" path="D:\AndroidstudioProjects\BobEngine\bobEngineTest\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\res\drawable\numbers.png" qualifiers="" type="drawable"/><file name="splash" path="D:\AndroidstudioProjects\BobEngine\bobEngineTest\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\res\layout\splash.xml" qualifiers="" type="layout"/><file path="D:\AndroidstudioProjects\BobEngine\bobEngineTest\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\res\values\values.xml" qualifiers=""><style name="AppBaseTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style><string name="app_name">Game powered by BobEngine</string><string name="splashImageDescription">Powered by BobEngine</string><style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style></file></source></dataSet><dataSet config="main"><source path="D:\AndroidstudioProjects\BobEngine\bobEngineTest\src\main\res"><file name="pop" path="D:\AndroidstudioProjects\BobEngine\bobEngineTest\src\main\res\raw\pop.wav" qualifiers="" type="raw"/><file path="D:\AndroidstudioProjects\BobEngine\bobEngineTest\src\main\res\values\strings.xml" qualifiers=""><string name="app_name">BobEngineExample</string></file><file path="D:\AndroidstudioProjects\BobEngine\bobEngineTest\src\main\res\values\styles.xml" qualifiers=""><style name="AppBaseTheme" parent="android:Theme.Translucent.NoTitleBar">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style><style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style></file><file path="D:\AndroidstudioProjects\BobEngine\bobEngineTest\src\main\res\values-v11\styles.xml" qualifiers="v11"><style name="AppBaseTheme" parent="android:Theme.Holo.Light">
+        <!-- API 11 theme customizations can go here. -->
+    </style></file><file path="D:\AndroidstudioProjects\BobEngine\bobEngineTest\src\main\res\values-v14\styles.xml" qualifiers="v14"><style name="AppBaseTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+        <!-- API 14 theme customizations can go here. -->
+    </style></file></source><source path="D:\AndroidstudioProjects\BobEngine\bobEngineTest\build\generated\res\rs\debug"/><source path="D:\AndroidstudioProjects\BobEngine\bobEngineTest\build\generated\res\generated\debug"/></dataSet><dataSet config="debug"><source path="D:\AndroidstudioProjects\BobEngine\bobEngineTest\src\debug\res"/></dataSet><mergedItems/></merger>

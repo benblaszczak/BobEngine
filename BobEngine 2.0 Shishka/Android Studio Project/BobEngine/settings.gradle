@@ -1,0 +1,4 @@
+include ':bobEngineTest', ':cameraexample'
+include ':touchInput'
+include ':template'
+include ':bobEngine'

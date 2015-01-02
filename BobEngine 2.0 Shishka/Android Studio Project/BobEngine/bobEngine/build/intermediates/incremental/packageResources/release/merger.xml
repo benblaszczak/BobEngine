@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="D:\AndroidstudioProjects\BobEngine\bobEngine\src\main\res"><file name="fadeout" path="D:\AndroidstudioProjects\BobEngine\bobEngine\src\main\res\anim\fadeout.xml" qualifiers="" type="anim"/><file name="ic_launcher" path="D:\AndroidstudioProjects\BobEngine\bobEngine\src\main\res\drawable\ic_launcher.png" qualifiers="" type="drawable"/><file name="logo" path="D:\AndroidstudioProjects\BobEngine\bobEngine\src\main\res\drawable\logo.png" qualifiers="" type="drawable"/><file name="numbers" path="D:\AndroidstudioProjects\BobEngine\bobEngine\src\main\res\drawable\numbers.png" qualifiers="" type="drawable"/><file name="splash" path="D:\AndroidstudioProjects\BobEngine\bobEngine\src\main\res\layout\splash.xml" qualifiers="" type="layout"/><file path="D:\AndroidstudioProjects\BobEngine\bobEngine\src\main\res\values\strings.xml" qualifiers=""><string name="app_name">Game powered by BobEngine</string><string name="splashImageDescription">Powered by BobEngine</string></file><file path="D:\AndroidstudioProjects\BobEngine\bobEngine\src\main\res\values\styles.xml" qualifiers=""><style name="AppBaseTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style><style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style></file></source><source path="D:\AndroidstudioProjects\BobEngine\bobEngine\build\generated\res\rs\release"/><source path="D:\AndroidstudioProjects\BobEngine\bobEngine\build\generated\res\generated\release"/></dataSet><dataSet config="release"><source path="D:\AndroidstudioProjects\BobEngine\bobEngine\src\release\res"/></dataSet><mergedItems/></merger>

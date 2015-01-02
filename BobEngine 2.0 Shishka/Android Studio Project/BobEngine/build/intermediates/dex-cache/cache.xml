@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="D:\AndroidstudioProjects\BobEngine\bobEngineTest\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="7936a1bfcf6edc131985f9e02dd118d3360d9a2b">
+        <dex dex="D:\AndroidstudioProjects\BobEngine\bobEngineTest\build\intermediates\pre-dexed\debug\classes-6318dd800610c2550f3c24981f43ecf4092c32b1.jar" />
+    </item>
+    <item
+        jar="D:\AndroidstudioProjects\BobEngine\touchInput\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="7c3408ba20eadc1cc9d95e17d4a73b626834b5ae">
+        <dex dex="D:\AndroidstudioProjects\BobEngine\touchInput\build\intermediates\pre-dexed\debug\classes-7d19aff4e43eae9ee4c1f5fc05d6461215aa10e9.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-v4\19.1.0\support-v4-19.1.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67">
+        <dex dex="D:\AndroidstudioProjects\BobEngine\bobEngineTest\build\intermediates\pre-dexed\debug\support-v4-19.1.0-29cbb9634a5288c62fafd71d132a47c501b317ce.jar" />
+    </item>
+    <item
+        jar="D:\AndroidstudioProjects\BobEngine\cameraexample\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\libs\internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="D:\AndroidstudioProjects\BobEngine\cameraexample\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-dfc9c965cfe23efdd4c4dafd560e43f1b6ba9c51.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\20.0.0\support-annotations-20.0.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="9d9013e9ff35fc3756411e62873c363c70c638fa">
+        <dex dex="D:\AndroidstudioProjects\BobEngine\template\build\intermediates\pre-dexed\debug\support-annotations-20.0.0-7b75f360f4dfb571c7d95baa5fa0c762211aa57a.jar" />
+    </item>
+    <item
+        jar="D:\AndroidstudioProjects\BobEngine\template\build\intermediates\exploded-aar\com.android.support\support-v4\20.0.0\classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="8694693636ab36910c8100ce527c258ff3ebece0">
+        <dex dex="D:\AndroidstudioProjects\BobEngine\template\build\intermediates\pre-dexed\debug\classes-35282463c482eaf3b495a92d746ef4d38212d462.jar" />
+    </item>
+    <item
+        jar="D:\AndroidstudioProjects\BobEngine\cameraexample\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
+        <dex dex="D:\AndroidstudioProjects\BobEngine\cameraexample\build\intermediates\pre-dexed\debug\classes-339644578c67c8f68bb924208488028de3e67c5c.jar" />
+    </item>
+    <item
+        jar="D:\AndroidstudioProjects\BobEngine\template\build\intermediates\exploded-aar\com.android.support\support-v4\20.0.0\libs\internal_impl-20.0.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="e40b3078e3fbd353c9f44da8df25a8fc0078209d">
+        <dex dex="D:\AndroidstudioProjects\BobEngine\template\build\intermediates\pre-dexed\debug\internal_impl-20.0.0-91047c91144a263d675f282e94047a1e45f7d530.jar" />
+    </item>
+    <item
+        jar="D:\AndroidstudioProjects\BobEngine\cameraexample\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="D:\AndroidstudioProjects\BobEngine\cameraexample\build\intermediates\pre-dexed\debug\classes-81e403bdaa77a078a24c13a2a4412dedb5a7d821.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\21.0.3\support-annotations-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
+        <dex dex="D:\AndroidstudioProjects\BobEngine\cameraexample\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-c3c289dc48ddbbb6ba661feedf62cf3cc08f67e5.jar" />
+    </item>
+    <item
+        jar="D:\AndroidstudioProjects\BobEngine\template\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="7c3408ba20eadc1cc9d95e17d4a73b626834b5ae">
+        <dex dex="D:\AndroidstudioProjects\BobEngine\template\build\intermediates\pre-dexed\debug\classes-e12ad5fc9b6818cc2050b3e41c436195a2e89056.jar" />
+    </item>
+    <item
+        jar="D:\AndroidstudioProjects\BobEngine\cameraexample\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="7936a1bfcf6edc131985f9e02dd118d3360d9a2b">
+        <dex dex="D:\AndroidstudioProjects\BobEngine\cameraexample\build\intermediates\pre-dexed\debug\classes-5ed3c47de0d5ba5596f7fd28067fded6c90f5878.jar" />
+    </item>
+
+</items>
