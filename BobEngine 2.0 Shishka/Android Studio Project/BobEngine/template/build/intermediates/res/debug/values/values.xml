@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/D:/AndroidstudioProjects/BobEngine/template/src/main/res/values/strings.xml -->
+    <!-- From: file:/C:/Users/Ben/Documents/GitHub/BobEngine/BobEngine%202.0%20Shishka/Android%20Studio%20Project/BobEngine/template/src/main/res/values/strings.xml -->
     <eat-comment/>
     <string name="app_name">Template</string>
     <string name="hello_world">Hello world!</string>
-    <!-- From: file:/D:/AndroidstudioProjects/BobEngine/template/build/intermediates/exploded-aar/BobEngine/bobEngine/unspecified/res/values/values.xml -->
+    <!-- From: file:/C:/Users/Ben/Documents/GitHub/BobEngine/BobEngine%202.0%20Shishka/Android%20Studio%20Project/BobEngine/template/build/intermediates/exploded-aar/BobEngine/bobEngine/unspecified/res/values/values.xml -->
     <eat-comment/>
     <string name="splashImageDescription">Powered by BobEngine</string>
     <style name="AppBaseTheme" parent="@android:style/Theme.Black.NoTitleBar">
@@ -14,7 +14,7 @@
             backward-compatibility can go here.
         -->
     </style>
-    <!-- From: file:/D:/AndroidstudioProjects/BobEngine/template/src/main/res/values/styles.xml -->
+    <!-- From: file:/C:/Users/Ben/Documents/GitHub/BobEngine/BobEngine%202.0%20Shishka/Android%20Studio%20Project/BobEngine/template/src/main/res/values/styles.xml -->
     <eat-comment/>
     <style name="AppTheme" parent="@android:style/Theme.Black.NoTitleBar">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
