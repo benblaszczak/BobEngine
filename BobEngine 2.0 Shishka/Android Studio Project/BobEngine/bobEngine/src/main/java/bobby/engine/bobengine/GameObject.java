@@ -124,7 +124,7 @@ public class GameObject {
 		box = new double[MAX_COL_BOXES][4];
 		colBoxes = 0;
 		indices = INDICES;
-		layer = 0;
+		layer = 1;
 	}
 
 	/**

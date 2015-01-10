@@ -42,7 +42,7 @@ public class MainActivity extends BobActivity {
 
                 room.addObject(object);
 
-                goToRoom(room);
+                goToRoom(room); // This is how we tell BobEngine which room to update and draw!!
 
                 /**
                  * Camera function tests.
@@ -74,7 +74,7 @@ public class MainActivity extends BobActivity {
                  * anchor to the center of the screen: (room.getWidth() / 2, room.getHeight() / 2).
                  * Then, the player will remain in the center when zooming in and out.
                  */
-                room.setCameraAnchor(0,0);
+                room.setCameraAnchor(getWidth() / 2, getHeight() / 2);
             }
         };
 

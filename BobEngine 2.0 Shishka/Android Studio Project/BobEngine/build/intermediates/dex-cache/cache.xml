@@ -5,7 +5,7 @@
         jar="C:\Users\Ben\Documents\GitHub\BobEngine\BobEngine 2.0 Shishka\Android Studio Project\BobEngine\cameraexample\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
         jumboMode="false"
         revision="21.1.2"
-        sha1="da395686caeca963aab361474aa599502c9d0898">
+        sha1="0f068569e1202b4b90c3e66dfd4d2c6948cbb0f5">
         <dex dex="C:\Users\Ben\Documents\GitHub\BobEngine\BobEngine 2.0 Shishka\Android Studio Project\BobEngine\cameraexample\build\intermediates\pre-dexed\debug\classes-1096f1b58122e70f5b7dd43c3c9ea2df7272529f.jar" />
     </item>
     <item
@@ -37,6 +37,13 @@
         <dex dex="C:\Users\Ben\Documents\GitHub\BobEngine\BobEngine 2.0 Shishka\Android Studio Project\BobEngine\cameraexample\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-32dac2d109f83b06386794f4640df10114c82a33.jar" />
     </item>
     <item
+        jar="C:\Users\Ben\AppData\Local\Android\android-studio\sdk\extras\android\m2repository\com\android\support\support-v4\19.1.0\support-v4-19.1.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67">
+        <dex dex="C:\Users\Ben\Documents\GitHub\BobEngine\BobEngine 2.0 Shishka\Android Studio Project\BobEngine\jumpybug\build\intermediates\pre-dexed\debug\support-v4-19.1.0-63587936ae897837d88087c00b80eb3ceff75c4c.jar" />
+    </item>
+    <item
         jar="C:\Users\Ben\Documents\GitHub\BobEngine\BobEngine 2.0 Shishka\Android Studio Project\BobEngine\cameraexample\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\classes.jar"
         jumboMode="false"
         revision="21.1.2"
@@ -49,6 +56,20 @@
         revision="21.1.2"
         sha1="a75165170c88c37a5a67de53f1fa280f362e5105">
         <dex dex="C:\Users\Ben\Documents\GitHub\BobEngine\BobEngine 2.0 Shishka\Android Studio Project\BobEngine\touchInput\build\intermediates\pre-dexed\debug\classes-486219a9590596cec4d822b86dce8a7b5f4d3f3a.jar" />
+    </item>
+    <item
+        jar="C:\Users\Ben\Documents\GitHub\BobEngine\BobEngine 2.0 Shishka\Android Studio Project\BobEngine\jumpybug\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="a3f25e87200d6ce93eda42c2213b93e83c6da57b">
+        <dex dex="C:\Users\Ben\Documents\GitHub\BobEngine\BobEngine 2.0 Shishka\Android Studio Project\BobEngine\jumpybug\build\intermediates\pre-dexed\debug\classes-03dc399e97add2325ce3d3d6df50f0048d135242.jar" />
+    </item>
+    <item
+        jar="C:\Users\Ben\Documents\GitHub\BobEngine\BobEngine 2.0 Shishka\Android Studio Project\BobEngine\jumpybug\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="0f068569e1202b4b90c3e66dfd4d2c6948cbb0f5">
+        <dex dex="C:\Users\Ben\Documents\GitHub\BobEngine\BobEngine 2.0 Shishka\Android Studio Project\BobEngine\jumpybug\build\intermediates\pre-dexed\debug\classes-03dc399e97add2325ce3d3d6df50f0048d135242.jar" />
     </item>
     <item
         jar="C:\Users\Ben\Documents\GitHub\BobEngine\BobEngine 2.0 Shishka\Android Studio Project\BobEngine\template\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"

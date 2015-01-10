@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/bobEngine/bobEngine.iml" filepath="$PROJECT_DIR$/bobEngine/bobEngine.iml" />
       <module fileurl="file://$PROJECT_DIR$/bobEngineTest/bobEngineTest.iml" filepath="$PROJECT_DIR$/bobEngineTest/bobEngineTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/cameraexample/cameraexample.iml" filepath="$PROJECT_DIR$/cameraexample/cameraexample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jumpybug/jumpybug.iml" filepath="$PROJECT_DIR$/jumpybug/jumpybug.iml" />
       <module fileurl="file://$PROJECT_DIR$/template/template.iml" filepath="$PROJECT_DIR$/template/template.iml" />
       <module fileurl="file://$PROJECT_DIR$/touchInput/touchInput.iml" filepath="$PROJECT_DIR$/touchInput/touchInput.iml" />
     </modules>

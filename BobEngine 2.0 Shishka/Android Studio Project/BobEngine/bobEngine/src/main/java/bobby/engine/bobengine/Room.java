@@ -29,8 +29,7 @@ import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
 import android.app.Activity;
-
-// TODO When objects are off screen, do they still appear if the camera is shifted to show them?
+import android.opengl.GLES10;
 
 /**
  * Rooms are collections of GameObjects. They handle updating and rendering each
@@ -42,18 +41,25 @@ import android.app.Activity;
 public class Room {
 	// Constants
 	public final int OBJECTS = 8000;                       // Maximum number of quads. This is kind of sloppy. I should find a better way to do this.
-	public final int LAYERS = 5;                           // Number of layers.
+	public final int LAYERS = 5;                           // Default number of layers.
 	public final int VERTEX_BYTES = 4 * 3 * 4 * OBJECTS;   // 4 bytes per float * 3 coords per vertex * 4 vertices * max objects
 	public final int TEX_BYTES = 4 * 2 * 4 * OBJECTS;      // 4 bytes per float * 2 coords per vertex * 4 vertices
 	public final int INDEX_BYTES = 4 * 4 * OBJECTS;        // 4 bytes per short * 4 indices per quad * max num of objects
 
 	// Variables
-	public int instances = 0;                              // The number of objects in this room
+    public int nextInstance;                               // The next available instance ID
+	public int instances;                                  // The number of objects in this room
 	public int index;                                      // The number of indices for all quads
 	public short indices[] = new short[6];                 // The order in which to draw the vertices
 	public int lastIndex[];                                // The number of indices last frame for each layer
-	protected int cur;                                     // A cursor.
-	public int layers;
+	public int layers;                                     // Number of layers - 1. (ex. 5 layers would be 0-4 so layers is 4)
+
+    // Camera variables
+    private int camx;
+    private int camy;
+    private double camzoom;
+    private double canchorx;
+    private double canchory;
 
 	// Objects
 	protected GameObject[][] objects;
@@ -92,6 +98,16 @@ public class Room {
 
 		layers = LAYERS - 1;
 		lastIndex = new int[LAYERS];
+
+        instances = 0;
+        nextInstance = 0;
+
+        // Camera initialization
+        camx = 0;
+        camy = 0;
+        camzoom = 1;
+        canchorx = 0;
+        canchory = 0;
 	}
 
 	/**
@@ -123,9 +139,21 @@ public class Room {
 	 * @return An unused ID number to be given to a GameObject
 	 */
 	public int nextInstance() {
+        nextInstance++;
 		instances++;
-		return instances;
+		return nextInstance;
 	}
+
+    /**
+     * Manually set the max number of objects in the case that you have not
+     * been using nextInstance(). The max number of objects must be equal to
+     * or greater than your largest instance ID.
+     *
+     * @param num
+     */
+    public void setNumObjects(int num) {
+        instances = num;
+    }
 
 	/**
 	 * Add a new GameObject to this room. Must be done for each GameObject to be
@@ -197,89 +225,90 @@ public class Room {
 	public double getRatioY() {
 		return getView().getRatioY();
 	}
-	
-	/**
-	 * Change the x position of the camera.
-	 */
-	public void setCameraX(int x) {
-		getView().getRenderer().setCameraX(x);
-	}
-	
-	/**
-	 * Change the y position of the camera.
-	 */
-	public void setCameraY(int y) {
-		getView().getRenderer().setCameraY(y);
-	}
-	
-	/**
-	 * Get the current x position of the camera.
-	 */
-	public double getCameraX() {
-		return getView().getRenderer().getCameraX();
-	}
-	
-	/**
-	 * Get the current y position of the camera.
-	 */
-	public double getCameraY() {
-		return getView().getRenderer().getCameraY();
-	}
+
+    /**
+     * Change the x position of the camera.
+     */
+    public void setCameraX(int x) {
+        camx = x;
+    }
+
+    /**
+     * Change the y position of the camera.
+     */
+    public void setCameraY(int y) {
+        camy = y;
+    }
+
+    /**
+     * Set the anchor point for zooming the camera. </br></br>
+     *
+     * HINT: this point will stay in the same location on the screen when zooming
+     * in and out.
+     *
+     * @param x
+     * @param y
+     */
+    public void setCameraAnchor(int x, int y) {
+        canchorx = x;
+        canchory = y;
+    }
+
+    /**
+     * Get the current x position of the camera.
+     */
+    public double getCameraX() {
+        return camx;
+    }
+
+    /**
+     * Get the current y position of the camera.
+     */
+    public double getCameraY() {
+        return camy;
+    }
 
     /**
      * Get the coordinate of the left edge of the camera.
      */
     public int getCameraLeftEdge() {
-        return getView().getRenderer().getCameraLeftEdge();
+        return (int) (camx + canchorx - getView().getRenderer().getCameraWidth() * camzoom * (canchorx / getView().getRenderer().getCameraWidth()));
     }
 
     /**
      * Get the coordinate of teh right edge of the screen.
      */
     public int getCameraRightEdge() {
-        return getView().getRenderer().getCameraRightEdge();
+        return (int) (camx + canchorx + getView().getRenderer().getCameraWidth() * camzoom * ((getView().getRenderer().getCameraWidth() - canchorx) / getView().getRenderer().getCameraWidth()));
     }
 
     /**
      * Get the coordinate of the bottom edge of the screen.
      */
     public int getCameraBottomEdge() {
-        return getView().getRenderer().getCameraBottomEdge();
+        return (int) (camy + canchory - getView().getRenderer().getCameraHeight() * camzoom * (canchory / getView().getRenderer().getCameraHeight()));
     }
 
     /**
      * Get the coordinate of the top edge of the screen.
      */
     public int getCameraTopEdge() {
-        return getView().getRenderer().getCameraTopEdge();
+        return (int) (camy + canchory + getView().getRenderer().getCameraHeight() * camzoom * ((getView().getRenderer().getCameraHeight() - canchory) / getView().getRenderer().getCameraHeight()));
     }
 
-	/**
-	 * Set the anchor point for zooming the camera. </br></br>
-	 * 
-	 * HINT: this point will stay in the same location on the screen when zooming
-	 * in and out.
-	 * 
-	 * @param x
-	 * @param y
-	 */
-	public void setCameraAnchor(int x, int y) {
-		getView().getRenderer().setCameraAnchor(x, y);
-	}
-	
-	/**
-	 * Set the zoom factor of the camera.
-	 */
-	public void setCameraZoom(double zoom) {
-		getView().getRenderer().setCameraZoom(zoom);
-	}
-	
-	/**
-	 * Get the current zoom factor of the camera.
-	 */
-	public double getCameraZoom() {
-		return getView().getRenderer().getCameraZoom();
-	}
+    /**
+     * Set the zoom factor of the camera.
+     */
+    public void setCameraZoom(double zoom) {
+        camzoom = zoom;
+    }
+
+    /**
+     * Get the current zoom factor of the camera.
+     */
+    public double getCameraZoom() {
+        return camzoom;
+    }
 
 	/**
 	 * Gathers the vertex, texture, and index data for each GameObject in this
@@ -291,6 +320,15 @@ public class Room {
 	 *            - openGL ES 1.0 object to do pass drawing information to.
 	 */
 	public void draw(GL10 gl) {
+        // Update camera
+        gl.glMatrixMode(GLES10.GL_PROJECTION);
+        gl.glLoadIdentity();
+        gl.glOrthof(getCameraLeftEdge(), getCameraRightEdge(), getCameraBottomEdge(), getCameraTopEdge(), -1, 1);
+
+        // Draw graphics
+        gl.glMatrixMode(GLES10.GL_MODELVIEW);
+        gl.glLoadIdentity();
+
 		int numG = getView().getGraphicsHelper().getNumGraphics();
 		
 		for (int l = 0; l <= layers; l++) {

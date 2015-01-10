@@ -1,4 +1,4 @@
-include ':bobEngineTest', ':cameraexample'
+include ':bobEngineTest', ':cameraexample', ':jumpybug'
 include ':touchInput'
 include ':template'
 include ':bobEngine'
