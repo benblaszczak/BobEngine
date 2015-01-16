@@ -10,3 +10,4 @@ bobEngineTest - Can be used for testing the performance and features of BobEngin
 touchInput - Shows how you can use BobEngine to handle input from the touch screen.
 template - A barebones BobEngine application that can be used as a base for other projects.
 cameraexample - An example that allows you to explore the camera functions.
+jumpybug - Flappy Bird clone that serves as an example of a full game
