@@ -24,14 +24,6 @@ public class MainActivity extends BobActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		/* 
-		 * Show the splash screen 
-		 * You can show a different splash screen by creating
-		 * a splash.xml layout file and placing it in res/layouts
-		 */
-		Intent splash = new Intent(this, SplashActivity.class);
-		startActivity(splash);
-		
 		/* Set up the GameView */
 		gameView = new GameView(this);
 		

@@ -180,6 +180,7 @@ public class Touch implements OnTouchListener {
 			}
 
 			numTouches = 0;
+
 			break;
 
 		case MotionEvent.ACTION_POINTER_DOWN:
@@ -199,8 +200,9 @@ public class Touch implements OnTouchListener {
 			break;
 
 		case MotionEvent.ACTION_POINTER_UP:
+
             if (myView.getCurrentRoom() != null) myView.getCurrentRoom().released(index);
-			
+
 			for (int i = 0; i < MAX_FINGERS; i++) {
 				if(i < numTouches - 1) {
 					held[i] = true;

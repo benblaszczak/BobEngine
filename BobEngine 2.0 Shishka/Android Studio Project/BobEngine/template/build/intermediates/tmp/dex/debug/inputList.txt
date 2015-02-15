@@ -1,3 +1,0 @@
-C:\Users\Ben\Documents\GitHub\BobEngine\BobEngine 2.0 Shishka\Android Studio Project\BobEngine\template\build\intermediates\classes\debug
-C:\Users\Ben\Documents\GitHub\BobEngine\BobEngine 2.0 Shishka\Android Studio Project\BobEngine\template\build\intermediates\pre-dexed\debug\classes-19df9d3687a7093c8d8a55968d260bd2b5147f1a.jar
-C:\Users\Ben\Documents\GitHub\BobEngine\BobEngine 2.0 Shishka\Android Studio Project\BobEngine\template\build\intermediates\pre-dexed\debug\support-v4-19.1.0-63587936ae897837d88087c00b80eb3ceff75c4c.jar

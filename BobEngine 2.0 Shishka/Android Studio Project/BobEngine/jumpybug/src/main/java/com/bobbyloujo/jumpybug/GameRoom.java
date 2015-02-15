@@ -81,6 +81,7 @@ public class GameRoom extends Room {
         scoreDis.width = getWidth() / 5;
         scoreDis.height = scoreDis.width;
         scoreDis.setNumber(score);
+        scoreDis.setAlignment(1); // 0 for left alignment, 1 for center, 2 for right
 
         for (int i = 0; i < NUM_FLOW; i++) {
             topFlowers[i].set(true);
@@ -107,7 +108,6 @@ public class GameRoom extends Room {
         distance++;
 
         scoreDis.setNumber(score);                                                   // Update score display
-        scoreDis.x = getWidth() / 2 + scoreDis.getWidth() / 2;  // Keep it centered
 
         /**
          * Send a new flower when we've moved the correct distance.

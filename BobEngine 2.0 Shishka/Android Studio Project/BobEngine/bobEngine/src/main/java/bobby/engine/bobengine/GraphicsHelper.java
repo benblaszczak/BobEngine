@@ -41,7 +41,7 @@ import android.util.Log;
 public class GraphicsHelper {
 
 	// Constants
-	private int START_NUM_TEX = 20;                  // Starting maximum number of textures (graphics)
+	private int START_NUM_TEX = 50;                  // Starting maximum number of textures (graphics)
 
 	// Variables
 	private int numGFX;                              // Number of loaded graphics

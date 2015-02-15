@@ -22,7 +22,7 @@ public class GameView extends BobView {
 	
 	public void onCreateRooms() {
 		start = new StartRoom(this);
-		
+		start.set();
 		goToRoom(start);
 	}
 }

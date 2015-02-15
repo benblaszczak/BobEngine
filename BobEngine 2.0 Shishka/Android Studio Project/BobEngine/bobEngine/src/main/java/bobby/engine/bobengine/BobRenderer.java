@@ -47,8 +47,13 @@ public class BobRenderer implements Renderer {
 	private long timeElapsed = 16;                    // Amount of time the frame took
 
 	/* Camera variables */
+	private double camx = 0;
+	private double camy = 0;
+	private double canchorx = 0;
+	private double canchory = 0;
 	private double camwidth;
 	private double camheight;
+	private double camzoom = 1;
 
 	/* Background color values */
 	private float red = 1;
@@ -98,7 +103,10 @@ public class BobRenderer implements Renderer {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		myOwner.getGraphicsHelper().handleGraphics((GL11) gl);// Load textures for the view
 
-		red = green = blue = alpha = 1;
+		// 
+		//red = green = blue = alpha = 1;
+		//camx = camy = 0;
+		//camzoom = 1;
 
 		gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);          // How to interpret transparency
 		gl.glAlphaFunc(GL10.GL_GREATER, 0);
@@ -125,16 +133,20 @@ public class BobRenderer implements Renderer {
 	 */
 	@Override
 	public void onDrawFrame(GL10 gl) {
-        Room current = myOwner.getCurrentRoom();
-
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT);                              // Get rid of the previous frame
-		gl.glClearColor(red, green, blue, alpha);                          // BG color
+		gl.glClearColor(red, green, blue, alpha);                          // BG color; needs to be able to change
 
 		myOwner.getGraphicsHelper().handleGraphics((GL11) gl);
 
-		if (current != null) {
-            current.update(averageDelta / OPTIMAL_TIME);   // Update game logic
-            current.draw(gl);                              // Draw graphics
+		if (myOwner.getCurrentRoom() != null) {
+            gl.glMatrixMode(GLES10.GL_PROJECTION);
+            gl.glLoadIdentity();
+            gl.glOrthof(getCameraLeftEdge(), getCameraRightEdge(), getCameraBottomEdge(), getCameraTopEdge(), -1, 1);
+            gl.glMatrixMode(GLES10.GL_MODELVIEW);
+            gl.glLoadIdentity();
+
+			myOwner.getCurrentRoom().draw(gl);                              // Draw graphics
+			myOwner.getCurrentRoom().update(averageDelta / OPTIMAL_TIME);   // Update game logic
 		}
 
 		now = SystemClock.uptimeMillis();
@@ -199,17 +211,87 @@ public class BobRenderer implements Renderer {
 		averageDelta = 16.6f;
 	}
 
+	/**
+	 * Change the x position of the camera.
+	 */
+	public void setCameraX(int x) {
+		camx = x;
+	}
+
+	/**
+	 * Change the y position of the camera.
+	 */
+	public void setCameraY(int y) {
+		camy = y;
+	}
+	
+	/**
+	 * Set the anchor point for zooming the camera. </br></br>
+	 * 
+	 * HINT: this point will stay in the same location on the screen when zooming
+	 * in and out.
+	 * 
+	 * @param x
+	 * @param y
+	 */
+	public void setCameraAnchor(int x, int y) {
+		canchorx = x;
+		canchory = y;
+	}
+
+	/**
+	 * Get the current x position of the camera.
+	 */
+	public double getCameraX() {
+		return camx;
+	}
+
+	/**
+	 * Get the current y position of the camera.
+	 */
+	public double getCameraY() {
+		return camy;
+	}
+
     /**
-     * Returns the width of the camera's view in pixels when the camera's zoom level is 1.
+     * Get the coordinate of the left edge of the camera.
      */
-    public double getCameraWidth() {
-        return camwidth;
+    public int getCameraLeftEdge() {
+        return (int) (camx + canchorx - camwidth * camzoom * (canchorx / camwidth));
     }
 
     /**
-     * Returns the height of the camera's view in pixels when the camera's zoom level is 1.
+     * Get the coordinate of teh right edge of the screen.
      */
-    public double getCameraHeight() {
-        return camheight;
+    public int getCameraRightEdge() {
+        return (int) (camx + canchorx + camwidth * camzoom * ((camwidth - canchorx) / camwidth));
     }
+
+    /**
+     * Get the coordinate of the bottom edge of the screen.
+     */
+    public int getCameraBottomEdge() {
+        return (int) (camy + canchory - camheight * camzoom * (canchory / camheight));
+    }
+
+    /**
+     * Get the coordinate of the top edge of the screen.
+     */
+    public int getCameraTopEdge() {
+        return (int) (camy + canchory + camheight * camzoom * ((camheight - canchory) / camheight));
+    }
+
+	/**
+	 * Set the zoom factor of the camera.
+	 */
+	public void setCameraZoom(double zoom) {
+		camzoom = zoom;
+	}
+
+	/**
+	 * Get the current zoom factor of the camera.
+	 */
+	public double getCameraZoom() {
+		return camzoom;
+	}
 }

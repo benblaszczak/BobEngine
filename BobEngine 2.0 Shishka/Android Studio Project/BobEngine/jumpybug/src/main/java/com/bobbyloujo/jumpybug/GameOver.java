@@ -50,6 +50,7 @@ public class GameOver extends Room {
         score.width = getWidth() / 5;
         score.height = score.width;
         score.x = getWidth() / 2;
+        score.setAlignment(1);
 
         gameOver.x = getWidth() / 2;
         gameOver.y = getHeight() * 5 / 6;
@@ -65,8 +66,6 @@ public class GameOver extends Room {
      */
     @Override
     public void step(double dt) {
-        score.x = getWidth() / 2 + score.getWidth() / 2; // Center the score
-
         if (getTouch().objectTouched(play)) {  // Is the play button being touched?
             play.frame = 1;                    // Pressed frame.
         } else {

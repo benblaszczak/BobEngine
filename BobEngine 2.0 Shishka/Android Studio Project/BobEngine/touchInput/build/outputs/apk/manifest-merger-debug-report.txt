@@ -26,7 +26,6 @@ MERGED from BobEngine:bobEngine:unspecified:29:5
 		INJECTED from AndroidManifest.xml:0:0
 application
 ADDED from AndroidManifest.xml:11:5
-MERGED from BobEngine:bobEngine:unspecified:33:5
 	android:label
 		ADDED from AndroidManifest.xml:14:9
 	android:allowBackup
@@ -53,7 +52,6 @@ ADDED from AndroidManifest.xml:24:17
 		ADDED from AndroidManifest.xml:24:27
 activity#bobby.engine.bobengine.SplashActivity
 ADDED from AndroidManifest.xml:29:9
-MERGED from BobEngine:bobEngine:unspecified:38:9
 	android:theme
 		ADDED from AndroidManifest.xml:31:13
 	android:name

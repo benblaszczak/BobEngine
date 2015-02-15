@@ -1,5 +1,7 @@
 package bobby.example.bobengineexample;
 
+import android.util.Log;
+
 import java.util.Random;
 
 import bobby.engine.bobengine.BobView;
@@ -30,8 +32,6 @@ public class StartRoom extends Room {
 			droid[i] = new Android(nextInstance(), this);
 		}
 
-		set();
-
 		for (int i = 0; i < NUM_DROIDS; i++) {
 			addObject(droid[i]);
 		}
@@ -47,6 +47,8 @@ public class StartRoom extends Room {
 		num.set(500, 1000, 1f / 6f, 1);
 		num.setAfterKerning(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 		num.setBeforeKerning(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        num.setAlignment(1);
+        Log.d("test", ";lakjsdfjk");
 	}
 
 	@Override
@@ -63,8 +65,6 @@ public class StartRoom extends Room {
 		}
 		
 		num.setNumber((int) ((60.0 / deltaTime) * 10));
-		num.x = (getWidth() / 2) + num.getWidth() / 2;
-
 		super.step(deltaTime);
 	}
 }

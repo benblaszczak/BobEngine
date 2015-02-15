@@ -14,9 +14,9 @@ public class MainActivity extends BobActivity {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		useImmersiveMode();
-		
 		super.onCreate(savedInstanceState);
+
+        useImmersiveMode();
 		
 		view = new GameView(this);
 		

@@ -55,7 +55,6 @@ public abstract class BobView extends GLSurfaceView {
 
 	// Variables
 	private Point screen;                                  // The size of the screen in pixels.
-	private Point base;                                    // The base screen dimensions to use for calculating correction ratios.
 	private double ratioX;                                 // Screen width correction ratio for handling different sized screens
 	private double ratioY;                                 // Screen height correction ratio
 	private boolean created;                               // Flag that indicates this view has already been created.
@@ -122,11 +121,10 @@ public abstract class BobView extends GLSurfaceView {
 		wm = (WindowManager) myActivity.getSystemService(Context.WINDOW_SERVICE);
 
 		screen = new Point();
-		base = new Point();
 		
 		if (myActivity instanceof BobActivity) {                                         // Best to use a BobActivity but not required
-			screen.x = ((BobActivity) myActivity).screenWidth;
-			screen.y = ((BobActivity) myActivity).screenHeight;
+			screen.x = ((BobActivity) myActivity).getScreenWidth();
+			screen.y = ((BobActivity) myActivity).getScreenHeight();
 		} else {                                                                         // Must account for cases where a BobActivity is not used.
 
 			try {
@@ -136,37 +134,6 @@ public abstract class BobView extends GLSurfaceView {
 				screen.y = wm.getDefaultDisplay().getHeight();
 			}
 		}
-
-		/*
-		 * The following block of code creates x and y ratios of the current device's
-		 * screen dimensions compared to some base dimensions. These ratios can be used
-		 * to ensure the game plays the same on all different screen sizes.
-		 * 
-		 * For example, you may do:
-		 * 
-		 * x = x + 1 * getRatioX();
-		 * 
-		 * instead of:
-		 * 
-		 * x = x + 1;
-		 * 
-		 * So that the object moves to the right at the same speed relative to screen
-		 * size on all different screen sizes.
-		 * 
-		 * These ratios are based on the orientation of the device when this view is created.
-		 */
-		rot = wm.getDefaultDisplay().getRotation();
-
-		if (rot == Surface.ROTATION_0 || rot == Surface.ROTATION_180) {                   // Portrait orientation
-			base.x = INIT_BASE_W;
-			base.y = INIT_BASE_H;
-		} else {                                                                          // Landscape orientation
-			base.x = INIT_BASE_H;
-			base.y = INIT_BASE_W;
-		}
-
-		ratioX = (double) screen.x / (double) base.x;
-		ratioY = (double) screen.y / (double) base.y;
 	}
 	
 	/**
@@ -270,22 +237,55 @@ public abstract class BobView extends GLSurfaceView {
 		
 		return false;
 	}
-	
-	/**
-	 * Returns the screen width correction ratio for dealing with different size screens.
-	 * This ratio is based off of the initial orientation of the device when the BobView is initialized!
-	 */
-	public double getRatioX() {
-		return ratioX;
-	}
-	
-	/**
-	 * Returns the screen height correction ratio for dealing with different size screens.
-	 * This ratio is based off of the initial orientation of the device when the BobView is initialized!
-	 */
-	public double getRatioY() {
-		return ratioY;
-	}
+
+    /**
+     * Returns the screen width correction ratio for dealing with different size screens.
+     *
+     * <br /><br />
+     *
+     * For example, you may do:             <br /><br />
+     *
+     * x = x + 1 * getRatioX();             <br /><br />
+     *
+     * instead of:                          <br /><br />
+     *
+     * x = x + 1;                           <br /><br />
+     *
+     * So that the object moves to the right at the same speed relative to screen
+     * size on all different screen sizes.
+     */
+    @TargetApi(17)
+    public double getRatioX() {
+        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        try {
+            wm.getDefaultDisplay().getRealSize(screen);
+        } catch (NoSuchMethodError e) {
+            screen.x = wm.getDefaultDisplay().getWidth();
+        }
+
+        if(isPortrait()) ratioX = screen.x / INIT_BASE_W;
+        else ratioX = screen.x / INIT_BASE_H;
+
+        return ratioX;
+    }
+
+    /**
+     * Returns the screen height correction ratio for dealing with different size screens.
+     */
+    @TargetApi(17)
+    public double getRatioY() {
+        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        try {
+            wm.getDefaultDisplay().getRealSize(screen);
+        } catch (NoSuchMethodError e) {
+            screen.y = wm.getDefaultDisplay().getHeight();
+        }
+
+        if(isPortrait()) ratioY = screen.y / INIT_BASE_H;
+        else ratioY = screen.y / INIT_BASE_W;
+
+        return ratioY;
+    }
 
 	/**
 	 * Sets the background color for the BobView.

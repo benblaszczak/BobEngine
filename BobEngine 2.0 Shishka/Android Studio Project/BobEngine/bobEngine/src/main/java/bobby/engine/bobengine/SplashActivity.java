@@ -24,75 +24,91 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 
 
 /**
- * This Activity displays the splash screen when the app is opened. The splash
- * screen will always be displayed in immersive mode. The default screen shows
- * the "Powered by BobEngine" logo. You may use a different layout for the splash
- * screen by defining one in a "splash.xml" file and placing it in your
- * res/layout/ folder.
- * <br /><br />
- * Note that if you do not show the BobEngine screen, you must credit BobEngine
- * somewhere else in your app. Thank you for your cooperation!
- * <br /><br />
- * You can display this screen by starting an intent for SplashActivity.
- * <br /><br />
- * If you are having trouble displaying the splash screen, be sure to add the line
- * 'manifestmerger.enabled=true' to your project.properties file. You may also
- * define SplashActivity in your own AndroidManifest.xml file instead.
+ * This activity allows you to show multiple splash screens. Splash screens should be
+ * created as XML layouts and placed in res\layouts.
  * 
  * @author Ben
  *
  */
-public class SplashActivity extends Activity {
+public abstract class SplashActivity extends BobActivity {
 
-	public static final String TIME = "time";                                  // Use this to send a custom amount of time
-	private final int SPLASH_TIME = 3000;                                      // Default amount of time this screen shows in milliseconds.
-	private int time;                                                          // Amount of time this screen shows
-	
-	@SuppressLint("InlinedApi")
-	final int VISIBILITY =                                                     // The flags for immersive mode
-	View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-			| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+    private final int MAX_LAYOUTS = 10;    // The maximum number of splash screens.
 
-	@SuppressLint("NewApi")
+    private int[] layouts;                 // Holds the resource IDs for all the splash screen layouts
+    private int[] times;                   // Holds the times for all the splash screens
+    private int numLays;                   // The number of splash screens to show
+    private int curLay;                    // The current screen being shown
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		time = getIntent().getIntExtra(TIME, SPLASH_TIME);
-		
-		try {                                                                  // Immersive mode (Will not work on versions prior to 4.4.2)
-			getWindow().getDecorView().setSystemUiVisibility(VISIBILITY);      // Set the flags for immersive mode
-		} catch (NoSuchMethodError e) {                                        // Immersive mode not supported (Android version < 4.4.2)
-			// Get KitKat!
-		}
+        useImmersiveMode();
 
-		new Handler().postDelayed(new Runnable() {
+        numLays = 0;
+        curLay = 0;
+        layouts = new int[MAX_LAYOUTS];
+        times = new int[MAX_LAYOUTS];
 
-			@Override
-			public void run() {
-				runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						finish();
-					}
-
-				});
-			}
-
-		}, time);
-
-		setContentView(R.layout.splash);
+        setup();
+        nextScreen();
 	}
-	
-	@Override
-	public void onPause() {
-		super.onPause();
-		
-		overridePendingTransition(0, android.R.anim.fade_out);
-	}
+
+    /**
+     * Add a splash screen to the queue of splash screens. Call this in setup().
+     *
+     * @param layout - The resource ID of the splash screen layout
+     * @param time - The amount of time in milliseconds to show the screen
+     */
+    public void addSplash(int layout, int time) {
+        if (numLays < MAX_LAYOUTS) {
+            layouts[numLays] = layout;
+            times[numLays] = time;
+            numLays++;
+        } else {
+            Log.i("BobEngine", "Too many splash screens. Increase MAX_LAYOUTS.");
+        }
+    }
+
+    /**
+     * Go to the next splash screen or call end() when all screens
+     * have been shown.
+     */
+    private void nextScreen() {
+        if (curLay < numLays) {
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    setContentView(layouts[curLay]);
+
+                    new Handler().postDelayed(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            curLay++;
+                            nextScreen();
+                        }
+                    }, times[curLay]);
+                }
+            });
+        } else {
+            end();
+        }
+    }
+
+    /**
+     * Use this method to add your layouts to the queue of splash screens.
+     */
+    protected abstract void setup();
+
+    /**
+     * This method is called after all the splash screens have been shown. Use it
+     * to go to the next activity.
+     */
+    protected abstract void end();
 }

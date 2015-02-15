@@ -42,6 +42,7 @@ public class NumberDisplay extends GameObject {
 	private int digits;
 	private double realWidth;
 	private int indices;
+    private int position;
 
 	// Graphic
 	private static Graphic g;                         // The default number graphic
@@ -76,6 +77,7 @@ public class NumberDisplay extends GameObject {
 		height = width;
 		indices = 0;
 		digits = 1;
+        position = 0;
 
 		this.x = x;
 		this.y = y;
@@ -108,6 +110,10 @@ public class NumberDisplay extends GameObject {
 		before[8] = d8;
 		before[9] = d9;
 	}
+
+	public void setBeforeKerning(double before[]) {
+		this.before = before;
+	}
 	
 	/**
 	 * Set the amount of empty space after digits. These values should be decimals representing percentages
@@ -125,17 +131,33 @@ public class NumberDisplay extends GameObject {
 	 * @param d9
 	 */
 	public void setAfterKerning(double d0, double d1, double d2, double d3, double d4, double d5, double d6, double d7, double d8, double d9 ) {
-		before[0] = d0;
-		before[1] = d1;
-		before[2] = d2;
-		before[3] = d3;
-		before[4] = d4;
-		before[5] = d5;
-		before[6] = d6;
-		before[7] = d7;
-		before[8] = d8;
-		before[9] = d9;
+		after[0] = d0;
+		after[1] = d1;
+		after[2] = d2;
+		after[3] = d3;
+		after[4] = d4;
+		after[5] = d5;
+		after[6] = d6;
+		after[7] = d7;
+		after[8] = d8;
+		after[9] = d9;
 	}
+
+	public void setAfterKerning(double after[]) {
+		this.after = after;
+	}
+
+    /**
+     * Set the alignment of this number display.
+     * <br /><br />
+     * 0 - Align right   <br />
+     * 1 - Align center  <br />
+     * 2 - Align left    <br />
+     * @param alignment
+     */
+    public void setAlignment(int alignment) {
+        position = alignment;
+    }
 
 	/**
 	 * Change the number that this NumberDisplay displays.
@@ -187,6 +209,89 @@ public class NumberDisplay extends GameObject {
 		oX = x;
 		realWidth = width * (digits - 1);
 
+        for (int d = 0; d < digits; d++) {
+            int digit = tempNum % 10;
+            tempNum /= 10;
+
+            // Remove space before
+            switch (digit) {
+                case 0:
+                    realWidth -= width * before[0];
+                    break;
+                case 1:
+                    realWidth -= width * before[1];
+                    break;
+                case 2:
+                    realWidth -= width * before[2];
+                    break;
+                case 3:
+                    realWidth -= width * before[3];
+                    break;
+                case 4:
+                    realWidth -= width * before[4];
+                    break;
+                case 5:
+                    realWidth -= width * before[5];
+                    break;
+                case 6:
+                    realWidth -= width * before[6];
+                    break;
+                case 7:
+                    realWidth -= width * before[7];
+                    break;
+                case 8:
+                    realWidth -= width * before[8];
+                    break;
+                case 9:
+                    realWidth -= width * before[9];
+                    break;
+            }
+
+            // Remove space after
+            switch (digit) {
+                case 0:
+                    realWidth -= width * after[0];
+                    break;
+                case 1:
+                    realWidth -= width * after[1];
+                    break;
+                case 2:
+                    realWidth -= width * after[2];
+                    break;
+                case 3:
+                    realWidth -= width * after[3];
+                    break;
+                case 4:
+                    realWidth -= width * after[4];
+                    break;
+                case 5:
+                    realWidth -= width * after[5];
+                    break;
+                case 6:
+                    realWidth -= width * after[6];
+                    break;
+                case 7:
+                    realWidth -= width * after[7];
+                    break;
+                case 8:
+                    realWidth -= width * after[8];
+                    break;
+                case 9:
+                    realWidth -= width * after[9];
+                    break;
+            }
+        }
+
+        if (position == 0) {
+            x = x + width / 2 + realWidth;
+        } else if (position == 1) {
+            x = x + realWidth / 2;
+        } else if (position == 2) {
+            x = x - width / 2;
+        }
+
+        tempNum = (int) number;
+
 		for (int d = 0; d < digits; d++) {
 			int digit = tempNum % 10;
 			tempNum /= 10;
@@ -195,43 +300,33 @@ public class NumberDisplay extends GameObject {
 			switch (digit) {
 			case 0:
 				x += width * before[0];
-				realWidth -= width * before[0];
 				break;
 			case 1:
 				x += width * before[1];
-				realWidth -= width * before[1];
 				break;
 			case 2:
 				x += width * before[2];
-				realWidth -= width * before[2];
 				break;
 			case 3:
 				x += width * before[3];
-				realWidth -= width * before[3];
 				break;
 			case 4:
 				x += width * before[4];
-				realWidth -= width * before[4];
 				break;
 			case 5:
 				x += width * before[5];
-				realWidth -= width * before[5];
 				break;
 			case 6:
 				x += width * before[6];
-				realWidth -= width * before[6];
 				break;
 			case 7:
 				x += width * before[7];
-				realWidth -= width * before[7];
 				break;
 			case 8:
 				x += width * before[8];
-				realWidth -= width * before[8];
 				break;
 			case 9:
 				x += width * before[9];
-				realWidth -= width * before[9];
 				break;
 			}
 
@@ -246,43 +341,33 @@ public class NumberDisplay extends GameObject {
 			switch (digit) {
 			case 0:
 				x += width * after[0];
-				realWidth -= width * after[0];
 				break;
 			case 1:
 				x += width * after[1];
-				realWidth -= width * after[1];
 				break;
 			case 2:
 				x += width * after[2];
-				realWidth -= width * after[2];
 				break;
 			case 3:
 				x += width * after[3];
-				realWidth -= width * after[3];
 				break;
 			case 4:
 				x += width * after[4];
-				realWidth -= width * after[4];
 				break;
 			case 5:
 				x += width * after[5];
-				realWidth -= width * after[5];
 				break;
 			case 6:
 				x += width * after[6];
-				realWidth -= width * after[6];
 				break;
 			case 7:
 				x += width * after[7];
-				realWidth -= width * after[7];
 				break;
 			case 8:
 				x += width * after[8];
-				realWidth -= width * after[8];
 				break;
 			case 9:
 				x += width * after[9];
-				realWidth -= width * after[9];
 				break;
 			}
 		}
