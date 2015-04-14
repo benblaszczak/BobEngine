@@ -177,7 +177,7 @@ public class GraphicsHelper {
 				success = true;
 			} catch (OutOfMemoryError e) {  // Not enough memory to load all the graphics. BobEngine will try down sampling them.
 				sampleSize++;
-				Log.i("BobEngine", "Not enough memory. Retrying in sample size " + Integer.toString(sampleSize));
+				Log.e("BobEngine", "Not enough memory. Retrying in sample size " + Integer.toString(sampleSize));
 				success = false;
 			}
 		} while (!success);  // Try again
@@ -216,7 +216,7 @@ public class GraphicsHelper {
 		// Tell openGL which texture we are working with
 		gl.glBindTexture(GL11.GL_TEXTURE_2D, t);
 
-		// Create mipmaps and set texture parameters. Some day I will provide a way to choose these parameters through BobEngine.
+		// Create mipmaps and set texture parameters.
 		gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, graphics[t].minFilter);                 // Filtering for downscaling
 		gl.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, graphics[t].magFilter);                 // Upscale filtering
 		if (graphics[t].useMipMaps) gl.glTexParameterx(GL11.GL_TEXTURE_2D, GL11.GL_GENERATE_MIPMAP, GL11.GL_TRUE); // Use mipmapping

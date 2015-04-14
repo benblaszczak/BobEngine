@@ -137,11 +137,10 @@ public class Touch implements OnTouchListener {
 	 * ...trigger releases. <br />
 	 * ...get touch positions. <br />
 	 */
-	@SuppressLint("ClickableViewAccessibility")
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		// Variables
-		numTouches = event.getPointerCount();            // The current number of touchs
+		numTouches = event.getPointerCount();            // The current number of touches
 		int index = event.getActionIndex();              // The finger that is touching the screen
 
 		switch (event.getActionMasked() & MotionEvent.ACTION_MASK) {

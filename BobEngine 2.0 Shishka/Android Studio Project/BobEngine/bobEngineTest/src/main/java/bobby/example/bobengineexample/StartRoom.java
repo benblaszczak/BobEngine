@@ -18,7 +18,7 @@ public class StartRoom extends Room {
 	private Random rand;
 
 	// Constants
-	private final int NUM_DROIDS = 5;   // Number of bouncing icons (not actually droids anymore, whatever)
+	private final int NUM_DROIDS = 10;   // Number of bouncing icons (not actually droids anymore, whatever)
 	private final double DROID_SIZE = 10; // Size... sort of. Bigger number = smaller bouncing icons
 
 	StartRoom(BobView container) {
@@ -44,11 +44,10 @@ public class StartRoom extends Room {
 			droid[i].set(rand.nextInt(getWidth()), rand.nextInt(getHeight()), DROID_SIZE, 1);
 		}
 		
-		num.set(500, 1000, 1f / 6f, 1);
+		num.set(getWidth() / 2, getHeight() / 2, 1f / 6f, 1);
 		num.setAfterKerning(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 		num.setBeforeKerning(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         num.setAlignment(1);
-        Log.d("test", ";lakjsdfjk");
 	}
 
 	@Override

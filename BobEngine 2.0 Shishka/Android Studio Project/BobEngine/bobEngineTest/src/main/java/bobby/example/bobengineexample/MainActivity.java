@@ -4,8 +4,9 @@ import android.os.Bundle;
 import bobby.engine.bobengine.BobActivity;
 
 /**
- * This example project demonstrates how to set up the most basic BobEngine project:
- * 1 view with 1 room that has 1 object
+ * This module is my playground for testing new BobEngine features. It's full
+ * of sloppy code showing off lots of random things that BobEngine can do. Look
+ * through it if you like, but be warned that is messy!
  */
 
 public class MainActivity extends BobActivity {

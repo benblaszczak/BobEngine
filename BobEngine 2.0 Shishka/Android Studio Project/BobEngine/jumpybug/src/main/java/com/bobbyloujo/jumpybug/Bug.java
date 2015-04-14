@@ -55,6 +55,7 @@ public class Bug extends GameObject {
         width = getRoom().getWidth() / 8;
         height = width;
         vy = 0;
+		layer = 3;
     }
 
     /**

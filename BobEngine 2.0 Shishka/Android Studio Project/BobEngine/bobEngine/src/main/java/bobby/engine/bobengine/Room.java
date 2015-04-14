@@ -1,21 +1,21 @@
 /**
  * BobEngine - 2D game engine for Android
- * 
+ *
  * Copyright (C) 2014, 2015 Benjamin Blaszczak
- * 
+ *
  * BobEngine is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser Public License
  * version 2.1 as published by the free software foundation.
- * 
+ *
  * BobEngine is provided without warranty; without even the implied
  * warranty of merchantability or fitness for a particular 
  * purpose. See the GNU Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General
  * Public License along with BobEngine; if not, write to the
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301 USA
- * 
+ *
  */
 
 package bobby.engine.bobengine;
@@ -29,20 +29,19 @@ import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
 import android.app.Activity;
-
-// TODO When objects are off screen, do they still appear if the camera is shifted to show them?
+import android.opengl.GLES10;
 
 /**
  * Rooms are collections of GameObjects. They handle updating and rendering each
  * object in the room.
- * 
+ *
  * @author Ben
- * 
+ *
  */
 public class Room {
 	// Constants
 	public final int OBJECTS = 8000;                       // Maximum number of quads. This is kind of sloppy. I should find a better way to do this.
-	public final int LAYERS = 5;                           // Number of layers.
+	public final int LAYERS = 5;                           // Default number of layers.
 	public final int VERTEX_BYTES = 4 * 3 * 4 * OBJECTS;   // 4 bytes per float * 3 coords per vertex * 4 vertices * max objects
 	public final int TEX_BYTES = 4 * 2 * 4 * OBJECTS;      // 4 bytes per float * 2 coords per vertex * 4 vertices
 	public final int INDEX_BYTES = 4 * 4 * OBJECTS;        // 4 bytes per short * 4 indices per quad * max num of objects
@@ -52,8 +51,14 @@ public class Room {
 	public int index;                                      // The number of indices for all quads
 	public short indices[] = new short[6];                 // The order in which to draw the vertices
 	public int lastIndex[];                                // The number of indices last frame for each layer
-	protected int cur;                                     // A cursor.
-	public int layers;
+	public int layers;                                     // Number of layers - 1. (ex. 5 layers would be 0-4 so layers is 4)
+
+	// Camera variables
+	private int camx;
+	private int camy;
+	private double camzoom;
+	private double canchorx;
+	private double canchory;
 
 	// Objects
 	protected GameObject[][] objects;
@@ -92,11 +97,18 @@ public class Room {
 
 		layers = LAYERS - 1;
 		lastIndex = new int[LAYERS];
+
+		// Camera initialization
+		camx = 0;
+		camy = 0;
+		camzoom = 1;
+		canchorx = 0;
+		canchory = 0;
 	}
 
 	/**
 	 * Get the BobView that contains this Room.
-	 * 
+	 *
 	 * @return BobView containing this Room.
 	 */
 	public BobView getView() {
@@ -118,8 +130,15 @@ public class Room {
 	}
 
 	/**
+	 * Get the controller helper for this Room's containing BobView.
+	 */
+	public Controller getController() {
+		return myView.getController();
+	}
+
+	/**
 	 * Gets next available instance id.
-	 * 
+	 *
 	 * @return An unused ID number to be given to a GameObject
 	 */
 	public int nextInstance() {
@@ -130,7 +149,7 @@ public class Room {
 	/**
 	 * Add a new GameObject to this room. Must be done for each GameObject to be
 	 * draw in this room.
-	 * 
+	 *
 	 * @param o
 	 *            - GameObject to add.
 	 */
@@ -141,7 +160,7 @@ public class Room {
 	/**
 	 * Removes a GameObject from this room. If possible, consider moving the
 	 * object off screen instead.
-	 * 
+	 *
 	 * @param o
 	 *            - GameObject to remove.
 	 */
@@ -163,7 +182,7 @@ public class Room {
 	/**
 	 * Returns the height of the room. This is the same as the height of the
 	 * room's containing BobView.
-	 * 
+	 *
 	 * @return Height of the room, in pixels.
 	 * */
 	public int getHeight() {
@@ -173,7 +192,7 @@ public class Room {
 	/**
 	 * Returns the width of the room. This is the same as the width of the
 	 * room's containing BobView.
-	 * 
+	 *
 	 * @return Width of the room, in pixels.
 	 * */
 	public int getWidth() {
@@ -197,88 +216,89 @@ public class Room {
 	public double getRatioY() {
 		return getView().getRatioY();
 	}
-	
+
 	/**
 	 * Change the x position of the camera.
 	 */
 	public void setCameraX(int x) {
-		getView().getRenderer().setCameraX(x);
+		camx = x;
 	}
-	
+
 	/**
 	 * Change the y position of the camera.
 	 */
 	public void setCameraY(int y) {
-		getView().getRenderer().setCameraY(y);
+		camy = y;
 	}
-	
-	/**
-	 * Get the current x position of the camera.
-	 */
-	public double getCameraX() {
-		return getView().getRenderer().getCameraX();
-	}
-	
-	/**
-	 * Get the current y position of the camera.
-	 */
-	public double getCameraY() {
-		return getView().getRenderer().getCameraY();
-	}
-
-    /**
-     * Get the coordinate of the left edge of the camera.
-     */
-    public int getCameraLeftEdge() {
-        return getView().getRenderer().getCameraLeftEdge();
-    }
-
-    /**
-     * Get the coordinate of teh right edge of the screen.
-     */
-    public int getCameraRightEdge() {
-        return getView().getRenderer().getCameraRightEdge();
-    }
-
-    /**
-     * Get the coordinate of the bottom edge of the screen.
-     */
-    public int getCameraBottomEdge() {
-        return getView().getRenderer().getCameraBottomEdge();
-    }
-
-    /**
-     * Get the coordinate of the top edge of the screen.
-     */
-    public int getCameraTopEdge() {
-        return getView().getRenderer().getCameraTopEdge();
-    }
 
 	/**
 	 * Set the anchor point for zooming the camera. </br></br>
-	 * 
+	 *
 	 * HINT: this point will stay in the same location on the screen when zooming
 	 * in and out.
-	 * 
+	 *
 	 * @param x
 	 * @param y
 	 */
 	public void setCameraAnchor(int x, int y) {
-		getView().getRenderer().setCameraAnchor(x, y);
+		canchorx = x;
+		canchory = y;
 	}
-	
+
+	/**
+	 * Get the current x position of the camera.
+	 */
+	public double getCameraX() {
+		return camx;
+	}
+
+	/**
+	 * Get the current y position of the camera.
+	 */
+	public double getCameraY() {
+		return camy;
+	}
+
+	/**
+	 * Get the coordinate of the left edge of the camera.
+	 */
+	public int getCameraLeftEdge() {
+		return (int) (camx + canchorx - getView().getRenderer().getCameraWidth() * camzoom * (canchorx / getView().getRenderer().getCameraWidth()));
+	}
+
+	/**
+	 * Get the coordinate of teh right edge of the screen.
+	 */
+	public int getCameraRightEdge() {
+		return (int) (camx + canchorx + getView().getRenderer().getCameraWidth() * camzoom * ((getView().getRenderer().getCameraWidth() - canchorx) / getView().getRenderer().getCameraWidth()));
+	}
+
+	/**
+	 * Get the coordinate of the bottom edge of the screen.
+	 */
+	public int getCameraBottomEdge() {
+		return (int) (camy + canchory - getView().getRenderer().getCameraHeight() * camzoom * (canchory / getView().getRenderer().getCameraHeight()));
+	}
+
+	/**
+	 * Get the coordinate of the top edge of the screen.
+	 */
+	public int getCameraTopEdge() {
+		return (int) (camy + canchory + getView().getRenderer().getCameraHeight() * camzoom * ((getView().getRenderer().getCameraHeight() - canchory) / getView().getRenderer().getCameraHeight()));
+	}
+
 	/**
 	 * Set the zoom factor of the camera.
 	 */
 	public void setCameraZoom(double zoom) {
-		getView().getRenderer().setCameraZoom(zoom);
+		camzoom = zoom;
 	}
-	
+
 	/**
 	 * Get the current zoom factor of the camera.
 	 */
 	public double getCameraZoom() {
-		return getView().getRenderer().getCameraZoom();
+		return camzoom;
 	}
 
 	/**
@@ -286,17 +306,26 @@ public class Room {
 	 * room and passes that information to openGL. Can be called from another
 	 * room's draw method to draw both rooms at once. If overridden, call
 	 * super.draw(gl).
-	 * 
+	 *
 	 * @param gl
 	 *            - openGL ES 1.0 object to do pass drawing information to.
 	 */
 	public void draw(GL10 gl) {
+		// Update camera
+		gl.glMatrixMode(GLES10.GL_PROJECTION);
+		gl.glLoadIdentity();
+		gl.glOrthof(getCameraLeftEdge(), getCameraRightEdge(), getCameraBottomEdge(), getCameraTopEdge(), -1, 1);
+
+		// Draw graphics
+		gl.glMatrixMode(GLES10.GL_MODELVIEW);
+		gl.glLoadIdentity();
+
 		int numG = getView().getGraphicsHelper().getNumGraphics();
-		
+
 		for (int l = 0; l <= layers; l++) {
 			for (int t = 0; t < numG; t++) {
 				int obs = 0;
-				
+
 				for (int o = 0; o <= instances; o++) {
 					g = objects[l][o];
 
@@ -322,7 +351,7 @@ public class Room {
 						if (g != null && g.getGraphicID() == t) {
 							if (g.onScreen()) {
 								vertexBuffer.put(g.getVertices());
-								textureBuffer.put(g.getGraphic());
+								textureBuffer.put(g.getGraphicVerts());
 								index += g.getIndices();
 							}
 						}
@@ -346,14 +375,14 @@ public class Room {
 						indexBuffer[l].put(indices);
 						lastIndex[l] = index;
 					}
-					
+
 					vertexBuffer.position(0);
 					textureBuffer.position(0);
 					indexBuffer[l].position(0);
-					
+
 					// Add color
 					// TODO gl.glColor4f(red, green, blue, alpha);
-					
+
 					gl.glBindTexture(GL11.GL_TEXTURE_2D, t);
 
 					// Point to our vertex buffer
@@ -372,7 +401,7 @@ public class Room {
 	 * also handles changes to an object's layer. Can be called from another
 	 * room's step event to update both rooms at once. If overridden, call
 	 * super.update(deltaTime).
-	 * 
+	 *
 	 * @param deltaTime
 	 */
 	public void update(double deltaTime) {
@@ -404,7 +433,7 @@ public class Room {
 
 	/**
 	 * Event that happens every frame. Can be overridden.
-	 * 
+	 *
 	 * @param deltaTime
 	 *            - [Time the last frame took]/[60 FPS] Will be 1 if the game is
 	 *            running at 60FPS, > 1 if the game is running slow, and < 1 if
@@ -431,12 +460,28 @@ public class Room {
 	}
 
 	/**
+	 * Gamepad newpress event. Executes the newpress event for each
+	 * GameObject in this room. Can be overridden, but be sure to call
+	 * super.newpress() in your override method.
+	 */
+	public void newpress(int controller, int button) {
+		// Perform step even for each object
+		for (int l = 0; l <= LAYERS; l++) {
+			for (int o = instances; o >= 0; o--) {
+				if (objects[l][o] != null) {
+					objects[l][o].newpress(controller, button);
+				}
+			}
+		}
+	}
+
+	/**
 	 * Touch screen release event. Executes the release event for each
 	 * GameObject in this room. Can be overridden, but be sure to call
 	 * super.release() in your override method.
 	 */
 	public void released(int index) {
-		// Perform step even for each object
+		// Perform released event for each object
 		for (int l = 0; l <= LAYERS; l++) {
 			for (int o = instances; o >= 0; o--) {
 				if (objects[l][o] != null) {
@@ -447,7 +492,23 @@ public class Room {
 	}
 
 	/**
-	 * 
+	 * Gamepad release event. Executes the release event for each
+	 * GameObject in this room. Can be overridden, but be sure to call
+	 * super.release() in your override method.
+	 */
+	public void released(int controller, int button) {
+		// Perform released event for each object
+		for (int l = 0; l <= LAYERS; l++) {
+			for (int o = instances; o >= 0; o--) {
+				if (objects[l][o] != null) {
+					objects[l][o].released(controller, button);
+				}
+			}
+		}
+	}
+
+	/**
+	 *
 	 * @return The angle between (x1, y1) and (x2, y2)
 	 */
 	public double getAngle(double x, double y, double x2, double y2) {
@@ -455,7 +516,7 @@ public class Room {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param ob1
 	 * @param ob2
 	 * @return The angle between ob1 and ob2
@@ -466,7 +527,7 @@ public class Room {
 
 	/**
 	 * Gets the distance between two points.
-	 * 
+	 *
 	 * @return Distance between (x1, y1) and (x2, y2)
 	 */
 	public double getDistance(int x1, int y1, int x2, int y2) {
@@ -475,7 +536,7 @@ public class Room {
 
 	/**
 	 * Gets the distance between two GameObjects.
-	 * 
+	 *
 	 * @param ob1
 	 *            - GameObject 1
 	 * @param ob2
@@ -487,31 +548,50 @@ public class Room {
 	}
 
 	/**
+	 * Gets the distance between two GameObjects, squared (faster).
+	 *
+	 * @param ob1
+	 *            - GameObject 1
+	 * @param ob2
+	 *            - GameObject 2
+	 * @return Distance between ob1 and ob2, squared, in pixels.
+	 */
+	public double getDistanceBetweenSquared(GameObject ob1, GameObject ob2) {
+		return Math.pow(ob1.x - ob2.x, 2) + Math.pow(ob1.y - ob2.y, 2);
+	}
+
+	/**
 	 * Checks if GameObject 1 has collided with GameObject 2.
-	 * 
+	 *
 	 * @param ob1
 	 *            - GameObject 1
 	 * @param ob2
 	 *            - GameObject 2
 	 */
 	public boolean checkCollision(GameObject ob1, GameObject ob2) {
-		double radius = Math.sqrt(Math.pow((ob1.x - ob1.width / 2), 2) + Math.pow((ob1.y + ob1.height / 2), 2))
-				+ Math.sqrt(Math.pow((ob2.x - ob2.width / 2), 2) + Math.pow((ob2.y + ob2.height / 2), 2));
+
+		double absw1 = Math.abs(ob1.width);
+		double absh1 = Math.abs(ob1.height);
+		double absw2 = Math.abs(ob2.width);
+		double absh2 = Math.abs(ob2.height);
+
+		double radius = Math.sqrt(Math.pow((ob1.x - absw1 / 2), 2) + Math.pow((ob1.y + absh1 / 2), 2))
+				+ Math.sqrt(Math.pow((ob2.x - absw2 / 2), 2) + Math.pow((ob2.y + absh2 / 2), 2));
 
 		if (getDistanceBetween(ob1, ob2) <= radius) {
 			for (int b1 = 0; b1 < ob1.getNumColBoxes(); b1++) {
 				// Find the coordinates of the box defined by ob1.box[]
-				double x1 = (ob1.x - ob1.width / 2) + (ob1.box[b1][0] * ob1.width);
-				double x2 = (ob1.x - ob1.width / 2) + (ob1.box[b1][1] * ob1.width);
-				double y1 = (ob1.y + ob1.height / 2) - (ob1.box[b1][2] * ob1.height);
-				double y2 = (ob1.y + ob1.height / 2) - (ob1.box[b1][3] * ob1.height);
+				double x1 = (ob1.x - absw1 / 2) + (ob1.box[b1][0] * absw1);
+				double x2 = (ob1.x - absw1 / 2) + (ob1.box[b1][1] * absw1);
+				double y1 = (ob1.y + absh1 / 2) - (ob1.box[b1][2] * absh1);
+				double y2 = (ob1.y + absh1 / 2) - (ob1.box[b1][3] * absh1);
 
 				// Compare the ob2's boxs to ob1's boxes
 				for (int b2 = 0; b2 < ob2.getNumColBoxes(); b2++) {
-					double mX1 = (ob2.x - ob2.width / 2) + (ob2.box[b2][0] * ob2.width);
-					double mX2 = (ob2.x - ob2.width / 2) + (ob2.box[b2][1] * ob2.width);
-					double mY1 = (ob2.y + ob2.height / 2) - (ob2.box[b2][2] * ob2.height);
-					double mY2 = (ob2.y + ob2.height / 2) - (ob2.box[b2][3] * ob2.height);
+					double mX1 = (ob2.x - absw2 / 2) + (ob2.box[b2][0] * absw2);
+					double mX2 = (ob2.x - absw2 / 2) + (ob2.box[b2][1] * absw2);
+					double mY1 = (ob2.y + absh2 / 2) - (ob2.box[b2][2] * absh2);
+					double mY2 = (ob2.y + absh2 / 2) - (ob2.box[b2][3] * absh2);
 
 					// Compare corners of other object to boundaries of plane box
 					if (x1 >= mX1 && x1 <= mX2) {              // Left X
@@ -547,19 +627,23 @@ public class Room {
 	}
 
 	/**
-	 * Checks if there is an object at position (x, y) according to ob's
+	 * Checks if the object is at position (x, y) according to ob's
 	 * collision boxes.
-	 * 
+	 *
 	 * @param ob
 	 *            - GameObject
 	 */
-	public boolean objectAtPosition(GameObject ob, int x, int y) {
+	public boolean objectAtPosition(GameObject ob, double x, double y) {
+
+		double absw = Math.abs(ob.width);
+		double absh = Math.abs(ob.height);
+
 		for (int b1 = 0; b1 < ob.getNumColBoxes(); b1++) {
 			// Find the coordinates of the box defined by ob1.box[]
-			double x1 = (ob.x - ob.width / 2) + (ob.box[b1][0] * ob.width);
-			double x2 = (ob.x - ob.width / 2) + (ob.box[b1][1] * ob.width);
-			double y1 = (ob.y + ob.height / 2) - (ob.box[b1][2] * ob.height);
-			double y2 = (ob.y + ob.height / 2) - (ob.box[b1][3] * ob.height);
+			double x1 = (ob.x - absw / 2) + (ob.box[b1][0] * absw);
+			double x2 = (ob.x - absw / 2) + (ob.box[b1][1] * absw);
+			double y1 = (ob.y + absh / 2) - (ob.box[b1][2] * absh);
+			double y2 = (ob.y + absh / 2) - (ob.box[b1][3] * absh);
 
 			// Compare corners of other object to boundaries of plane box
 			if (x >= x1 && x <= x2) {              // Left X, Right X
@@ -570,5 +654,22 @@ public class Room {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Checks if there is an object at position (x, y) according to ob's
+	 * collision boxes. If yes, returns that object. If no, returns null.
+	 */
+	public GameObject objectAtPosition(double x, double y) {
+
+		for (int l = 0; l <= LAYERS; l++) {
+			for (int o = instances; o >= 0; o--) {
+				if (objects[l][o] != null && objectAtPosition(objects[l][o], x, y)) {
+					return objects[l][o];
+				}
+			}
+		}
+
+		return null;
 	}
 }

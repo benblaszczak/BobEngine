@@ -1,21 +1,21 @@
 /**
  * BobEngine - 2D game engine for Android
- * 
+ *
  * Copyright (C) 2014, 2015 Benjamin Blaszczak
- * 
+ *
  * BobEngine is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser Public License
  * version 2.1 as published by the free software foundation.
- * 
+ *
  * BobEngine is provided without warranty; without even the implied
  * warranty of merchantability or fitness for a particular 
  * purpose. See the GNU Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General
  * Public License along with BobEngine; if not, write to the
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301 USA
- * 
+ *
  */
 
 package bobby.engine.bobengine;
@@ -28,14 +28,17 @@ import android.opengl.GLES10;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
 import android.os.SystemClock;
+import android.util.Log;
 
 /**
  * This class handles updating and rendering for it's BobView owner.
- * 
+ *
  * @author Ben
- * 
  */
 public class BobRenderer implements Renderer {
+
+	// Constants
+	private final boolean OUTPUT_FPS = false;         // Setting this to true will output the FPS in logcat under the tag "fps"
 
 	// Variables
 	public static final long FPS = 60;                // The optimal speed that the game will run
@@ -46,14 +49,12 @@ public class BobRenderer implements Renderer {
 	private int frames = 0;                           // # of frames passed
 	private long timeElapsed = 16;                    // Amount of time the frame took
 
+	private double low;   // The lowest FPS
+	private double high;  // The highest FPS
+
 	/* Camera variables */
-	private double camx = 0;
-	private double camy = 0;
-	private double canchorx = 0;
-	private double canchory = 0;
 	private double camwidth;
 	private double camheight;
-	private double camzoom = 1;
 
 	/* Background color values */
 	private float red = 1;
@@ -66,9 +67,8 @@ public class BobRenderer implements Renderer {
 
 	/**
 	 * Sets the BobView associated with this BobRenderer.
-	 * 
-	 * @param newOwner
-	 *            - BobView associated with this renderer.
+	 *
+	 * @param newOwner - BobView associated with this renderer.
 	 */
 	public void setOwner(BobView newOwner) {
 		myOwner = newOwner;
@@ -76,15 +76,11 @@ public class BobRenderer implements Renderer {
 
 	/**
 	 * Sets the background color for the BobView.
-	 * 
-	 * @param red
-	 *            - Red value from 0 to 1
-	 * @param green
-	 *            - Green value from 0 to 1
-	 * @param blue
-	 *            - Blue value from 0 to 1
-	 * @param alpha
-	 *            - Alpha value from 0 to 1
+	 *
+	 * @param red   - Red value from 0 to 1
+	 * @param green - Green value from 0 to 1
+	 * @param blue  - Blue value from 0 to 1
+	 * @param alpha - Alpha value from 0 to 1
 	 */
 	public void setBackgroundColor(float red, float green, float blue, float alpha) {
 		this.red = red;
@@ -103,10 +99,8 @@ public class BobRenderer implements Renderer {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		myOwner.getGraphicsHelper().handleGraphics((GL11) gl);// Load textures for the view
 
-		// 
-		//red = green = blue = alpha = 1;
-		//camx = camy = 0;
-		//camzoom = 1;
+		red = green = blue = alpha = 1;
+		low = high = -1;
 
 		gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);          // How to interpret transparency
 		gl.glAlphaFunc(GL10.GL_GREATER, 0);
@@ -133,25 +127,23 @@ public class BobRenderer implements Renderer {
 	 */
 	@Override
 	public void onDrawFrame(GL10 gl) {
+		Room current = myOwner.getCurrentRoom();
+
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT);                              // Get rid of the previous frame
-		gl.glClearColor(red, green, blue, alpha);                          // BG color; needs to be able to change
+		gl.glClearColor(red, green, blue, alpha);                          // BG color
 
 		myOwner.getGraphicsHelper().handleGraphics((GL11) gl);
 
-		if (myOwner.getCurrentRoom() != null) {
-            gl.glMatrixMode(GLES10.GL_PROJECTION);
-            gl.glLoadIdentity();
-            gl.glOrthof(getCameraLeftEdge(), getCameraRightEdge(), getCameraBottomEdge(), getCameraTopEdge(), -1, 1);
-            gl.glMatrixMode(GLES10.GL_MODELVIEW);
-            gl.glLoadIdentity();
-
-			myOwner.getCurrentRoom().draw(gl);                              // Draw graphics
-			myOwner.getCurrentRoom().update(averageDelta / OPTIMAL_TIME);   // Update game logic
+		if (current != null) {
+			current.update(averageDelta / OPTIMAL_TIME);   // Update game logic
+			current.draw(gl);                              // Draw graphics
 		}
 
 		now = SystemClock.uptimeMillis();
-		if (lastTime > 0) timeElapsed = now - lastTime;                    // The amount of time the last frame took
-		else timeElapsed = (long) averageDelta;                            // Only happens the first frame
+		if (lastTime > 0)
+			timeElapsed = now - lastTime;                    // The amount of time the last frame took
+		else
+			timeElapsed = (long) averageDelta;                            // Only happens the first frame
 
 		if (frames < FPS) {
 			frames++;
@@ -170,11 +162,20 @@ public class BobRenderer implements Renderer {
 			averageDelta = OPTIMAL_TIME;
 		}
 
-		/*
-		 * double fps = (double) 1000 / (double) averageDelta; if
-		 * (SystemClock.uptimeMillis() % 100 == 0) { Log.d("test", "FPS: " +
-		 * Double.toString(fps)); // Show FPS in logcat }
-		 */
+		if (OUTPUT_FPS) {
+			double fps = (double) 1000 / (double) averageDelta;
+
+			if (1000.0 / timeElapsed < low || low == -1) low = 1000.0 / timeElapsed;
+			if (1000.0 / timeElapsed > high || high == -1) high = 1000.0 / timeElapsed;
+			if (1000.0 / timeElapsed < 30) Log.d("fps", "FRAME DROPPED. FPS: " + Double.toString(1000.0 / timeElapsed));
+
+			if (SystemClock.uptimeMillis() % 100 == 0) {
+				Log.d("fps", "FPS: " + Double.toString(fps) +
+						"    LOW: " + Double.toString(low) +
+						"    HIGH: " + Double.toString(high)); // Show FPS in logcat
+			}
+		}
+
 	}
 
 	/**
@@ -193,7 +194,7 @@ public class BobRenderer implements Renderer {
 		camwidth = width;
 		camheight = height;
 
-        gl.glViewport(0, 0, width, height);
+		gl.glViewport(0, 0, width, height);
 		gl.glMatrixMode(GL10.GL_PROJECTION);      // Select The Projection Matrix
 		gl.glLoadIdentity();                      // Reset The Projection Matrix
 		GLU.gluOrtho2D(gl, 0, width, 0, height);  // Use orthogonic view. No perspective.
@@ -212,86 +213,16 @@ public class BobRenderer implements Renderer {
 	}
 
 	/**
-	 * Change the x position of the camera.
+	 * Returns the width of the camera's view in pixels when the camera's zoom level is 1.
 	 */
-	public void setCameraX(int x) {
-		camx = x;
+	public double getCameraWidth() {
+		return camwidth;
 	}
 
 	/**
-	 * Change the y position of the camera.
+	 * Returns the height of the camera's view in pixels when the camera's zoom level is 1.
 	 */
-	public void setCameraY(int y) {
-		camy = y;
-	}
-	
-	/**
-	 * Set the anchor point for zooming the camera. </br></br>
-	 * 
-	 * HINT: this point will stay in the same location on the screen when zooming
-	 * in and out.
-	 * 
-	 * @param x
-	 * @param y
-	 */
-	public void setCameraAnchor(int x, int y) {
-		canchorx = x;
-		canchory = y;
-	}
-
-	/**
-	 * Get the current x position of the camera.
-	 */
-	public double getCameraX() {
-		return camx;
-	}
-
-	/**
-	 * Get the current y position of the camera.
-	 */
-	public double getCameraY() {
-		return camy;
-	}
-
-    /**
-     * Get the coordinate of the left edge of the camera.
-     */
-    public int getCameraLeftEdge() {
-        return (int) (camx + canchorx - camwidth * camzoom * (canchorx / camwidth));
-    }
-
-    /**
-     * Get the coordinate of teh right edge of the screen.
-     */
-    public int getCameraRightEdge() {
-        return (int) (camx + canchorx + camwidth * camzoom * ((camwidth - canchorx) / camwidth));
-    }
-
-    /**
-     * Get the coordinate of the bottom edge of the screen.
-     */
-    public int getCameraBottomEdge() {
-        return (int) (camy + canchory - camheight * camzoom * (canchory / camheight));
-    }
-
-    /**
-     * Get the coordinate of the top edge of the screen.
-     */
-    public int getCameraTopEdge() {
-        return (int) (camy + canchory + camheight * camzoom * ((camheight - canchory) / camheight));
-    }
-
-	/**
-	 * Set the zoom factor of the camera.
-	 */
-	public void setCameraZoom(double zoom) {
-		camzoom = zoom;
-	}
-
-	/**
-	 * Get the current zoom factor of the camera.
-	 */
-	public double getCameraZoom() {
-		return camzoom;
+	public double getCameraHeight() {
+		return camheight;
 	}
 }

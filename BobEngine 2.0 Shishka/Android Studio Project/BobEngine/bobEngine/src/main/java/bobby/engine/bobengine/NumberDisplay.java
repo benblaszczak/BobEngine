@@ -53,6 +53,12 @@ public class NumberDisplay extends GameObject {
 		g = getView().getGraphicsHelper().addGraphic(R.drawable.numbers);
 
 		setGraphic(g, 10);
+
+		x = y = width = height = 100;
+		position = 0;
+		digits = 1;
+		number = 0;
+		indices = 0;
 	}
 
 	/**
@@ -379,7 +385,7 @@ public class NumberDisplay extends GameObject {
 
 	// Get texture coords
 	@Override
-	public float[] getGraphic() {
+	public float[] getGraphicVerts() {
 		float totTexture[] = new float[8 * digits];
 		int tempNum;
 
@@ -389,7 +395,7 @@ public class NumberDisplay extends GameObject {
 			tempNum /= 10;
 
 			setFrame(frame);
-			float[] texture = super.getGraphic();
+			float[] texture = super.getGraphicVerts();
 
 			for (int i = 0; i < 8; i++) {
 				totTexture[(d * 8) + i] = texture[i];

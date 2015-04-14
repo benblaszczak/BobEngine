@@ -2,11 +2,14 @@
   <dictionary name="Benjamin">
     <words>
       <w>blaszczak</w>
+      <w>bobview</w>
       <w>immersive</w>
       <w>mipmapping</w>
       <w>mipmaps</w>
       <w>pixellated</w>
+      <w>posx</w>
       <w>upscaling</w>
+      <w>verts</w>
     </words>
   </dictionary>
 </component>

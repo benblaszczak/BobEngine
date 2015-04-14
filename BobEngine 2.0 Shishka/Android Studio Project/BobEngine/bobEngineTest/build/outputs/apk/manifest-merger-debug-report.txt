@@ -1,6 +1,8 @@
 -- Merging decision tree log ---
 manifest
 ADDED from AndroidManifest.xml:1:1
+	xmlns:android
+		ADDED from AndroidManifest.xml:1:11
 	package
 		ADDED from AndroidManifest.xml:2:5
 		INJECTED from AndroidManifest.xml:0:0
@@ -11,8 +13,6 @@ ADDED from AndroidManifest.xml:1:1
 		ADDED from AndroidManifest.xml:3:5
 		INJECTED from AndroidManifest.xml:0:0
 		INJECTED from AndroidManifest.xml:0:0
-	xmlns:android
-		ADDED from AndroidManifest.xml:1:11
 uses-sdk
 ADDED from AndroidManifest.xml:6:5
 MERGED from BobEngine:bobEngine:unspecified:29:5
@@ -26,10 +26,10 @@ MERGED from BobEngine:bobEngine:unspecified:29:5
 		INJECTED from AndroidManifest.xml:0:0
 uses-feature#0x00011000
 ADDED from AndroidManifest.xml:10:5
-	android:glEsVersion
-		ADDED from AndroidManifest.xml:10:19
 	android:required
 		ADDED from AndroidManifest.xml:10:52
+	android:glEsVersion
+		ADDED from AndroidManifest.xml:10:19
 application
 ADDED from AndroidManifest.xml:12:5
 	android:label
@@ -40,12 +40,12 @@ ADDED from AndroidManifest.xml:12:5
 		ADDED from AndroidManifest.xml:14:9
 activity#bobby.example.bobengineexample.MainActivity
 ADDED from AndroidManifest.xml:16:9
-	android:windowIsTranslucent
-		ADDED from AndroidManifest.xml:20:13
 	android:label
 		ADDED from AndroidManifest.xml:18:13
 	android:theme
 		ADDED from AndroidManifest.xml:19:13
+	android:windowIsTranslucent
+		ADDED from AndroidManifest.xml:20:13
 	android:name
 		ADDED from AndroidManifest.xml:17:13
 intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER

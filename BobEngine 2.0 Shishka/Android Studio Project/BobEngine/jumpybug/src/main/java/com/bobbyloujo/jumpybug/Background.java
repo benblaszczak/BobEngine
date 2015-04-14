@@ -21,7 +21,7 @@ public class Background extends GameObject {
     public Background(int id, Room containingRoom) {
         super(id, containingRoom);
 
-        layer = 0; // By default, the layer is 1. Lower layers are drawn first, so they will appear behind higher layers
+        layer = 0; // By default, the layer is 2. Lower layers are drawn first, so they will appear behind higher layers
 
         setGraphic(GameView.bg, 1);
     }

@@ -29,9 +29,16 @@ import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.InputDevice;
+import android.view.InputEvent;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.Surface;
+import android.view.View;
 import android.view.WindowManager;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+
+import java.security.Key;
 
 /**
  * A BobEngine view that contains and renders Rooms with GameObjects. This class
@@ -50,6 +57,7 @@ public abstract class BobView extends GLSurfaceView {
 	private Room currentRoom;                              // The room that is currently being updated and drawn
 	private Activity myActivity;                           // The activity that this BobView belongs to.
 	private Touch myTouch;                                 // An object which handles touch screen input
+	private Controller myController;                       // Object that assists in handing controller input
 	private BobRenderer renderer;                          // This BobView's renderer
 	private GraphicsHelper graphicsHelper;                 // An object that assists in loading graphics
 
@@ -116,7 +124,6 @@ public abstract class BobView extends GLSurfaceView {
 
 		/* Screen Size and Correction Ratios */
 		WindowManager wm;                                                                // For getting information about the display.
-		int rot;                                                                         // The screen rotation
 
 		wm = (WindowManager) myActivity.getSystemService(Context.WINDOW_SERVICE);
 
@@ -134,6 +141,9 @@ public abstract class BobView extends GLSurfaceView {
 				screen.y = wm.getDefaultDisplay().getHeight();
 			}
 		}
+
+		updateRatioX();
+		updateRatioY();
 	}
 	
 	/**
@@ -180,6 +190,21 @@ public abstract class BobView extends GLSurfaceView {
 	 */
 	public Touch getTouch() {
 		return myTouch;
+	}
+
+	/**
+	 * Set the controller object to be used for input.
+	 * @param controller
+	 */
+	public void setController(Controller controller){
+		myController = controller;
+	}
+
+	/**
+	 * Returns this BobView's controller helper.
+	 */
+	public Controller getController() {
+		return myController;
 	}
 
 	/**
@@ -238,6 +263,23 @@ public abstract class BobView extends GLSurfaceView {
 		return false;
 	}
 
+	/**
+	 * Updates the screen width correction ratio. Can be a bit taxing, so try not to call it too
+	 * much. This should only need to be updated if the orientation of the device has changed.
+	 */
+	@TargetApi(17)
+	public void updateRatioX() {
+		WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+		try {
+			wm.getDefaultDisplay().getRealSize(screen);
+		} catch (NoSuchMethodError e) {
+			screen.x = wm.getDefaultDisplay().getWidth();
+		}
+
+		if(isPortrait()) ratioX = screen.x / INIT_BASE_W;
+		else ratioX = screen.x / INIT_BASE_H;
+	}
+
     /**
      * Returns the screen width correction ratio for dealing with different size screens.
      *
@@ -256,34 +298,31 @@ public abstract class BobView extends GLSurfaceView {
      */
     @TargetApi(17)
     public double getRatioX() {
-        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-        try {
-            wm.getDefaultDisplay().getRealSize(screen);
-        } catch (NoSuchMethodError e) {
-            screen.x = wm.getDefaultDisplay().getWidth();
-        }
-
-        if(isPortrait()) ratioX = screen.x / INIT_BASE_W;
-        else ratioX = screen.x / INIT_BASE_H;
-
         return ratioX;
     }
+
+	/**
+	 * Updates the screen height correction ratio. Can be a bit taxing, so try not to call it too
+	 * much.
+	 */
+	@TargetApi(17)
+	public void updateRatioY() {
+		WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+		try {
+			wm.getDefaultDisplay().getRealSize(screen);
+		} catch (NoSuchMethodError e) {
+			screen.y = wm.getDefaultDisplay().getHeight();
+		}
+
+		if(isPortrait()) ratioY = screen.y / INIT_BASE_H;
+		else ratioY = screen.y / INIT_BASE_W;
+	}
 
     /**
      * Returns the screen height correction ratio for dealing with different size screens.
      */
     @TargetApi(17)
     public double getRatioY() {
-        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-        try {
-            wm.getDefaultDisplay().getRealSize(screen);
-        } catch (NoSuchMethodError e) {
-            screen.y = wm.getDefaultDisplay().getHeight();
-        }
-
-        if(isPortrait()) ratioY = screen.y / INIT_BASE_H;
-        else ratioY = screen.y / INIT_BASE_W;
-
         return ratioY;
     }
 
@@ -301,6 +340,13 @@ public abstract class BobView extends GLSurfaceView {
 	 */
 	public void setBackgroundColor(float red, float green, float blue, float alpha) {
 		renderer.setBackgroundColor(red, green, blue, alpha);
+	}
+
+	@Override
+	public void onResume(){
+		setFocusable(true);
+		requestFocus();
+		super.onResume();
 	}
 	
 	/**

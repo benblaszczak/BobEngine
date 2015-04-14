@@ -38,7 +38,7 @@ public class MainActivity extends BobActivity {
                 object.y = room.getHeight() / 2;                    // Center of the screen
                 object.width = room.getWidth() / 10;
                 object.height = object.width;
-                object.setGraphic(g, 1);
+                object.setGraphic(g);
 
                 room.addObject(object);
 

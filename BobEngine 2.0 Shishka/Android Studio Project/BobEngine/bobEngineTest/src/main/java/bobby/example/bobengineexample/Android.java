@@ -16,14 +16,20 @@ public class Android extends GameObject {
 	private SoundPlayer sounds;
 	private int POP;
 
+	private Quad two;
+
 	// On create
 	public Android(int id, Room containingRoom) {
 		super(id, containingRoom);
 
-		sounds = new SoundPlayer(getView().getContext());
-		POP = sounds.newSound(R.raw.pop);
+		//sounds = new SoundPlayer(getView().getContext());
+		//POP = sounds.newSound(R.raw.pop);
 
 		setGraphic(GameView.android, FRAMES);
+
+		two = new Quad();
+		two.setGraphic(GameView.android, FRAMES);
+		addQuad(two);
 	}
 
 	// Set/Reset
@@ -34,6 +40,9 @@ public class Android extends GameObject {
 
 		height = myRoom.getHeight() / size;
 		width = height;
+
+		//two.width = width;
+		//two.height = height;
 
         //getRoom().setCameraX(0);
         //getRoom().setCameraY(0);
@@ -74,6 +83,9 @@ public class Android extends GameObject {
 			y = height / 2;
 		}
 
+		two.x = x + width;
+		two.y = y;
+
 		super.step(deltaTime);
 	}
 
@@ -81,7 +93,7 @@ public class Android extends GameObject {
 	public void newpress(int index) {
 
 		if (getTouch().objectTouched(this)) {
-			sounds.play(POP);
+			//sounds.play(POP);
 		}
 	}
 
@@ -111,7 +123,7 @@ public class Android extends GameObject {
 	}
 
 	@Override
-	public float[] getGraphic() {
+	public float[] getGraphicVerts() {
 		// In getVertices() above, we generated vertices for two quads. We need to match
 		// the number of position vertices with the number of texture (graphic) vertices.
 
@@ -120,7 +132,7 @@ public class Android extends GameObject {
 		// game objects for separate textures.
 
 		// Here we just use two of the same sets of graphics vertices.
-		float[] two = concatenate(super.getGraphic(), super.getGraphic());
+		float[] two = concatenate(super.getGraphicVerts(), super.getGraphicVerts());
 
 		return two;
 	}
