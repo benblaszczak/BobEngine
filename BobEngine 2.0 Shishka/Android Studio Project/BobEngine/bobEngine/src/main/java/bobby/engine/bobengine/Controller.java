@@ -21,6 +21,7 @@
 package bobby.engine.bobengine;
 
 import android.annotation.TargetApi;
+import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -94,11 +95,18 @@ public class Controller {
 	private boolean LSdpad;
 	private boolean simpleDPAD;
 
+	// Variables
+	private int lastPlayerDown;
+	private int lastPlayerUp;
+
 	public Controller(BobView owner) {
 		myOwner = owner;
 		simpleDPAD = false;
 		RSdpad = false;
 		LSdpad = false;
+
+		lastPlayerDown = -1;
+		lastPlayerUp = -1;
 
 		myOwner.setController(this);
 	}
@@ -292,8 +300,9 @@ public class Controller {
 				player = 1;
 			}
 
-			if (event.getRepeatCount() == 0) {
+			if (event.getRepeatCount() == 0 || player != lastPlayerDown) {
 				newpress(player, keyCode);
+				lastPlayerDown = player;
 				return true;
 			}
 		}
@@ -312,8 +321,9 @@ public class Controller {
 				player = 1;
 			}
 
-			if (event.getRepeatCount() == 0) {
+			if (event.getRepeatCount() == 0 || player != lastPlayerUp) {
 				released(player, keyCode);
+				lastPlayerUp = player;
 				return true;
 			}
 		}

@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BobEngine.iml" filepath="$PROJECT_DIR$/BobEngine.iml" />
       <module fileurl="file://$PROJECT_DIR$/bobEngine/bobEngine.iml" filepath="$PROJECT_DIR$/bobEngine/bobEngine.iml" />
-      <module fileurl="file://$PROJECT_DIR$/bobEngine/bobEngine.iml" filepath="$PROJECT_DIR$/bobEngine/bobEngine.iml" />
       <module fileurl="file://$PROJECT_DIR$/bobEngineTest/bobEngineTest.iml" filepath="$PROJECT_DIR$/bobEngineTest/bobEngineTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/cameraexample/cameraexample.iml" filepath="$PROJECT_DIR$/cameraexample/cameraexample.iml" />
       <module fileurl="file://$PROJECT_DIR$/controllerexample/controllerexample.iml" filepath="$PROJECT_DIR$/controllerexample/controllerexample.iml" />
