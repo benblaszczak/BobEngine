@@ -307,7 +307,7 @@ public class Controller {
 			}
 		}
 
-		return myOwner.onKeyDown(keyCode, event);
+		return false;
 	}
 
 	@TargetApi(19)
@@ -328,7 +328,7 @@ public class Controller {
 			}
 		}
 
-		return myOwner.onKeyDown(keyCode, event);
+		return false;
 	}
 
 	@TargetApi(19)
@@ -460,6 +460,6 @@ public class Controller {
 		}
 
 
-		return myOwner.onGenericMotionEvent(event);
+		return false;
 	}
 }

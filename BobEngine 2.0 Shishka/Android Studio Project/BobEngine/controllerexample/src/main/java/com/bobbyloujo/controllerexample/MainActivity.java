@@ -189,16 +189,16 @@ public class MainActivity extends BobActivity {
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		return controller.onKeyUp(keyCode, event);
+		return controller.onKeyUp(keyCode, event) ? true : super.onKeyUp(keyCode, event);
 	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		return controller.onKeyDown(keyCode, event);
+		return controller.onKeyDown(keyCode, event) ? true : super.onKeyDown(keyCode, event);
 	}
 
 	@Override
 	public boolean onGenericMotionEvent(MotionEvent event) {
-		return controller.onGenericMotionEvent(event);
+		return controller.onGenericMotionEvent(event) ? true : super.onGenericMotionEvent(event);
 	}
 }

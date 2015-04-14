@@ -12,7 +12,7 @@
         jar="C:\Users\Benjamin\AndroidStudioProjects\BobEngine\controllerexample\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
         jumboMode="false"
         revision="21.1.2"
-        sha1="c22c3cab555b3350abce1e9d9e80a84eaf85d904">
+        sha1="935c826582116f91f270ffea312d0363209d2f62">
         <dex dex="C:\Users\Benjamin\AndroidStudioProjects\BobEngine\controllerexample\build\intermediates\pre-dexed\debug\classes-0ed47d135420322561cbc090251f74dc95f17b44.jar" />
     </item>
     <item
@@ -37,18 +37,18 @@
         <dex dex="C:\Users\Benjamin\AndroidStudioProjects\BobEngine\bobEngineTest\build\intermediates\pre-dexed\debug\support-v4-19.1.0-29cbb9634a5288c62fafd71d132a47c501b317ce.jar" />
     </item>
     <item
-        jar="C:\Users\Benjamin\AndroidStudioProjects\BobEngine\jumpybug\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="7691bb121fdee6e6b0556fda1bd0ac71fea0eee3">
-        <dex dex="C:\Users\Benjamin\AndroidStudioProjects\BobEngine\jumpybug\build\intermediates\pre-dexed\debug\classes-1ede2217aaaaa7d9f95ceb02cb01e614b278c8cf.jar" />
-    </item>
-    <item
         jar="C:\Users\Benjamin\AndroidStudioProjects\BobEngine\cameraexample\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="7691bb121fdee6e6b0556fda1bd0ac71fea0eee3">
         <dex dex="C:\Users\Benjamin\AndroidStudioProjects\BobEngine\cameraexample\build\intermediates\pre-dexed\debug\classes-8edd02de5f66bdc38c91a18c30675ad1abdfd955.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\AndroidStudioProjects\BobEngine\jumpybug\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="7691bb121fdee6e6b0556fda1bd0ac71fea0eee3">
+        <dex dex="C:\Users\Benjamin\AndroidStudioProjects\BobEngine\jumpybug\build\intermediates\pre-dexed\debug\classes-1ede2217aaaaa7d9f95ceb02cb01e614b278c8cf.jar" />
     </item>
     <item
         jar="C:\Users\Benjamin\AndroidStudioProjects\BobEngine\template\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
@@ -65,18 +65,18 @@
         <dex dex="C:\Users\Benjamin\AndroidStudioProjects\BobEngine\jumpybug\build\intermediates\pre-dexed\debug\support-v4-19.1.0-29cbb9634a5288c62fafd71d132a47c501b317ce.jar" />
     </item>
     <item
-        jar="C:\Users\Benjamin\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\22.0.0\support-annotations-22.0.0.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="685d0b2c590447e85284ed84712cb363ba04eff8">
-        <dex dex="C:\Users\Benjamin\AndroidStudioProjects\BobEngine\controllerexample\build\intermediates\pre-dexed\debug\support-annotations-22.0.0-dfd68dcdd7e7d007a418636d5af0d6e103245f0d.jar" />
-    </item>
-    <item
         jar="C:\Users\Benjamin\AndroidStudioProjects\BobEngine\controllerexample\build\intermediates\exploded-aar\com.android.support\support-v4\22.0.0\libs\internal_impl-22.0.0.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="b5b92f469d515a13d778900f6d50c03d12f35504">
         <dex dex="C:\Users\Benjamin\AndroidStudioProjects\BobEngine\controllerexample\build\intermediates\pre-dexed\debug\internal_impl-22.0.0-30ed0da8746186bb37a89c88a8bc041c3a3f3597.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\22.0.0\support-annotations-22.0.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="685d0b2c590447e85284ed84712cb363ba04eff8">
+        <dex dex="C:\Users\Benjamin\AndroidStudioProjects\BobEngine\controllerexample\build\intermediates\pre-dexed\debug\support-annotations-22.0.0-dfd68dcdd7e7d007a418636d5af0d6e103245f0d.jar" />
     </item>
     <item
         jar="C:\Users\Benjamin\AndroidStudioProjects\BobEngine\controllerexample\build\intermediates\exploded-aar\com.android.support\appcompat-v7\22.0.0\classes.jar"
