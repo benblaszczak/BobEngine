@@ -11,3 +11,5 @@ touchInput - Shows how you can use BobEngine to handle input from the touch scre
 template - A barebones BobEngine application that can be used as a base for other projects.
 cameraexample - An example that allows you to explore the camera functions.
 jumpybug - Flappy Bird clone that serves as an example of a full game
+controllerexample - shows how to get input from the a physical gamepad
+textdisplayexample - shows how to use TextDisplay
