@@ -23,6 +23,7 @@ package bobby.engine.bobengine;
 import android.app.Activity;
 import android.util.Log;
 
+
 /**
  * Super class for all the game objects in the game.
  * 
@@ -52,6 +53,7 @@ public class GameObject {
 	public int id;
 	/** This object's current frame. */
 	public int frame;
+	public boolean visible;
 
 	/** This object's number of collision boxes. */
 	private int colBoxes;
@@ -60,6 +62,7 @@ public class GameObject {
 	/** The room that this object is in. */
 	protected Room myRoom;
 
+	private Graphic myGraphic;
 
 	/**
 	 * This object's collision boxes. Use giveCollisionBox() to give this object
@@ -67,9 +70,9 @@ public class GameObject {
 	 */
 	public double box[][];
 
-	private int numQuads;
 	private Quad[] quads;
 	protected Quad main;
+	private int maxQuads;
 
 	/**
 	 * Initialization. Requires a unique Id number and the room containing this
@@ -88,6 +91,7 @@ public class GameObject {
 		box = new double[MAX_COL_BOXES][4];
 		colBoxes = 0;
 		layer = 2;
+		visible = true;
 
 		main = new Quad();
 		main.x = x;
@@ -95,10 +99,11 @@ public class GameObject {
 		main.height = height;
 		main.width = width;
 		main.angle = angle;
+		main.visible = true;
 
-		numQuads = 1;
 		quads = new Quad[DEFAULT_NUM_QUADS];
 		quads[0] = main;
+		maxQuads = DEFAULT_NUM_QUADS;
 	}
 
 	/**
@@ -156,7 +161,8 @@ public class GameObject {
 	 *            Should not be a sheet of graphics.
 	 */
 	public void setGraphic(Graphic graphic) {
-		main.setGraphic(graphic);
+		myGraphic = graphic;
+		main.setGraphic(1);
 	}
 
 	/**
@@ -174,7 +180,8 @@ public class GameObject {
 	 *            - The number of frames this graphic has.
 	 */
 	public void setGraphic(Graphic graphic, int frames) {
-		main.setGraphic(graphic, frames);
+		myGraphic = graphic;
+		main.setGraphic(frames);
 	}
 
 	/**
@@ -182,10 +189,11 @@ public class GameObject {
 	 *
 	 * @param graphic
 	 * @param columns The number of columns of frames
-	 * @param framesPerColumn The number of frames in a column
+	 * @param rows The number of frames in a column
 	 */
-	public void setGraphic(Graphic graphic, int columns, int framesPerColumn) {
-		main.setGraphic(graphic, columns, framesPerColumn);
+	public void setGraphic(Graphic graphic, int columns, int rows) {
+		myGraphic = graphic;
+		main.setGraphic(columns, rows);
 	}
 
 	/**
@@ -235,34 +243,8 @@ public class GameObject {
 	 *            - The number of frames the graphic has.
 	 */
 	public void setPreciseGraphic(Graphic graphicSheet, float x, float y, float height, float width, int frames) {
-		main.setPreciseGraphic(graphicSheet, x, y, height, width, frames);
-	}
-
-	/**
-	 * Updates this object's vertices to the specified x and y positions.
-	 *
-	 * <br />
-	 * <b>It is better to change the x and y properties of this object instead.
-	 * Your call to this function will likely be overridden.</b>
-	 *
-	 * @param x
-	 * @param y
-	 */
-	public void updatePosition(double x, double y) {
-		main.x = x;
-		main.y = y;
-		main.updatePosition();
-	}
-
-	/**
-	 * Changes this object's current frame. Do not call this method directly.
-	 * Change the value of variable "frame" instead.
-	 *
-	 * @param frame
-	 *            - the new frame
-	 */
-	protected void setFrame(int frame) {
-		main.setFrame(frame);
+		myGraphic = graphicSheet;
+		main.setPreciseGraphic(x, y, height, width, frames);
 	}
 
 	/**
@@ -281,21 +263,92 @@ public class GameObject {
 	}
 
 	/**
+	 * The animation will have finished when the final frame in the animation has been
+	 * shown for the correct amount of time determined by the FPS set by the call
+	 * to the animate() method.
 	 *
-	 * @param q
+	 * @return True for a single frame when the animation has finished, false otherwise.
 	 */
-	public void addQuad(Quad q) {
-		numQuads++;
-		quads[numQuads - 1] = q;
+	public boolean animationFinished() {
+		return main.animationFinished();
 	}
 
 	/**
+	 * Add a quad to the first empty space in the list. NOTE: if the list is full,
+	 * this method will double the size of the list to make room for the new quad.
 	 *
-	 * @param i
-	 * @param q
+	 * @param q The Quad to add
+	 */
+	public void addQuad(Quad q) {
+		int i = 0;
+
+		while (quads[i] != null && i <= quads.length) {
+			i++;
+		}
+
+		if (i == quads.length) {
+			setMaxQuads(getMaxQuads() * 2);
+		}
+
+		quads[i] = q;
+	}
+
+	/**
+	 * Set the Quad at a specific spot in the list. This will overwrite
+	 * the quad that currently occupies that place in the list. By default,
+	 * the main quad for this GameObject is in place 0. This can be useful
+	 * for reordering the list to determine the order in which the quads are
+	 * drawn. Quad 0 is drawn first, therefor will be behind all the other
+	 * quads.
+	 *
+	 * @param i - The place in the list to put q
+	 * @param q - The new quad for place i
 	 */
 	public void setQuad(int i, Quad q) {
 		quads[i] = q;
+	}
+
+	/**
+	 * Resize the list of quads by setting a new max number of quads.
+	 * If set to a number less than the current max, quads at the end
+	 * of the list will simply be removed from the list.
+	 *
+	 * @param max
+	 */
+	public void setMaxQuads(int max){
+		if (max != maxQuads) {
+			Quad temp[] = quads.clone();
+
+			quads = new Quad[max];
+
+			for (int i = 0; i < max && i < temp.length; i++) {
+				quads[i] = temp[i];
+			}
+
+			maxQuads = max;
+		}
+	}
+
+	/**
+	 * Returns the max number of quads that can be added to this GameObject.
+	 * This can be changed with setMaxQuads(int max).
+	 * @return
+	 */
+	public int getMaxQuads() {
+		return quads.length;
+	}
+
+	/**
+	 * The main quad shares the attributes of this GameObject.
+	 * @return This GameObject's main Quad.
+	 */
+	public Quad getMainQuad() {
+		return main;
+	}
+
+	public Quad getQuad(int i) {
+		if (i > 0 && i < quads.length) return quads[i];
+		else return null;
 	}
 
 	/**
@@ -306,10 +359,21 @@ public class GameObject {
 	 * @return This object's vertices.
 	 */
 	public float[] getVertices() {
-		float verts[] = null;
-		for (int i = 0; i < numQuads; i++) {
-			if (quads[i].onScreen()) verts = concatenate(verts, quads[i].getVertices());
+		float verts[];
+		int numQuads = 0;
+		int maxQuads = quads.length;
+		int cursor = 0;
+
+		for (int i = 0; i < maxQuads; i++) {
+			if (quads[i] != null && quads[i].visible) numQuads++;
 		}
+
+		verts = new float[numQuads * Quad.VERT_SIZE];
+
+		for (int i = 0; i < maxQuads; i++) {
+			if (quads[i] != null && quads[i].visible) cursor = quads[i].getVertices(cursor, verts);
+		}
+
 		return verts;
 	}
 
@@ -321,11 +385,21 @@ public class GameObject {
 	 * @return This object's graphic coordinates.
 	 */
 	public float[] getGraphicVerts() {
-		float coords[] = null;
-		for (int i = 0; i < numQuads; i++) {
-			if (quads[i].onScreen()) coords = concatenate(coords, quads[i].getGraphicVerts());
+		float verts[];
+		int numQuads = 0;
+		int cursor = 0;
+
+		for (int i = 0; i < getMaxQuads(); i++) {
+			if (quads[i] != null && quads[i].visible) numQuads++;
 		}
-		return coords;
+
+		verts = new float[numQuads * Quad.GFX_VERT_SIZE];
+
+		for (int i = 0; i < getMaxQuads(); i++) {
+			if (quads[i] != null && quads[i].visible) cursor = quads[i].getGraphicVerts(cursor, verts);
+		}
+
+		return verts;
 	}
 
 	/**
@@ -338,11 +412,11 @@ public class GameObject {
 	public int getIndices() {
 		int quadsOnScreen = 0;
 
-		for (int i = 0; i < numQuads; i++) {
-			if (quads[i].onScreen()) quadsOnScreen++;
+		for (int i = 0; i < getMaxQuads(); i++) {
+			if (quads[i] != null && quads[i].visible) quadsOnScreen++;
 		}
 
-		return 6*quadsOnScreen;
+		return 6 * quadsOnScreen;
 	}
 	
 	/**
@@ -446,9 +520,10 @@ public class GameObject {
 		main.width = width;
 		main.angle = angle;
 		main.frame = frame;
+		main.visible = visible;
 
-		for (int i = 0; i < numQuads; i++) {
-			quads[i].update(deltaTime);
+		for (int i = 0; i < getMaxQuads(); i++) {
+			if (quads[i] != null) quads[i].update(deltaTime);
 		}
 
 		frame = main.frame;
@@ -517,8 +592,8 @@ public class GameObject {
 	 *         beyond the screen's bounds.
 	 */
 	public boolean onScreen() {
-		for (int i = 0; i < numQuads; i++) {
-			if (quads[i].onScreen()) {
+		for (int i = 0; i < getMaxQuads(); i++) {
+			if (quads[i] != null && quads[i].onScreen()) {
 				return true;
 			}
 		}
@@ -530,18 +605,27 @@ public class GameObject {
 	 * A textured quad with basic attributes such as x, y, height, width, etc...
 	 */
 	public class Quad {
+		// Constants
+		public static final int VERT_SIZE = 12;
+		public static final int GFX_VERT_SIZE = 8;
+
+		// General Attributes
 		public double x;        // X coordinate, midpoint
 		public double y;        // Y coordinate, midpoint
 		public double height;   // height of this quad
 		public double width;    // width of this quad
 		public double angle;    // Rotation angle of this quad
+		public boolean visible; // Visibility of this object
 
-		private Graphic myGraphic;
-		private int frame;
+		// Animation variables and attributes
+		public int frame;
 		private int animFPS;
 		private int startFrame;
 		private int endFrame;
 		private int frameCount;
+		private boolean animFinished;
+
+		// Texture attributes
 		private float tX;
 		private float tY;
 		private float animHeight;
@@ -549,21 +633,20 @@ public class GameObject {
 		private int totalFrames;
 		private int frameRow;
 
-		public float vertices[];
-		public float graphicCoords[];
+		// States
+		private boolean isOnScreen;
 
 		public Quad() {
 			x = y = height = width = 100;
 			angle = 0;
+			visible = true;
 
 			totalFrames = 1;
 			frameRow = 1;
 			animFPS = 0;
 			startFrame = 0;
 			endFrame = totalFrames - 1;
-
-			vertices = new float[12];
-			graphicCoords = new float[8];
+			animFinished = false;
 		}
 
 		/**
@@ -571,10 +654,11 @@ public class GameObject {
 		 * @param deltaTime
 		 */
 		public void update(double deltaTime) {
-			updatePosition();
-			setFrame(frame);
+			isOnScreen = false;
 
 			// Animate
+			animFinished = false;
+
 			if (animFPS > 0) {
 				if (startFrame <= endFrame) {
 					if (frame < startFrame || frame > endFrame) {
@@ -587,7 +671,7 @@ public class GameObject {
 				}
 
 				if (frameCount >= BobRenderer.FPS / animFPS) {
-					if (startFrame < endFrame) frame++;
+					if (startFrame <= endFrame) frame++;
 					else frame--;
 					frameCount = 0;
 				} else {
@@ -597,46 +681,16 @@ public class GameObject {
 				if (startFrame <= endFrame) {
 					if (frame > endFrame) {
 						frame = startFrame;
+						animFinished = true;
 					}
 				} else {
 					if (frame < endFrame) {
+						animFinished = true;
 						frame = startFrame;
 					}
 				}
-			}
-		}
-
-		/**
-		 * Updates this quad's vertices.
-		 */
-		public void updatePosition() {
-			// Data
-			double sin;
-			double cos;
-			int y = (int) this.y;
-			int x = (int) this.x;
-
-			if (angle != 0) {                          // Don't do unnecessary calculations
-				cos = (double) Math.cos(Math.toRadians(angle + 180));
-				sin = (double) Math.sin(Math.toRadians(angle + 180));
-
-				vertices[0] = (float) ((x - (x - width / 2)) * cos - (y - (y - height / 2)) * sin + x);   // Bottom Left X
-				vertices[1] = (float) ((x - (x - width / 2)) * sin + (y - (y - height / 2)) * cos + y);   // Bottom Left Y
-				vertices[3] = (float) ((x - (x - width / 2)) * cos - (y - (y + height / 2)) * sin + x);   // Top Left X
-				vertices[4] = (float) ((x - (x - width / 2)) * sin + (y - (y + height / 2)) * cos + y);   // Top Left Y
-				vertices[6] = (float) ((x - (x + width / 2)) * cos - (y - (y - height / 2)) * sin + x);   // Bottom Right X
-				vertices[7] = (float) ((x - (x + width / 2)) * sin + (y - (y - height / 2)) * cos + y);   // Bottom Right Y
-				vertices[9] = (float) ((x - (x + width / 2)) * cos - (y - (y + height / 2)) * sin + x);   // Top Right X
-				vertices[10] = (float) ((x - (x + width / 2)) * sin + (y - (y + height / 2)) * cos + y);  // Top Right Y
 			} else {
-				vertices[0] = (float) (x - width / 2);     // Bottom Left X
-				vertices[1] = (float) (y - height / 2);    // Bottom Left Y
-				vertices[3] = vertices[0];                 // Top Left X (Same as Bottom X)
-				vertices[4] = (float) (y + height / 2);    // Top Left Y
-				vertices[6] = (float) (x + width / 2);     // Bottom Right X
-				vertices[7] = vertices[1];                 // Bottom Right Y (Same as Left Y)
-				vertices[9] = vertices[6];                 // Top Right X (Same as Bottom X)
-				vertices[10] = vertices[4];                // Top Right Y (Same as Left Y)
+				animFinished = true;
 			}
 		}
 
@@ -652,42 +706,25 @@ public class GameObject {
 		}
 
 		/**
-		 * Set the graphic for this quad with 1 frame. For better performance
-		 * when using many graphics, put multiple graphics onto a single graphic sheet and use
-		 * setGraphic(Graphic graphic, int x, int y, ...) or setPreciseGraphic(...).
-		 *
-		 * @param graphic
-		 *            - The graphic to use. Should only have one image on it.
-		 *            Should not be a sheet of graphics.
-		 */
-		public void setGraphic(Graphic graphic) {
-			setPreciseGraphic(graphic, 0, 0, 1, 1, 1);
-		}
-
-		/**
 		 * Set the graphic for this quad with a specific number of frames. For better performance
 		 * when using many graphics, put multiple graphics onto a single graphic sheet and use
 		 * setGraphic(Graphic graphic, int x, int y, ...) or setPreciseGraphic(...).
 		 *
-		 * @param graphic
-		 *            - The graphic to use. Should only have one image on it.
-		 *            Should not be a sheet of graphics.
 		 * @param frames
 		 *            - The number of frames this graphic has.
 		 */
-		public void setGraphic(Graphic graphic, int frames) {
-			setPreciseGraphic(graphic, 0, 0, 1, 1, frames);
+		public void setGraphic(int frames) {
+			setPreciseGraphic(0, 0, 1, 1, frames);
 		}
 
 		/**
 		 * Set the graphic for this object with a specific number of columns of frames.
 		 *
-		 * @param graphic
 		 * @param columns The number of columns of frames
-		 * @param framesPerColumn The number of frames in a column
+		 * @param rows The number of frames in a column
 		 */
-		public void setGraphic(Graphic graphic, int columns, int framesPerColumn) {
-			setPreciseGraphic(graphic, 0, 0, 1, 1f / columns, framesPerColumn);
+		public void setGraphic(int columns, int rows) {
+			setPreciseGraphic(0, 0, 1, 1f / (float) columns, rows);
 		}
 
 		/**
@@ -727,8 +764,6 @@ public class GameObject {
 		 * Set graphic information for this quad with precise values for x, y,
 		 * width, height. Use this when there is more than one drawable folder.
 		 *
-		 * @param graphicSheet
-		 *            - The graphic sheet to use.
 		 * @param x
 		 *            - The x coordinate of the graphic on the sheet, from 0 to 1.
 		 * @param y
@@ -742,48 +777,13 @@ public class GameObject {
 		 * @param frames
 		 *            - The number of frames the graphic has.
 		 */
-		public void setPreciseGraphic(Graphic graphicSheet, float x, float y, float height, float width, int frames) {
-			myGraphic = graphicSheet;
+		public void setPreciseGraphic(float x, float y, float height, float width, int frames) {
 			tX = x;
 			tY = y;
 
 			animWidth = width;
 			animHeight = height;
 			frameRow = frames;
-		}
-
-		/**
-		 * Changes this quad's current frame. Do not call this method directly.
-		 * Change the value of variable "frame" instead.
-		 *
-		 * @param frame
-		 *            - the new frame
-		 */
-		protected void setFrame(int frame) {
-			// Data
-			float leftX;   // Left X coordinate of the frame on the graphic sheet
-			float rightX;  // Right X coordinate
-			float topY;    // Top Y coordinate
-			float bottomY; // Bottom Y coordinate
-
-			leftX = tX + animWidth * (frame / frameRow);
-			rightX = tX + animWidth * ((frame / frameRow) + 1);
-			topY = tY + (animHeight / frameRow) * (frame % frameRow);
-			bottomY = tY + (animHeight / frameRow) + (animHeight / frameRow) * (frame % frameRow);
-
-			leftX += 1f / (animWidth * myGraphic.width * 100f);
-			rightX -= 1f / (animWidth * myGraphic.width * 100f);
-			topY += 1f / (animHeight * myGraphic.height * 100f);
-			bottomY -= 1f / (animHeight * myGraphic.height * 100f);
-
-			graphicCoords[0] = leftX;
-			graphicCoords[1] = bottomY;
-			graphicCoords[2] = leftX;
-			graphicCoords[3] = topY;
-			graphicCoords[4] = rightX;
-			graphicCoords[5] = bottomY;
-			graphicCoords[6] = rightX;
-			graphicCoords[7] = topY;
 		}
 
 		/**
@@ -804,25 +804,76 @@ public class GameObject {
 		}
 
 		/**
-		 * Gets the vertex data for drawing this quad. Can be overridden for
-		 * advanced purposes but be sure to also create getGraphicVerts() and
-		 * getIndices() overrides that match your getVertices() function.
+		 * The animation will have finished when the final frame in the animation has been
+		 * shown for the correct amount of time determined by the FPS set by the call
+		 * to the animate() method.
 		 *
-		 * @return This object's vertices.
+		 * @return True for a single frame when the animation has finished, false otherwise.
 		 */
-		public float[] getVertices() {
-			return vertices;
+		public boolean animationFinished() {
+			return animFinished;
 		}
 
-		/**
-		 * Gets the graphic coordinate data for drawing this quad. Can be
-		 * overridden for advanced purposes but be sure to also create getVertices()
-		 * and getIndices() overrides that match your getGraphicVerts() function.
-		 *
-		 * @return This object's graphic coordinates.
-		 */
-		public float[] getGraphicVerts() {
-			return graphicCoords;
+		public int getVertices(int cursor, float[] allVertices) {
+			// Data
+			double sin;
+			double cos;
+
+			if (angle != 0) {                          // Don't do unnecessary calculations
+				cos = Math.cos(Math.toRadians(angle + 180));
+				sin = Math.sin(Math.toRadians(angle + 180));
+
+				allVertices[cursor] = (float) ((x - (x - width / 2)) * cos - (y - (y - height / 2)) * sin + x);       // Bottom Left X
+				allVertices[cursor + 1] = (float) ((x - (x - width / 2)) * sin + (y - (y - height / 2)) * cos + y);   // Bottom Left Y
+				allVertices[cursor + 3] = (float) ((x - (x - width / 2)) * cos - (y - (y + height / 2)) * sin + x);   // Top Left X
+				allVertices[cursor + 4] = (float) ((x - (x - width / 2)) * sin + (y - (y + height / 2)) * cos + y);   // Top Left Y
+				allVertices[cursor + 6] = (float) ((x - (x + width / 2)) * cos - (y - (y - height / 2)) * sin + x);   // Bottom Right X
+				allVertices[cursor + 7] = (float) ((x - (x + width / 2)) * sin + (y - (y - height / 2)) * cos + y);   // Bottom Right Y
+				allVertices[cursor + 9] = (float) ((x - (x + width / 2)) * cos - (y - (y + height / 2)) * sin + x);   // Top Right X
+				allVertices[cursor + 10] = (float) ((x - (x + width / 2)) * sin + (y - (y + height / 2)) * cos + y);  // Top Right Y
+			} else {
+				allVertices[cursor] = (float) (x - width / 2);         // Bottom Left X
+				allVertices[cursor + 1] = (float) (y - height / 2);    // Bottom Left Y
+				allVertices[cursor + 3] = allVertices[cursor + 0];     // Top Left X (Same as Bottom X)
+				allVertices[cursor + 4] = (float) (y + height / 2);    // Top Left Y
+				allVertices[cursor + 6] = (float) (x + width / 2);     // Bottom Right X
+				allVertices[cursor + 7] = allVertices[cursor + 1];     // Bottom Right Y (Same as Left Y)
+				allVertices[cursor + 9] = allVertices[cursor + 6];     // Top Right X (Same as Bottom X)
+				allVertices[cursor + 10] = allVertices[cursor + 4];    // Top Right Y (Same as Left Y)
+			}
+
+			cursor += VERT_SIZE;
+			return cursor;
+		}
+
+		public int getGraphicVerts(int cursor, float[] allGraphicVerts) {
+			// Data
+			float leftX;   // Left X coordinate of the frame on the graphic sheet
+			float rightX;  // Right X coordinate
+			float topY;    // Top Y coordinate
+			float bottomY; // Bottom Y coordinate
+
+			leftX = tX + animWidth * (frame / frameRow);
+			rightX = tX + animWidth * ((frame / frameRow) + 1);
+			topY = tY + (animHeight / frameRow) * (frame % frameRow);
+			bottomY = tY + (animHeight / frameRow) + (animHeight / frameRow) * (frame % frameRow);
+
+			leftX += 1f / (animWidth * myGraphic.width * 100f);
+			rightX -= 1f / (animWidth * myGraphic.width * 100f);
+			topY += 1f / (animHeight * myGraphic.height * 100f);
+			bottomY -= 1f / (animHeight * myGraphic.height * 100f);
+
+			allGraphicVerts[cursor] = leftX;
+			allGraphicVerts[cursor + 1] = bottomY;
+			allGraphicVerts[cursor + 2] = leftX;
+			allGraphicVerts[cursor + 3] = topY;
+			allGraphicVerts[cursor + 4] = rightX;
+			allGraphicVerts[cursor + 5] = bottomY;
+			allGraphicVerts[cursor + 6] = rightX;
+			allGraphicVerts[cursor + 7] = topY;
+
+			cursor += GFX_VERT_SIZE;
+			return cursor;
 		}
 
 		/**
@@ -833,20 +884,24 @@ public class GameObject {
 		 *         beyond the screen's bounds.
 		 */
 		public boolean onScreen() {
-			boolean flip = false;
-			if (width < 0) flip = true;
-			width = Math.abs(width);
+			if (!isOnScreen) {
+				boolean flip = false;
+				if (width < 0) flip = true;
+				width = Math.abs(width);
 
-			if (x > -width / 2 + getRoom().getCameraLeftEdge() && x < width / 2 + getRoom().getCameraRightEdge()) {
-				if (y > -height / 2 + getRoom().getCameraBottomEdge() && y < height / 2 + getRoom().getCameraTopEdge()) {
-					if (flip) width = -width;
-					return true;
+				if (x > -width / 2 + getRoom().getCameraLeftEdge() && x < width / 2 + getRoom().getCameraRightEdge()) {
+					if (y > -height / 2 + getRoom().getCameraBottomEdge() && y < height / 2 + getRoom().getCameraTopEdge()) {
+						if (flip) width = -width;
+						isOnScreen = true;
+						return true;
+					}
 				}
+
+				if (flip) width = -width;
+				return false;
+			} else {
+				return true;
 			}
-
-			if (flip) width = -width;
-
-			return false;
 		}
 	}
 }

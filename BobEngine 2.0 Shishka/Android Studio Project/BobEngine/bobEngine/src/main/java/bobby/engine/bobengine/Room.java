@@ -59,6 +59,10 @@ public class Room {
 	private double camzoom;
 	private double canchorx;
 	private double canchory;
+	private float camLeft;
+	private float camRight;
+	private float camTop;
+	private float camBottom;
 
 	// Objects
 	protected GameObject[][] objects;
@@ -262,29 +266,29 @@ public class Room {
 	/**
 	 * Get the coordinate of the left edge of the camera.
 	 */
-	public int getCameraLeftEdge() {
-		return (int) (camx + canchorx - getView().getRenderer().getCameraWidth() * camzoom * (canchorx / getView().getRenderer().getCameraWidth()));
+	public float getCameraLeftEdge() {
+		return camLeft;
 	}
 
 	/**
 	 * Get the coordinate of teh right edge of the screen.
 	 */
-	public int getCameraRightEdge() {
-		return (int) (camx + canchorx + getView().getRenderer().getCameraWidth() * camzoom * ((getView().getRenderer().getCameraWidth() - canchorx) / getView().getRenderer().getCameraWidth()));
+	public float getCameraRightEdge() {
+		return camRight;
 	}
 
 	/**
 	 * Get the coordinate of the bottom edge of the screen.
 	 */
-	public int getCameraBottomEdge() {
-		return (int) (camy + canchory - getView().getRenderer().getCameraHeight() * camzoom * (canchory / getView().getRenderer().getCameraHeight()));
+	public float getCameraBottomEdge() {
+		return camBottom;
 	}
 
 	/**
 	 * Get the coordinate of the top edge of the screen.
 	 */
-	public int getCameraTopEdge() {
-		return (int) (camy + canchory + getView().getRenderer().getCameraHeight() * camzoom * ((getView().getRenderer().getCameraHeight() - canchory) / getView().getRenderer().getCameraHeight()));
+	public float getCameraTopEdge() {
+		return camTop;
 	}
 
 	/**
@@ -407,6 +411,12 @@ public class Room {
 	public void update(double deltaTime) {
 		step(deltaTime);
 
+		// Update camera edges
+		camLeft = (float) (camx + canchorx - getView().getRenderer().getCameraWidth() * camzoom * (canchorx / getView().getRenderer().getCameraWidth()));
+		camRight = (float) (camx + canchorx + getView().getRenderer().getCameraWidth() * camzoom * ((getView().getRenderer().getCameraWidth() - canchorx) / getView().getRenderer().getCameraWidth()));
+		camTop = (float) (camy + canchory + getView().getRenderer().getCameraHeight() * camzoom * ((getView().getRenderer().getCameraHeight() - canchory) / getView().getRenderer().getCameraHeight()));
+		camBottom = (float) (camy + canchory - getView().getRenderer().getCameraHeight() * camzoom * (canchory / getView().getRenderer().getCameraHeight()));
+
 		// Perform step even for each object
 		for (int l = 0; l <= LAYERS; l++) {
 			for (int o = instances; o >= 0; o--) {
@@ -508,14 +518,17 @@ public class Room {
 	}
 
 	/**
+	 * Find the angle between two points.
 	 *
 	 * @return The angle between (x1, y1) and (x2, y2)
 	 */
 	public double getAngle(double x, double y, double x2, double y2) {
-		return Math.tan((y2 - y) / (x2 - x));
+		if (x < x2) return Math.atan((y - y2) / (x - x2));
+		else return Math.atan((y - y2) / (x - x2)) + Math.PI;
 	}
 
 	/**
+	 * Find the angle between two game objects.
 	 *
 	 * @param ob1
 	 * @param ob2

@@ -9,6 +9,7 @@
       <module fileurl="file://$PROJECT_DIR$/controllerexample/controllerexample.iml" filepath="$PROJECT_DIR$/controllerexample/controllerexample.iml" />
       <module fileurl="file://$PROJECT_DIR$/jumpybug/jumpybug.iml" filepath="$PROJECT_DIR$/jumpybug/jumpybug.iml" />
       <module fileurl="file://$PROJECT_DIR$/template/template.iml" filepath="$PROJECT_DIR$/template/template.iml" />
+      <module fileurl="file://$PROJECT_DIR$/textdisplayexample/textdisplayexample.iml" filepath="$PROJECT_DIR$/textdisplayexample/textdisplayexample.iml" />
       <module fileurl="file://$PROJECT_DIR$/touchInput/touchInput.iml" filepath="$PROJECT_DIR$/touchInput/touchInput.iml" />
     </modules>
   </component>

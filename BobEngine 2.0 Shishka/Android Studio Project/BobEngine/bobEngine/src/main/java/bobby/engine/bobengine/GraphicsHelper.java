@@ -156,6 +156,20 @@ public class GraphicsHelper {
     }
 
 	/**
+	 * Get the graphic created from a drawable that has already been added.
+	 *
+	 * @param drawable The drawable to find
+	 * @return A graphic object created from the drawable or null if the drawable has not been added.
+	 */
+	public Graphic findGraphic(int drawable) {
+		for (int i = 0; i < numGFX; i++) {
+			if (graphics[i] != null && graphics[i].drawable == drawable) return graphics[i];
+		}
+
+		return null;
+	}
+
+	/**
 	 * Perform outstanding graphic commands (load, unload).
 	 * 
 	 * @param gl

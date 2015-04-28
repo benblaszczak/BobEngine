@@ -43,6 +43,7 @@ public class NumberDisplay extends GameObject {
 	private double realWidth;
 	private int indices;
     private int position;
+	private Quad numbers[];
 
 	// Graphic
 	private static Graphic g;                         // The default number graphic
@@ -193,21 +194,15 @@ public class NumberDisplay extends GameObject {
 
 	// Step
 	public void update(double deltaTime) {
-
 		if (realWidth < width) {
 			realWidth = width;
 		}
 
 		digits = Integer.toString((int) number).length();
-		indices = digits * 6;
 
-		super.update(deltaTime);
-	}
+		numbers = new Quad[digits];
+		setMaxQuads(digits);
 
-	// Get Vertices
-	@Override
-	public float[] getVertices() {
-		float totSquare[] = new float[12 * digits];
 		int tempNum;
 		double oX;
 
@@ -215,88 +210,88 @@ public class NumberDisplay extends GameObject {
 		oX = x;
 		realWidth = width * (digits - 1);
 
-        for (int d = 0; d < digits; d++) {
-            int digit = tempNum % 10;
-            tempNum /= 10;
+		for (int d = 0; d < digits; d++) {
+			int digit = tempNum % 10;
+			tempNum /= 10;
 
-            // Remove space before
-            switch (digit) {
-                case 0:
-                    realWidth -= width * before[0];
-                    break;
-                case 1:
-                    realWidth -= width * before[1];
-                    break;
-                case 2:
-                    realWidth -= width * before[2];
-                    break;
-                case 3:
-                    realWidth -= width * before[3];
-                    break;
-                case 4:
-                    realWidth -= width * before[4];
-                    break;
-                case 5:
-                    realWidth -= width * before[5];
-                    break;
-                case 6:
-                    realWidth -= width * before[6];
-                    break;
-                case 7:
-                    realWidth -= width * before[7];
-                    break;
-                case 8:
-                    realWidth -= width * before[8];
-                    break;
-                case 9:
-                    realWidth -= width * before[9];
-                    break;
-            }
+			// Remove space before
+			switch (digit) {
+				case 0:
+					realWidth -= width * before[0];
+					break;
+				case 1:
+					realWidth -= width * before[1];
+					break;
+				case 2:
+					realWidth -= width * before[2];
+					break;
+				case 3:
+					realWidth -= width * before[3];
+					break;
+				case 4:
+					realWidth -= width * before[4];
+					break;
+				case 5:
+					realWidth -= width * before[5];
+					break;
+				case 6:
+					realWidth -= width * before[6];
+					break;
+				case 7:
+					realWidth -= width * before[7];
+					break;
+				case 8:
+					realWidth -= width * before[8];
+					break;
+				case 9:
+					realWidth -= width * before[9];
+					break;
+			}
 
-            // Remove space after
-            switch (digit) {
-                case 0:
-                    realWidth -= width * after[0];
-                    break;
-                case 1:
-                    realWidth -= width * after[1];
-                    break;
-                case 2:
-                    realWidth -= width * after[2];
-                    break;
-                case 3:
-                    realWidth -= width * after[3];
-                    break;
-                case 4:
-                    realWidth -= width * after[4];
-                    break;
-                case 5:
-                    realWidth -= width * after[5];
-                    break;
-                case 6:
-                    realWidth -= width * after[6];
-                    break;
-                case 7:
-                    realWidth -= width * after[7];
-                    break;
-                case 8:
-                    realWidth -= width * after[8];
-                    break;
-                case 9:
-                    realWidth -= width * after[9];
-                    break;
-            }
-        }
+			// Remove space after
+			switch (digit) {
+				case 0:
+					realWidth -= width * after[0];
+					break;
+				case 1:
+					realWidth -= width * after[1];
+					break;
+				case 2:
+					realWidth -= width * after[2];
+					break;
+				case 3:
+					realWidth -= width * after[3];
+					break;
+				case 4:
+					realWidth -= width * after[4];
+					break;
+				case 5:
+					realWidth -= width * after[5];
+					break;
+				case 6:
+					realWidth -= width * after[6];
+					break;
+				case 7:
+					realWidth -= width * after[7];
+					break;
+				case 8:
+					realWidth -= width * after[8];
+					break;
+				case 9:
+					realWidth -= width * after[9];
+					break;
+			}
+		}
 
-        if (position == 0) {
-            x = x + width / 2 + realWidth;
-        } else if (position == 1) {
-            x = x + realWidth / 2;
-        } else if (position == 2) {
-            x = x - width / 2;
-        }
+		if (position == 0) {
+			x = x + width / 2 + realWidth;
+		} else if (position == 1) {
+			x = x + realWidth / 2;
+		} else if (position == 2) {
+			x = x - width / 2;
+		}
 
-        tempNum = (int) number;
+		tempNum = (int) number;
 
 		for (int d = 0; d < digits; d++) {
 			int digit = tempNum % 10;
@@ -304,109 +299,84 @@ public class NumberDisplay extends GameObject {
 
 			// Remove space before
 			switch (digit) {
-			case 0:
-				x += width * before[0];
-				break;
-			case 1:
-				x += width * before[1];
-				break;
-			case 2:
-				x += width * before[2];
-				break;
-			case 3:
-				x += width * before[3];
-				break;
-			case 4:
-				x += width * before[4];
-				break;
-			case 5:
-				x += width * before[5];
-				break;
-			case 6:
-				x += width * before[6];
-				break;
-			case 7:
-				x += width * before[7];
-				break;
-			case 8:
-				x += width * before[8];
-				break;
-			case 9:
-				x += width * before[9];
-				break;
+				case 0:
+					x += width * before[0];
+					break;
+				case 1:
+					x += width * before[1];
+					break;
+				case 2:
+					x += width * before[2];
+					break;
+				case 3:
+					x += width * before[3];
+					break;
+				case 4:
+					x += width * before[4];
+					break;
+				case 5:
+					x += width * before[5];
+					break;
+				case 6:
+					x += width * before[6];
+					break;
+				case 7:
+					x += width * before[7];
+					break;
+				case 8:
+					x += width * before[8];
+					break;
+				case 9:
+					x += width * before[9];
+					break;
 			}
 
-			updatePosition(x - width * d, y);
-			float[] square = super.getVertices();
-
-			for (int i = 0; i < 12; i++) {
-				totSquare[(d * 12) + i] = square[i];
-			}
+			numbers[d] = new Quad();
+			numbers[d].height = height;
+			numbers[d].width = width;
+			numbers[d].setGraphic(10);
+			numbers[d].frame = digit;
+			numbers[d].x = x - width * d;
+			numbers[d].y = y;
+			setQuad(d, numbers[d]);
 
 			// Remove space after
 			switch (digit) {
-			case 0:
-				x += width * after[0];
-				break;
-			case 1:
-				x += width * after[1];
-				break;
-			case 2:
-				x += width * after[2];
-				break;
-			case 3:
-				x += width * after[3];
-				break;
-			case 4:
-				x += width * after[4];
-				break;
-			case 5:
-				x += width * after[5];
-				break;
-			case 6:
-				x += width * after[6];
-				break;
-			case 7:
-				x += width * after[7];
-				break;
-			case 8:
-				x += width * after[8];
-				break;
-			case 9:
-				x += width * after[9];
-				break;
+				case 0:
+					x += width * after[0];
+					break;
+				case 1:
+					x += width * after[1];
+					break;
+				case 2:
+					x += width * after[2];
+					break;
+				case 3:
+					x += width * after[3];
+					break;
+				case 4:
+					x += width * after[4];
+					break;
+				case 5:
+					x += width * after[5];
+					break;
+				case 6:
+					x += width * after[6];
+					break;
+				case 7:
+					x += width * after[7];
+					break;
+				case 8:
+					x += width * after[8];
+					break;
+				case 9:
+					x += width * after[9];
+					break;
 			}
 		}
 
 		x = oX;
 
-		return totSquare;
-	}
-
-	// Get texture coords
-	@Override
-	public float[] getGraphicVerts() {
-		float totTexture[] = new float[8 * digits];
-		int tempNum;
-
-		tempNum = (int) number;
-		for (int d = 0; d < digits; d++) {
-			frame = tempNum % 10;
-			tempNum /= 10;
-
-			setFrame(frame);
-			float[] texture = super.getGraphicVerts();
-
-			for (int i = 0; i < 8; i++) {
-				totTexture[(d * 8) + i] = texture[i];
-			}
-		}
-
-		return totTexture;
-	}
-
-	@Override
-	public int getIndices() {
-		return indices;
+		super.update(deltaTime);
 	}
 }
