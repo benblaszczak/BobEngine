@@ -276,8 +276,8 @@ public abstract class BobView extends GLSurfaceView {
 			screen.x = wm.getDefaultDisplay().getWidth();
 		}
 
-		if(isPortrait()) ratioX = screen.x / INIT_BASE_W;
-		else ratioX = screen.x / INIT_BASE_H;
+		if(isPortrait()) ratioX = (double) screen.x / INIT_BASE_W;
+		else ratioX =  (double) screen.x / INIT_BASE_H;
 	}
 
     /**
@@ -314,8 +314,8 @@ public abstract class BobView extends GLSurfaceView {
 			screen.y = wm.getDefaultDisplay().getHeight();
 		}
 
-		if(isPortrait()) ratioY = screen.y / INIT_BASE_H;
-		else ratioY = screen.y / INIT_BASE_W;
+		if(isPortrait()) ratioY = (double) screen.y / INIT_BASE_H;
+		else ratioY = (double) screen.y / INIT_BASE_W;
 	}
 
     /**

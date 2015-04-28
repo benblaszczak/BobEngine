@@ -71,15 +71,25 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="BobView.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="BobView.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/bobEngine/src/main/java/bobby/engine/bobengine/BobView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.39357907" vertical-offset="3426" max-vertical-offset="5338">
+            <state vertical-scroll-proportion="0.0" vertical-offset="3426" max-vertical-offset="5338">
               <caret line="273" column="55" selection-start-line="273" selection-start-column="55" selection-end-line="273" selection-end-column="55" />
               <folding>
                 <element signature="e#4379#4655#0" expanded="true" />
                 <element signature="e#4649#4650#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BobRenderer.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/bobEngine/src/main/java/bobby/engine/bobengine/BobRenderer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.28299645" vertical-offset="0" max-vertical-offset="3400">
+              <caret line="40" column="44" selection-start-line="40" selection-start-column="44" selection-end-line="40" selection-end-column="44" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -4779,7 +4789,6 @@
         <option value="$PROJECT_DIR$/largemap/src/main/java/com/bobbyloujo/largemap/ActivityMain.java" />
         <option value="$PROJECT_DIR$/bobEngine/src/main/java/bobby/engine/bobengine/GraphicsHelper.java" />
         <option value="$PROJECT_DIR$/largemap/src/main/java/com/bobbyloujo/largemap/MapSection.java" />
-        <option value="$PROJECT_DIR$/bobEngine/src/main/java/bobby/engine/bobengine/BobRenderer.java" />
         <option value="$PROJECT_DIR$/jumpybug/build.gradle" />
         <option value="$PROJECT_DIR$/bobEngineTest/build.gradle" />
         <option value="$PROJECT_DIR$/cameraexample/build.gradle" />
@@ -4796,6 +4805,7 @@
         <option value="$PROJECT_DIR$/bobEngine/src/main/java/bobby/engine/bobengine/TextDisplay.java" />
         <option value="$PROJECT_DIR$/textdisplayexample/src/main/java/com/bobbyloujo/textdisplayexample/MainActivity.java" />
         <option value="$PROJECT_DIR$/bobEngine/src/main/java/bobby/engine/bobengine/BobView.java" />
+        <option value="$PROJECT_DIR$/bobEngine/src/main/java/bobby/engine/bobengine/BobRenderer.java" />
       </list>
     </option>
   </component>
@@ -5393,14 +5403,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/controllerexample/src/main/java/com/bobbyloujo/controllerexample/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3349">
-          <caret line="15" column="2" selection-start-line="15" selection-start-column="2" selection-end-line="15" selection-end-column="2" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/bobEngine/src/main/java/bobby/engine/bobengine/Controller.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1887" max-vertical-offset="7837">
@@ -5787,12 +5789,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/bobEngine/src/main/java/bobby/engine/bobengine/BobView.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.39357907" vertical-offset="3426" max-vertical-offset="5338">
+        <state vertical-scroll-proportion="0.0" vertical-offset="3426" max-vertical-offset="5338">
           <caret line="273" column="55" selection-start-line="273" selection-start-column="55" selection-end-line="273" selection-end-column="55" />
           <folding>
             <element signature="e#4379#4655#0" expanded="true" />
             <element signature="e#4649#4650#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bobEngine/src/main/java/bobby/engine/bobengine/BobRenderer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.28299645" vertical-offset="0" max-vertical-offset="3400">
+          <caret line="40" column="44" selection-start-line="40" selection-start-column="44" selection-end-line="40" selection-end-column="44" />
+          <folding />
         </state>
       </provider>
     </entry>
