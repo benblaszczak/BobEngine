@@ -1,0 +1,3 @@
+include ':bobEngineTest', ':cameraexample', ':jumpybug', ':bobEngine', ':controllerexample', ':textdisplayexample', ':splashscreensandrooms'
+include ':touchInput'
+include ':template'

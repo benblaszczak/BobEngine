@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/C:/Users/Benjamin/Repositories/BobEngine/Android%20Studio%20Project/BobEngine/bobEngineTest/src/main/res/values/strings.xml -->
+    <eat-comment/>
+    <string name="app_name">BobEngineExample</string>
+    <!-- From: file:/C:/Users/Benjamin/Repositories/BobEngine/Android%20Studio%20Project/BobEngine/bobEngineTest/build/intermediates/exploded-aar/BobEngine/bobEngine/unspecified/res/values/values.xml -->
+    <eat-comment/>
+    <string name="splashImageDescription">Powered by BobEngine</string>
+    <!-- From: file:/C:/Users/Benjamin/Repositories/BobEngine/Android%20Studio%20Project/BobEngine/bobEngineTest/src/main/res/values/styles.xml -->
+    <eat-comment/>
+    <style name="AppBaseTheme" parent="android:Theme.Translucent.NoTitleBar">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+</resources>

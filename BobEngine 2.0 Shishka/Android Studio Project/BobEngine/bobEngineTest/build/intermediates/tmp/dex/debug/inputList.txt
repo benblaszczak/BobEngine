@@ -1,3 +1,0 @@
-C:\Users\Benjamin\AndroidStudioProjects\BobEngine\bobEngineTest\build\intermediates\classes\debug
-C:\Users\Benjamin\AndroidStudioProjects\BobEngine\bobEngineTest\build\intermediates\pre-dexed\debug\classes-f2b68782255735b8c9fb3acff44c1afd3c5ee686.jar
-C:\Users\Benjamin\AndroidStudioProjects\BobEngine\bobEngineTest\build\intermediates\pre-dexed\debug\support-v4-19.1.0-29cbb9634a5288c62fafd71d132a47c501b317ce.jar

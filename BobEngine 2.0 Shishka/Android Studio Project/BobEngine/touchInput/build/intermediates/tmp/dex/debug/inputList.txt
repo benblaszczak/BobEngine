@@ -1,3 +1,0 @@
-C:\Users\Benjamin\AndroidStudioProjects\BobEngine\touchInput\build\intermediates\classes\debug
-C:\Users\Benjamin\AndroidStudioProjects\BobEngine\touchInput\build\intermediates\pre-dexed\debug\classes-ed8f18f11e92747b14a8b801181207226a108824.jar
-C:\Users\Benjamin\AndroidStudioProjects\BobEngine\touchInput\build\intermediates\pre-dexed\debug\support-v4-19.1.0-29cbb9634a5288c62fafd71d132a47c501b317ce.jar
