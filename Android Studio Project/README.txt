@@ -13,3 +13,4 @@ cameraexample - An example that allows you to explore the camera functions.
 jumpybug - Flappy Bird clone that serves as an example of a full game
 controllerexample - shows how to get input from the a physical gamepad
 textdisplayexample - shows how to use TextDisplay
+splashscreensandrooms - shows how to use Rooms and SplashActivity
