@@ -50,8 +50,8 @@ import java.security.Key;
 public abstract class BobView extends GLSurfaceView {
 
 	// Constants
-	private final int INIT_BASE_W = 720;                   // Initial base screen width for correction ratio
-	private final int INIT_BASE_H = 1280;                  // Initial base screen height
+	private final double INIT_BASE_W = 720;                   // Initial base screen width for correction ratio
+	private final double INIT_BASE_H = 1280;                  // Initial base screen height
 
 	// Objects
 	private Room currentRoom;                              // The room that is currently being updated and drawn
