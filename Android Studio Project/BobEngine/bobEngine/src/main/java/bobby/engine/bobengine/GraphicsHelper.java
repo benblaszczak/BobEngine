@@ -41,14 +41,17 @@ import android.util.Log;
 public class GraphicsHelper {
 
 	// Constants
-	private int START_NUM_TEX = 50;                  // Starting maximum number of textures (graphics)
+	private int START_NUM_TEX = 1;                  // Starting maximum number of textures (graphics)
+	private int DEF_CLEANUPS = 2;                   // Number of cleanups until a graphic is removed.
 
 	// Variables
-	private int numGFX;                              // Number of loaded graphics
+	private int numGFX;                              // Number of added graphics
+	private int maxGFX;                              // The max graphic ID
 	private Graphic[] graphics;                      // Textures as drawables
 	private boolean useMipMaps;                      // Flag indicates if added graphics should be mip mapped
 	private int magFilter;                           // Upscale filter to use
 	private int minFilter;                           // Downscale filter to use
+	private int	cleanupsTilRemoval;
 
 	// Object
 	private Context context;
@@ -56,12 +59,13 @@ public class GraphicsHelper {
 	public GraphicsHelper(Context context) {
 		this.context = context;
 
-		numGFX = 1;
+		maxGFX = numGFX = 0;
 		graphics = new Graphic[START_NUM_TEX];
 
 		useMipMaps = true;
 		magFilter = GL11.GL_LINEAR;
 		minFilter = GL11.GL_LINEAR_MIPMAP_LINEAR;
+		cleanupsTilRemoval = DEF_CLEANUPS;
 	}
 
 	/**
@@ -100,19 +104,34 @@ public class GraphicsHelper {
 	 */
 	public Graphic addGraphic(int drawable, boolean shouldLoad) {
 		// Data
-		int graphic;
+		int graphic = 1;
 
-		graphic = numGFX;
+		Graphic alreadyAdded = findGraphic(drawable, useMipMaps, minFilter, magFilter);
+		if (alreadyAdded != null) return alreadyAdded;
+
 		numGFX++;
 
-		if (graphic > graphics.length) {                           // Hit max graphics, need to expand graphics[]
-			Graphic[] temp = graphics;
-			graphics = new Graphic[graphics.length + START_NUM_TEX];
+		if (numGFX >= graphics.length) {                           // Hit max graphics
+			cleanUp();                                             // Try to get rid of some that haven't been used recently
 
-			for (int i = 0; i < temp.length; i++) {
-				graphics[i] = temp[i];
+			if (numGFX >= graphics.length) {                       // Still too many, increase size of graphics
+				Graphic[] temp = graphics;
+				graphics = new Graphic[graphics.length + START_NUM_TEX];
+
+				for (int i = 0; i < temp.length; i++) {
+					graphics[i] = temp[i];
+				}
 			}
 		}
+
+		for (int i = 1; i < graphics.length; i++) {
+			if (graphics[i] == null) {
+				graphic = i;
+				break;
+			}
+		}
+
+		if (graphic > maxGFX) maxGFX = graphic;
 
 		try {
 			// Load the bitmap just to get the height and width
@@ -156,13 +175,66 @@ public class GraphicsHelper {
     }
 
 	/**
+	 * Add a graphic object. graphic may be assigned a new ID.
+	 * @param graphic
+	 */
+	public void addGraphic(Graphic graphic) {
+		// Data
+		int g = 1;
+
+		Graphic alreadyAdded = findGraphic(graphic.drawable, graphic.useMipMaps, graphic.minFilter, graphic.magFilter);
+		if (alreadyAdded != null) {
+			graphic.id = alreadyAdded.id;
+			graphic.indicateUsed(cleanupsTilRemoval);
+			graphics[graphic.id] = graphic;
+			return;
+		}
+
+		numGFX++;
+
+		if (numGFX >= graphics.length) {                           // Hit max graphics
+			cleanUp();                                             // Try to get rid of some that haven't been used recently
+
+			if (numGFX >= graphics.length) {                       // Still too many, increase size of graphics
+				Graphic[] temp = graphics;
+				graphics = new Graphic[graphics.length + START_NUM_TEX];
+
+				for (int i = 0; i < temp.length; i++) {
+					graphics[i] = temp[i];
+				}
+			}
+		}
+
+		for (int i = 1; i < graphics.length; i++) {
+			if (graphics[i] == null) {
+				g = i;
+				break;
+			}
+		}
+
+		if (g > maxGFX) maxGFX = g;
+
+		graphic.id = g;
+		graphic.indicateUsed(cleanupsTilRemoval);
+		graphics[g] = graphic;
+	}
+
+	/**
+	 * Signify that a graphic should be removed from the list.
+	 * @param graphic
+	 */
+	public void removeGraphic(Graphic graphic) {
+		if (graphics[graphic.id] == graphic) graphics[graphic.id].remove();
+	}
+
+	/**
 	 * Get the graphic created from a drawable that has already been added.
 	 *
 	 * @param drawable The drawable to find
 	 * @return A graphic object created from the drawable or null if the drawable has not been added.
 	 */
 	public Graphic findGraphic(int drawable) {
-		for (int i = 0; i < numGFX; i++) {
+		for (int i = 0; i < graphics.length; i++) {
 			if (graphics[i] != null && graphics[i].drawable == drawable) return graphics[i];
 		}
 
@@ -170,21 +242,81 @@ public class GraphicsHelper {
 	}
 
 	/**
-	 * Perform outstanding graphic commands (load, unload).
+	 * Get the graphic created from a drawable and with the same parameters that has already been added.
+	 *
+	 * @param drawable The drawable to find
+	 * @return A graphic object created from the drawable or null if the drawable has not been added.
+	 */
+	public Graphic findGraphic(int drawable, boolean useMipMaps, int minFilter, int magFilter) {
+		for (int i = 0; i < graphics.length; i++) {
+			if (graphics[i] != null
+					&& graphics[i].drawable == drawable
+					&& graphics[i].useMipMaps == useMipMaps
+					&& graphics[i].minFilter == minFilter
+					&& graphics[i].magFilter == magFilter) {
+				return graphics[i];
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Set the number of cleanups since a graphic has last been used needed
+	 * to remove the graphic from the GraphicHelper.
+	 * @param cleanups
+	 */
+	public void setCleanupsTilRemoval(int cleanups) {
+		cleanupsTilRemoval = cleanups;
+	}
+
+	/**
+	 * Get the number of cleanups since a graphic has last been used needed
+	 * to remove the graphic from the GraphicHelper.
+	 * @return
+	 */
+	public int getCleanupsTilRemoval() {
+		return cleanupsTilRemoval;
+	}
+
+	/**
+	 * Will find all graphics that have not been recently used and mark them for removal.
+	 */
+	public void cleanUp() {
+		for (int i = 1; i < graphics.length; i++) {
+			if (graphics[i] != null) {
+				graphics[i].cleanup();
+			}
+		}
+	}
+
+	/**
+	 * Perform outstanding graphic commands (load, unload, remove).
 	 * 
 	 * @param gl
 	 */
 	public void handleGraphics(GL11 gl) {
 		int sampleSize = 1;
-		boolean success = true;
+		boolean success = false;
+		boolean changed = false;
 
 		do {
 			try {
-				for (int t = 1; t < numGFX; t++) {
-					if (graphics[t].getCommand() == Graphic.Command.LOAD) {                             // Should we load it?
-						loadGraphic(gl, t, sampleSize);
-					} else if (graphics[t].getCommand() == Graphic.Command.UNLOAD) {                    // Should we unload it?
-						unloadGraphic(gl, t);
+				for (int t = 0; t < graphics.length; t++) {
+					if (graphics[t] != null) {
+						if (graphics[t].shouldLoad()) {                             // Should we load it?
+							loadGraphic(gl, t, sampleSize);
+							changed = true;
+						} else if (graphics[t].shouldUnload()) {                    // Should we unload it?
+							unloadGraphic(gl, t);
+							changed = true;
+						} else if (graphics[t].shouldRemove()) {
+							unloadGraphic(gl, t);
+							graphics[t].removed();
+							graphics[t] = null;
+							numGFX--;
+							changed = true;
+						}
 					}
 				}
 				
@@ -196,16 +328,15 @@ public class GraphicsHelper {
 			}
 		} while (!success);  // Try again
 
-		for (int t = 1; t < numGFX; t++) {
-			graphics[t].finished();
-		}
+		if (changed) gl.glFinish();
 	}
 
 	/**
 	 * Load a particular graphic.
 	 * 
-	 * @param gl
-	 * @param t
+	 * @param gl The OpenGL object to handle gl functions
+	 * @param t The id number of the graphic to load
+	 * @param sampleSize The sample size to load the graphic.
 	 */
 	private void loadGraphic(GL11 gl, int t, int sampleSize) {
 		Bitmap bmp;
@@ -246,6 +377,10 @@ public class GraphicsHelper {
 		gl.glFrontFace(GL11.GL_CCW);
 
 		bmp.recycle();
+
+		graphics[t].loaded();
+
+		gl.glFinish();
 	}
 
 	/**
@@ -254,6 +389,7 @@ public class GraphicsHelper {
 	private void unloadGraphic(GL11 gl, int t) {
 		int[] tex = { t };
 		gl.glDeleteTextures(1, tex, 0);
+		graphics[t].deleted();
 	}
 
 	/**
@@ -261,5 +397,12 @@ public class GraphicsHelper {
 	 */
 	public int getNumGraphics() {
 		return numGFX;
+	}
+
+	/**
+	 * Returns the maximum ID assigned to a graphic.
+	 */
+	public int getMaxGraphicID() {
+		return maxGFX;
 	}
 }

@@ -18,6 +18,10 @@ public class GameView extends BobView {
 	
 	public void onCreateGraphics() {
 		android = getGraphicsHelper().addGraphic(R.drawable.ic_launcher);
+
+		for (int i = 0; i < 10000; i++) {
+			getGraphicsHelper().addGraphic(R.drawable.characters);
+		}
 	}
 	
 	public void onCreateRooms() {

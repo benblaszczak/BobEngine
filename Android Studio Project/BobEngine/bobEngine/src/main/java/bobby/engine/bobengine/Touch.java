@@ -21,6 +21,7 @@
 package bobby.engine.bobengine;
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -34,11 +35,11 @@ import android.view.View.OnTouchListener;
 public class Touch implements OnTouchListener {
 
 	// Constants
-	private final static int MAX_FINGERS = 10;       // The max number of fingers that can touch the screen.
+	public final static int MAX_FINGERS = 10;       // The max number of fingers that can touch the screen.
 
 	// Variables
-	public int numTouches;
-	public boolean held[];
+	private int numTouches;
+	private boolean held[];
 
 	/** X positions of the pointers currently touching the screen. */
 	public float X[];                                // Touch X positions
@@ -69,7 +70,7 @@ public class Touch implements OnTouchListener {
 	}
 
 	/**
-	 * Returns true if the are described by x1, y1, x2, and y2 is being touched.
+	 * Returns true if the area described by x1, y1, x2, and y2 is being touched.
 	 * 
 	 * @param x1
 	 *            - X coord of the top-left corner of the box
@@ -82,13 +83,36 @@ public class Touch implements OnTouchListener {
 	 * @return true if touched by any finger, false otherwise
 	 */
 	public boolean areaTouched(double x1, double y1, double x2, double y2) {
-		for (int i = 0; i < numTouches; i++) {
+		for (int i = 0; i < MAX_FINGERS; i++) {
 			if (X[i] > x1 && X[i] < x2 && X[i] >= 0) {
 				if (Y[i] < y1 && Y[i] > y2 && X[i] >= 0) { return true; }
 			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Returns the ID of the index if the index touching the area described by x1, y1, x2, and y2.
+	 *
+	 * @param x1
+	 *            - X coord of the top-left corner of the box
+	 * @param y1
+	 *            - Y coord of the top-left corner
+	 * @param x2
+	 *            - X coord of the bottom-right corner
+	 * @param y2
+	 *            - Y coord of teh bottom-right corner
+	 * @return ID of the index touching the area or -1 if the area is not being touched.
+	 */
+	public int areaTouchedByIndex(double x1, double y1, double x2, double y2) {
+		for (int i = 0; i < MAX_FINGERS; i++) {
+			if (X[i] > x1 && X[i] < x2 && X[i] >= 0) {
+				if (Y[i] < y1 && Y[i] > y2 && X[i] >= 0) { return i; }
+			}
+		}
+
+		return -1;
 	}
 
 	/**
@@ -102,6 +126,25 @@ public class Touch implements OnTouchListener {
 		if (areaTouched(o.x - o.width / 2, o.y + o.height / 2, o.x + o.width / 2, o.y - o.height / 2)) { return true; }
 
 		return false;
+	}
+
+	/**
+	 * Returns the ID of the index touching object o.
+	 *
+	 * @param o
+	 *            - GameObject to check if is touched
+	 * @return The ID of the index touching object o, -1 if o is not being touched.
+	 */
+	public int objectTouchedByIndex(GameObject o) {
+		return areaTouchedByIndex(o.x - o.width / 2, o.y + o.height / 2, o.x + o.width / 2, o.y - o.height / 2);
+	}
+
+	/**
+	 * Get the number of pointers touching the screen.
+	 * @return number of pointers touching the screen.
+	 */
+	public int getNumTouches() {
+		return numTouches;
 	}
 	
 	/**
@@ -156,7 +199,7 @@ public class Touch implements OnTouchListener {
 			X[0] = event.getX();
 			Y[0] = myView.getHeight() - event.getY();
 
-			if (myView.getCurrentRoom() != null) myView.getCurrentRoom().newpress(index);
+			if (myView.getCurrentRoom() != null) myView.getCurrentRoom().signifyNewpress(index);
 			break;
 
 		case MotionEvent.ACTION_MOVE:
@@ -168,7 +211,7 @@ public class Touch implements OnTouchListener {
 			break;
 
 		case MotionEvent.ACTION_UP:
-            if (myView.getCurrentRoom() != null) myView.getCurrentRoom().released(index);
+            if (myView.getCurrentRoom() != null) myView.getCurrentRoom().signifyReleased(index);
 
 			for (int i = 0; i < MAX_FINGERS; i++) {
 				if(i < numTouches - 1) {
@@ -195,12 +238,12 @@ public class Touch implements OnTouchListener {
 			X[index] = event.getX(index);
 			Y[index] = myView.getHeight() - event.getY(index);
 
-			if (myView.getCurrentRoom() != null) myView.getCurrentRoom().newpress(index);
+			if (myView.getCurrentRoom() != null) myView.getCurrentRoom().signifyNewpress(index);
 			break;
 
 		case MotionEvent.ACTION_POINTER_UP:
 
-            if (myView.getCurrentRoom() != null) myView.getCurrentRoom().released(index);
+            if (myView.getCurrentRoom() != null) myView.getCurrentRoom().signifyReleased(index);
 
 			for (int i = 0; i < MAX_FINGERS; i++) {
 				if(i < numTouches - 1) {

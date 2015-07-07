@@ -38,7 +38,7 @@ import android.util.Log;
 public class BobRenderer implements Renderer {
 
 	// Constants
-	private final boolean OUTPUT_FPS = false;         // Setting this to true will output the FPS in logcat under the tag "fps"
+	private final boolean OUTPUT_FPS = true;         // Setting this to true will output the FPS in logcat under the tag "fps"
 
 	// Variables
 	public static final long FPS = 60;                // The optimal speed that the game will run
@@ -99,7 +99,6 @@ public class BobRenderer implements Renderer {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		myOwner.getGraphicsHelper().handleGraphics((GL11) gl);// Load textures for the view
 
-		red = green = blue = alpha = 1;
 		low = high = -1;
 
 		gl.glBlendFunc(GL10.GL_ONE, GL10.GL_ONE_MINUS_SRC_ALPHA);          // How to interpret transparency

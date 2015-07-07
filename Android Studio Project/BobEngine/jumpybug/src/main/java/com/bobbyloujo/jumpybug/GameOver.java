@@ -21,18 +21,11 @@ public class GameOver extends Room {
         super(container);
 
         // Initialize
-        play = new GameObject(nextInstance(), this);
-        bg1 = new Background(nextInstance(), this);
-        bg2 = new Background(nextInstance(), this);
-        score = new NumberDisplay(nextInstance(), this);
-        gameOver = new GameObject(nextInstance(), this);
-
-        // Add
-        addObject(play);
-        addObject(bg1);
-        addObject(bg2);
-        addObject(score);
-        addObject(gameOver);
+        play = new GameObject(this);
+        bg1 = new Background(this);
+        bg2 = new Background(this);
+        score = new NumberDisplay(this);
+        gameOver = new GameObject(this);
     }
 
     public void set() {
@@ -79,7 +72,7 @@ public class GameOver extends Room {
      * @param index - ID number of the finger that fired this event.
      */
     public void released(int index){
-        super.released(index);                       // MUST call super for the newpress and released events in rooms.
+        super.released(index);                       // MUST call super for the newpress and released events in rooms. (But not in GameObjects!)
 
         /**
          * getTouch() provides many useful functions for getting

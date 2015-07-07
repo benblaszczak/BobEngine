@@ -10,13 +10,8 @@ public class StartRoom extends Room {
 
 	public StartRoom(BobView container) {
 		super(container);
-		
-		// TODO Initialization of objects and variables
-		object = new AnObject(nextInstance(), this);
-		
-		
-		// TODO Add objects to this room
-		addObject(object);
+
+		object = new AnObject(this);
 	}
 
 	/**

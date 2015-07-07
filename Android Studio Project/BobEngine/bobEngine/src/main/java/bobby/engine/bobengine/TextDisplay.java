@@ -70,12 +70,20 @@ public class TextDisplay extends GameObject {
 	 * Initialization. Requires a unique Id number and the room containing this
 	 * GameObject.
 	 *
-	 * @param id             - ID number
-	 * @param containingRoom - Room that this object is in.
+	 * @param id ID number
+	 * @param room Room that this object is in.
 	 */
-	public TextDisplay(int id, Room containingRoom) {
-		super(id, containingRoom);
+	public TextDisplay(int id, Room room) {
+		super(id, room);
+		init();
+	}
 
+	public TextDisplay(Room room) {
+		super(room);
+		init();
+	}
+
+	private void init() {
 		Graphic g = getView().getGraphicsHelper().addGraphic(R.drawable.characters);
 		setGraphic(g, 13, 6);
 

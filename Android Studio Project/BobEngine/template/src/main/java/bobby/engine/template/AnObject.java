@@ -13,8 +13,8 @@ import bobby.engine.bobengine.Room;
  */
 public class AnObject extends GameObject {
 
-	public AnObject(int id, Room containingRoom) {
-		super(id, containingRoom);
+	public AnObject(Room room) {
+		super(room);
 		// TODO Initialization
 		
 		/* Set graphic and number of frames to use for this icon */

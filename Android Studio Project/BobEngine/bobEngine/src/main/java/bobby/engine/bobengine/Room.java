@@ -30,6 +30,7 @@ import javax.microedition.khronos.opengles.GL11;
 
 import android.app.Activity;
 import android.opengl.GLES10;
+import android.util.Log;
 
 /**
  * Rooms are collections of GameObjects. They handle updating and rendering each
@@ -40,18 +41,30 @@ import android.opengl.GLES10;
  */
 public class Room {
 	// Constants
-	public final int OBJECTS = 8000;                       // Maximum number of quads. This is kind of sloppy. I should find a better way to do this.
-	public final int LAYERS = 5;                           // Default number of layers.
-	public final int VERTEX_BYTES = 4 * 3 * 4 * OBJECTS;   // 4 bytes per float * 3 coords per vertex * 4 vertices * max objects
-	public final int TEX_BYTES = 4 * 2 * 4 * OBJECTS;      // 4 bytes per float * 2 coords per vertex * 4 vertices
-	public final int INDEX_BYTES = 4 * 4 * OBJECTS;        // 4 bytes per short * 4 indices per quad * max num of objects
+	public final int OBJECTS = 8000;                        // Maximum number of quads. This is kind of sloppy. I should find a better way to do this.
+	public final int DEF_LAYERS = 10;                       // Default number of layers.
+	private final int VERTEX_BYTES = 4 * 3 * 4 * OBJECTS;   // 4 bytes per float * 3 coords per vertex * 4 vertices * max objects
+	private final int TEX_BYTES = 4 * 2 * 4 * OBJECTS;      // 4 bytes per float * 2 coords per vertex * 4 vertices
+	private final int INDEX_BYTES = 4 * 4 * OBJECTS;        // 4 bytes per short * 4 indices per quad * max num of objects
 
 	// Variables
-	public int instances = 0;                              // The number of objects in this room
-	public int index;                                      // The number of indices for all quads
-	public short indices[] = new short[6];                 // The order in which to draw the vertices
-	public int lastIndex[];                                // The number of indices last frame for each layer
-	public int layers;                                     // Number of layers - 1. (ex. 5 layers would be 0-4 so layers is 4)
+	private int instances = 0;                              // The number of objects in this room
+	private int index;                                      // The number of indices for all quads
+	private short indices[] = new short[6];                 // The order in which to draw the vertices
+	private int lastIndex[];                                // The number of indices last frame for each layer
+
+	private int layers;           // Number of layers
+	private float red[];          // Red values for each layer
+	private float green[];        // Green values for each layer
+	private float blue[];         // Blue values for each layer
+	private float alpha[];        // alpha values for each layer
+
+	// Input variables
+	private boolean newpress[] = new boolean[Touch.MAX_FINGERS];
+	private boolean released[] = new boolean[Touch.MAX_FINGERS];
+
+	private int buttonNewpress[] = new int[Controller.MAX_CONTROLLERS];
+	private int buttonReleased[] = new int[Controller.MAX_CONTROLLERS];
 
 	// Camera variables
 	private int camx;
@@ -75,8 +88,18 @@ public class Room {
 	public FloatBuffer textureBuffer;                      // Buffer that holds the room's texture coords
 
 	public Room(BobView container) {
+		init(container, DEF_LAYERS);
+	}
+
+	public Room(BobView container, int layers) {
+		init(container, layers);
+	}
+
+	private void init(BobView container, int layers) {
 		myView = container;
-		objects = new GameObject[LAYERS + 1][OBJECTS + 1];
+		objects = new GameObject[layers][OBJECTS];
+
+		instances = 0;
 
 		// Set up vertex buffer
 		ByteBuffer vertexByteBuffer = ByteBuffer.allocateDirect(VERTEX_BYTES);            // a float has 4 bytes so we allocate for each coordinate 4 bytes
@@ -93,14 +116,23 @@ public class Room {
 		// Set up index buffer
 		vertexByteBuffer = ByteBuffer.allocateDirect(INDEX_BYTES);
 		vertexByteBuffer.order(ByteOrder.nativeOrder());
-		indexBuffer = new ShortBuffer[LAYERS];
-		for (int i = 0; i < LAYERS; i++) {
+		indexBuffer = new ShortBuffer[layers];
+		for (int i = 0; i < layers; i++) {
 			indexBuffer[i] = vertexByteBuffer.asShortBuffer();
 			indexBuffer[i].position(0);
 		}
 
-		layers = LAYERS - 1;
-		lastIndex = new int[LAYERS];
+		this.layers = layers;
+		lastIndex = new int[layers];
+
+		red = new float[layers];
+		green = new float[layers];
+		blue = new float[layers];
+		alpha = new float[layers];
+
+		for (int i = 0; i < layers; i++) {
+			red[i] = green[i] = blue[i] = alpha[i] = 1f;
+		}
 
 		// Camera initialization
 		camx = 0;
@@ -147,7 +179,7 @@ public class Room {
 	 */
 	public int nextInstance() {
 		instances++;
-		return instances;
+		return instances - 1;
 	}
 
 	/**
@@ -176,9 +208,17 @@ public class Room {
 	 * Removes all GameObjects from this room.
 	 */
 	public void clearObjects() {
-		for (int l = 0; l < LAYERS; l++) {
-			for (int o = 0; o <= instances; o++) {
+		for (int l = 0; l < layers; l++) {
+			for (int o = 0; o < instances; o++) {
 				objects[l][o] = null;
+			}
+		}
+	}
+
+	public void indicateGraphicsUsed() {
+		for (int l = 0; l < layers; l++) {
+			for (int o = 0; o < instances; o++) {
+				if (objects[l][o] != null) objects[l][o].getGraphic().indicateUsed(getView().getGraphicsHelper().getCleanupsTilRemoval());
 			}
 		}
 	}
@@ -241,8 +281,8 @@ public class Room {
 	 * HINT: this point will stay in the same location on the screen when zooming
 	 * in and out.
 	 *
-	 * @param x
-	 * @param y
+	 * @param x anchor x position
+	 * @param y anchor y position
 	 */
 	public void setCameraAnchor(int x, int y) {
 		canchorx = x;
@@ -306,6 +346,22 @@ public class Room {
 	}
 
 	/**
+	 * Set the color intensity of the game objects on a layer.
+	 *
+	 * @param layer The layer to change the color intensity.
+	 * @param r Intensity of red, from 0-1
+	 * @param g Green intensity
+	 * @param b Blue intensity
+	 * @param a Alpha intensity
+	 */
+	public void setLayerColor(int layer, float r, float g, float b, float a) {
+		red[layer] = r;
+		green[layer] = g;
+		blue[layer] = b;
+		alpha[layer] = a;
+	}
+
+	/**
 	 * Gathers the vertex, texture, and index data for each GameObject in this
 	 * room and passes that information to openGL. Can be called from another
 	 * room's draw method to draw both rooms at once. If overridden, call
@@ -324,13 +380,13 @@ public class Room {
 		gl.glMatrixMode(GLES10.GL_MODELVIEW);
 		gl.glLoadIdentity();
 
-		int numG = getView().getGraphicsHelper().getNumGraphics();
+		int numG = getView().getGraphicsHelper().getMaxGraphicID();
 
-		for (int l = 0; l <= layers; l++) {
-			for (int t = 0; t < numG; t++) {
+		for (int l = 0; l < layers; l++) {
+			for (int t = 0; t <= numG; t++) {
 				int obs = 0;
 
-				for (int o = 0; o <= instances; o++) {
+				for (int o = 0; o < instances; o++) {
 					g = objects[l][o];
 
 					if (g != null && g.getGraphicID() == t) {
@@ -349,7 +405,7 @@ public class Room {
 					indexBuffer[l].position(0);
 					index = 0;
 
-					for (int o = 0; o <= instances; o++) {
+					for (int o = 0; o < instances; o++) {
 						g = objects[l][o];
 
 						if (g != null && g.getGraphicID() == t) {
@@ -385,16 +441,29 @@ public class Room {
 					indexBuffer[l].position(0);
 
 					// Add color
-					// TODO gl.glColor4f(red, green, blue, alpha);
+					gl.glColor4f(red[l], green[l], blue[l], alpha[l]);
 
 					gl.glBindTexture(GL11.GL_TEXTURE_2D, t);
 
 					// Point to our vertex buffer
-					gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
+					gl.glVertexPointer(2, GL10.GL_FLOAT, 0, vertexBuffer);
 					gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, textureBuffer);
 
 					// Draw the vertices as triangle strip
 					gl.glDrawElements(GL10.GL_TRIANGLES, index, GL10.GL_UNSIGNED_SHORT, indexBuffer[l]);
+				}
+			}
+		}
+
+		// Load any recently used graphics that are not loaded.
+		for (int l = 0; l < layers; l++) {
+			for (int o = 0; o < instances; o++) {
+				if (objects[l][o] != null) {
+					g = objects[l][o];
+
+					if (g.getGraphic().shouldLoad()) {
+						getView().getGraphicsHelper().addGraphic(g.getGraphic());
+					}
 				}
 			}
 		}
@@ -409,6 +478,19 @@ public class Room {
 	 * @param deltaTime
 	 */
 	public void update(double deltaTime) {
+		// Handle input events
+		for (int i = 0; i < Touch.MAX_FINGERS; i++) {
+			if (newpress[i]) newpress(i); newpress[i] = false;
+			if (released[i]) released(i); released[i] = false;
+		}
+
+		for (int i = 0; i < Controller.MAX_CONTROLLERS; i++) {
+			if (buttonNewpress[i] != -1) newpress(i, buttonNewpress[i]);
+			buttonNewpress[i] = -1;
+			if (buttonReleased[i] != -1) released(i, buttonReleased[i]);
+			buttonReleased[i] = -1;
+		}
+
 		step(deltaTime);
 
 		// Update camera edges
@@ -418,8 +500,8 @@ public class Room {
 		camBottom = (float) (camy + canchory - getView().getRenderer().getCameraHeight() * camzoom * (canchory / getView().getRenderer().getCameraHeight()));
 
 		// Perform step even for each object
-		for (int l = 0; l <= LAYERS; l++) {
-			for (int o = instances; o >= 0; o--) {
+		for (int l = 0; l < layers; l++) {
+			for (int o = 0; o < instances; o++) {
 				if (objects[l][o] != null) {
 					objects[l][o].update(deltaTime);
 				}
@@ -427,8 +509,8 @@ public class Room {
 		}
 
 		// Fix layers
-		for (int l = 0; l <= LAYERS; l++) {
-			for (int o = 0; o <= instances; o++) {
+		for (int l = 0; l < layers; l++) {
+			for (int o = 0; o < instances; o++) {
 				if (objects[l][o] != null) {
 					g = objects[l][o];
 
@@ -454,14 +536,48 @@ public class Room {
 	}
 
 	/**
+	 * Tell this room to handle a newpress input event on the main thread.
+	 * @param index
+	 */
+	public void signifyNewpress(int index) {
+		newpress[index] = true;
+	}
+
+	/**
+	 * Tell this room to handle a newpress button event on the main thread.
+	 * @param controller the controller that triggered this event.
+	 * @param button the button that triggered this event
+	 */
+	public void signifyNewpress(int controller, int button) {
+		buttonNewpress[controller] = button;
+	}
+
+	/**
+	 * Tell this room to handle a release input event on the main thread.
+	 * @param index
+	 */
+	public void signifyReleased(int index) {
+		released[index] = true;
+	}
+
+	/**
+	 * Tell this room to handle a released button event on the main thread.
+	 * @param controller the controller that triggered this event.
+	 * @param button the button that triggered this event
+	 */
+	public void signifyReleased(int controller, int button) {
+		buttonReleased[controller] = button;
+	}
+
+	/**
 	 * Touch screen newpress event. Executes the newpress event for each
 	 * GameObject in this room. Can be overridden, but be sure to call
 	 * super.newpress() in your override method.
 	 */
 	public void newpress(int index) {
 		// Perform step even for each object
-		for (int l = 0; l <= LAYERS; l++) {
-			for (int o = instances; o >= 0; o--) {
+		for (int l = 0; l < layers; l++) {
+			for (int o = 0; o < instances; o++) {
 				if (objects[l][o] != null) {
 					objects[l][o].newpress(index);
 				}
@@ -476,8 +592,8 @@ public class Room {
 	 */
 	public void newpress(int controller, int button) {
 		// Perform step even for each object
-		for (int l = 0; l <= LAYERS; l++) {
-			for (int o = instances; o >= 0; o--) {
+		for (int l = 0; l < layers; l++) {
+			for (int o = 0; o < instances; o++) { // I have no idea why, but these loops originally started at instance and count DOWN to 0... wut.
 				if (objects[l][o] != null) {
 					objects[l][o].newpress(controller, button);
 				}
@@ -492,8 +608,8 @@ public class Room {
 	 */
 	public void released(int index) {
 		// Perform released event for each object
-		for (int l = 0; l <= LAYERS; l++) {
-			for (int o = instances; o >= 0; o--) {
+		for (int l = 0; l < layers; l++) {
+			for (int o = 0; o < instances; o++) {
 				if (objects[l][o] != null) {
 					objects[l][o].released(index);
 				}
@@ -508,8 +624,8 @@ public class Room {
 	 */
 	public void released(int controller, int button) {
 		// Perform released event for each object
-		for (int l = 0; l <= LAYERS; l++) {
-			for (int o = instances; o >= 0; o--) {
+		for (int l = 0; l < layers; l++) {
+			for (int o = 0; o < instances; o++) {
 				if (objects[l][o] != null) {
 					objects[l][o].released(controller, button);
 				}
@@ -530,8 +646,8 @@ public class Room {
 	/**
 	 * Find the angle between two game objects.
 	 *
-	 * @param ob1
-	 * @param ob2
+	 * @param ob1 first object
+	 * @param ob2 second object
 	 * @return The angle between ob1 and ob2
 	 */
 	public double getAngleBetween(GameObject ob1, GameObject ob2) {
@@ -675,8 +791,8 @@ public class Room {
 	 */
 	public GameObject objectAtPosition(double x, double y) {
 
-		for (int l = 0; l <= LAYERS; l++) {
-			for (int o = instances; o >= 0; o--) {
+		for (int l = 0; l <= DEF_LAYERS; l++) {
+			for (int o = 0; o < instances; o++) {
 				if (objects[l][o] != null && objectAtPosition(objects[l][o], x, y)) {
 					return objects[l][o];
 				}

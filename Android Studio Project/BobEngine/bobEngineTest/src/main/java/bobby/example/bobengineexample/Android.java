@@ -28,7 +28,7 @@ public class Android extends GameObject {
 		setGraphic(GameView.android, FRAMES);
 
 		two = new Quad();
-		two.setGraphic(GameView.android, FRAMES);
+		two.setGraphic(FRAMES);
 		addQuad(two);
 	}
 

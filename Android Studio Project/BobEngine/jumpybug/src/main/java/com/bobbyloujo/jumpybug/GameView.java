@@ -1,7 +1,6 @@
 package com.bobbyloujo.jumpybug;
 
 import android.content.Context;
-import android.util.AttributeSet;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -13,26 +12,26 @@ import bobby.engine.bobengine.Graphic;
  */
 public class GameView extends BobView {
 
-    // Rooms
-    public static StartRoom start;   // The start screen
-    public static GameRoom game;     // The actual game
-    public static GameOver gameOver; // The game over screen
+	// Rooms
+	public static StartRoom start;   // The start screen
+	public static GameRoom game;     // The actual game
+	public static GameOver gameOver; // The game over screen
 
-    // Graphics
-    public static Graphic bug;
-    public static Graphic title;
-    public static Graphic play;
-    public static Graphic flower;
-    public static Graphic bg;
-    public static Graphic over;
+	// Graphics
+	public static Graphic bug;
+	public static Graphic title;
+	public static Graphic play;
+	public static Graphic flower;
+	public static Graphic bg;
+	public static Graphic over;
 
-    public GameView(Context context) {
-        super(context);
-    }
+	public GameView(Context context) {
+		super(context);
+	}
 
-    @Override
-    protected void onCreateGraphics() {
-        /*
+	@Override
+	protected void onCreateGraphics() {
+		/*
          * Here is where we will create our graphics that we will use with our
          * game objects. You'll notice that it is very simple and requires only
          * one called to getGraphicsHelper().addGraphic(drawable) per graphic.
@@ -54,20 +53,20 @@ public class GameView extends BobView {
          *
          * For more information, look up OpenGL texture filtering.
          */
-        getGraphicsHelper().setParameters(true, GL10.GL_NEAREST, GL10.GL_NEAREST);
+		getGraphicsHelper().setParameters(false, GL10.GL_NEAREST, GL10.GL_NEAREST);
 
-        // Now, add the graphics!
-        bug = getGraphicsHelper().addGraphic(R.drawable.bug);
-        title = getGraphicsHelper().addGraphic(R.drawable.title);
-        play = getGraphicsHelper().addGraphic(R.drawable.play);
-        flower = getGraphicsHelper().addGraphic(R.drawable.flower);
-        bg = getGraphicsHelper().addGraphic(R.drawable.background);
-        over = getGraphicsHelper().addGraphic(R.drawable.gameover);
-    }
+		// Now, add the graphics!
+		bug = getGraphicsHelper().addGraphic(R.drawable.bug);
+		title = getGraphicsHelper().addGraphic(R.drawable.title);
+		play = getGraphicsHelper().addGraphic(R.drawable.play);
+		flower = getGraphicsHelper().addGraphic(R.drawable.flower);
+		bg = getGraphicsHelper().addGraphic(R.drawable.background);
+		over = getGraphicsHelper().addGraphic(R.drawable.gameover);
+	}
 
 
-    @Override
-    protected void onCreateRooms() {
+	@Override
+	protected void onCreateRooms() {
         /*
          * Here is where you will initialize and setup your rooms. This method is a bit
          * more important than the onCreateGraphics() method. By initializing and setting
@@ -81,14 +80,14 @@ public class GameView extends BobView {
          */
 
 
-        // Initialize the rooms
-        start = new StartRoom(this);
-        game = new GameRoom(this);
-        gameOver = new GameOver(this);
+		// Initialize the rooms
+		start = new StartRoom(this);
+		game = new GameRoom(this);
+		gameOver = new GameOver(this);
 
-        // Setup the rooms
-        start.set();
+		// Setup the rooms
+		start.set();
 
-        goToRoom(start); // Go to the start screen
-    }
+		goToRoom(start); // Go to the start screen
+	}
 }

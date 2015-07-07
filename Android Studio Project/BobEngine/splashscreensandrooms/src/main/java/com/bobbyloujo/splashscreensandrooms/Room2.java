@@ -7,6 +7,8 @@ import bobby.engine.bobengine.GameObject;
 import bobby.engine.bobengine.Room;
 
 /**
+ * Pretty similar to room 1.
+ *
  * Created by Benjamin on 5/11/2015.
  */
 public class Room2 extends Room {
@@ -15,14 +17,12 @@ public class Room2 extends Room {
 	public Room2(BobView container) {
 		super(container);
 
-		door = new GameObject(nextInstance(), this);
+		door = new GameObject(this);
 		door.setGraphic(GameView.doorForRoom2);
 		door.x = getWidth() / 2;
 		door.y = getHeight() / 2;
 		door.width = getWidth() / 2;
 		door.height = door.width * 2;
-
-		addObject(door);
 	}
 
 	@Override

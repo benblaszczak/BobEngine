@@ -8,42 +8,40 @@ import bobby.engine.bobengine.Room;
  */
 public class Background extends GameObject {
 
-    // Variables
-    private int speed;
+	// Variables
+	private int speed;
 
-    /**
-     * Initialization. Requires a unique Id number and the room containing this
-     * GameObject.
-     *
-     * @param id             - ID number
-     * @param containingRoom - Room that this object is in.
-     */
-    public Background(int id, Room containingRoom) {
-        super(id, containingRoom);
+	/**
+	 * Initialization.
+	 *
+	 * @param room - Room that this object is in.
+	 */
+	public Background(Room room) {
+		super(room);
 
-        layer = 0; // By default, the layer is 2. Lower layers are drawn first, so they will appear behind higher layers
+		layer = 0; // By default, the layer is 2. Lower layers are drawn first, so they will appear behind higher layers
 
-        setGraphic(GameView.bg, 1);
-    }
+		setGraphic(GameView.bg, 1);
+	}
 
-    /**
-     * Set up and reset the background
-     */
-    public void set(int x, int speed) {
-        this.x = x;
-        this.speed = speed;
+	/**
+	 * Set up and reset the background
+	 */
+	public void set(int x, int speed) {
+		this.x = x;
+		this.speed = speed;
 
-        width = getRoom().getWidth();
-        height = getRoom().getHeight();
-        y = height / 2;
-    }
+		width = getRoom().getWidth();
+		height = getRoom().getHeight();
+		y = height / 2;
+	}
 
-    @Override
-    public void step(double dt) {
-        x -= speed;
+	@Override
+	public void step(double dt) {
+		x -= speed;
 
-        if (x <= -width / 2) {
-            x = getRoom().getWidth() + width / 2 - (x + width / 2);
-        }
-    }
+		if (x <= -width / 2) {
+			x = getRoom().getWidth() + width / 2 - (x + width / 2);
+		}
+	}
 }

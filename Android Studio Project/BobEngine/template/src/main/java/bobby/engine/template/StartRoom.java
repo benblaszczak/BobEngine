@@ -5,11 +5,6 @@ import bobby.engine.bobengine.Room;
 
 /**
  * This is a room. Right now, it contains only one object but you can create more!
- *
- * Notice that the object is first initialized and then added to the room using the method
- * addObject(object). Calling addObject(object) is how BobEngine will know that when this room
- * is the room that is currently being displayed it will need to display the game object called
- * "object".
  */
 public class StartRoom extends Room {
 	
@@ -20,17 +15,16 @@ public class StartRoom extends Room {
 		super(container);
 		
 		// TODO Initialization of objects and variables
-		object = new AnObject(nextInstance(), this);
-		
-		
-		// TODO Add objects to this room
-		addObject(object);
+		object = new AnObject(this); // This object will appear in this room thanks to passing this room as the argument in the object's constructor.
 	}
 
 	/**
-	 * Set up and reset the room.
+	 * Set up and reset the room. This is not something that is built in to BobEngine
+	 * but I encourage using it or something similar so you can easily set up and reset
+	 * your rooms.
 	 */
 	public void set() {
+		// TODO Set up objects.
 		object.set();
 	}
 }

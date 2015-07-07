@@ -41,25 +41,29 @@ public class NumberDisplay extends GameObject {
 	public int number;
 	private int digits;
 	private double realWidth;
-	private int indices;
     private int position;
 	private Quad numbers[];
 
-	// Graphic
-	private static Graphic g;                         // The default number graphic
+	public NumberDisplay(Room room) {
+		super(room);
 
-	public NumberDisplay(int id, Room containingRoom) {
-		super(id, containingRoom);
-
-		g = getView().getGraphicsHelper().addGraphic(R.drawable.numbers);
-
-		setGraphic(g, 10);
+		setGraphic(getView().getGraphicsHelper().addGraphic(R.drawable.numbers), 10);
 
 		x = y = width = height = 100;
 		position = 0;
 		digits = 1;
 		number = 0;
-		indices = 0;
+	}
+
+	public NumberDisplay(int id, Room room) {
+		super(id, room);
+
+		setGraphic(getView().getGraphicsHelper().addGraphic(R.drawable.numbers), 10);
+
+		x = y = width = height = 100;
+		position = 0;
+		digits = 1;
+		number = 0;
 	}
 
 	/**
@@ -82,7 +86,6 @@ public class NumberDisplay extends GameObject {
 
 		realWidth = width = getRoom().getWidth() * sizeRatio;
 		height = width;
-		indices = 0;
 		digits = 1;
         position = 0;
 
@@ -198,7 +201,7 @@ public class NumberDisplay extends GameObject {
 			realWidth = width;
 		}
 
-		digits = Integer.toString((int) number).length();
+		digits = Integer.toString(number).length();
 
 		numbers = new Quad[digits];
 		setMaxQuads(digits);
@@ -206,7 +209,7 @@ public class NumberDisplay extends GameObject {
 		int tempNum;
 		double oX;
 
-		tempNum = (int) number;
+		tempNum = number;
 		oX = x;
 		realWidth = width * (digits - 1);
 
@@ -291,7 +294,7 @@ public class NumberDisplay extends GameObject {
 			x = x - width / 2;
 		}
 
-		tempNum = (int) number;
+		tempNum = number;
 
 		for (int d = 0; d < digits; d++) {
 			int digit = tempNum % 10;

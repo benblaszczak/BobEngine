@@ -58,16 +58,6 @@ public abstract class SplashActivity extends BobActivity {
         nextScreen();
 	}
 
-	/**
-	 * Clears all the splash screens that have been added to this SplashActivity.
-	 */
-	public void clearScreens() {
-		numLays = 0;
-		curLay = 0;
-		layouts = new int[MAX_LAYOUTS];
-		times = new int[MAX_LAYOUTS];
-	}
-
     /**
      * Add a splash screen to the queue of splash screens. Call this in setup().
      *

@@ -31,21 +31,14 @@ public class MainActivity extends BobActivity {
                 /**
                  * Room and object initialization
                  */
-                room = new Room(view) {
-					@Override
-					public void step(double dt) {
-						object.x += 1 * object.getRatioX();
-					}
-				};
+                room = new Room(view);
 
-                object = new GameObject(room.nextInstance(), room);
-                object.x = room.getWidth() / 2;                     // Center of the screen when camera (x,y) is (0,0)
-                object.y = room.getHeight() / 2;                    // Center of the screen
-                object.width = room.getWidth() / 10;
-                object.height = object.width;
-                object.setGraphic(g);
-
-                room.addObject(object);
+                object = new GameObject(room);        // Initializes the object and adds it to the room.
+                object.x = room.getWidth() / 2;       // Center of the screen when camera (x,y) is (0,0)
+                object.y = room.getHeight() / 2;      // Center of the screen
+                object.width = room.getWidth() / 10;  // Set the width
+                object.height = object.width;         // and height dimensions
+                object.setGraphic(g);                 // Set which graphic the object should use.
 
                 goToRoom(room); // This is how we tell BobEngine which room to update and draw!!
 

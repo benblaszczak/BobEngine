@@ -13,11 +13,11 @@ import bobby.engine.bobengine.TextDisplay;
 
 public class MainActivity extends Activity {
 
-	final String TEXT = "Who's the best? Bobby Lou Jo is the best.";
+	final String TEXT = "Who's the best? Bobby Lou Jo is the best."; // The text to display
 
-	BobView view;
-	Room room;
-	TextDisplay text;
+	BobView view;     // BobView for showing BobEngine content.
+	Room room;        // A room to put our TextDisplay in.
+	TextDisplay text; // A specialized GameObject that will display text.
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -31,10 +31,10 @@ public class MainActivity extends Activity {
 
 			@Override
 			protected void onCreateRooms() {
-				// Initialize everything, set up the room, go to the room.
+				// Initialize everything, go to the room.
 				room = new Room(view);
-				text = new TextDisplay(room.nextInstance(), room);
-				room.addObject(text);
+				text = new TextDisplay(room);
+
 				goToRoom(room);
 
 				/* Set the position of the TextDisplay */
@@ -53,7 +53,7 @@ public class MainActivity extends Activity {
 				 * to LEFT, lines beginning at x; when the align is set to RIGHT, lines end at x; when
 				 * the alignment is set to CENTER, lines are centered around x.
 				 */
-				text.setAlignment(TextDisplay.LEFT);
+				text.setAlignment(TextDisplay.CENTER);
 
 				/* Set the width of the TextDisplay. Words past this width will be wrapped to the next line. */
 				text.setBoxWidth(room.getWidth() / 2);
@@ -62,7 +62,7 @@ public class MainActivity extends Activity {
 				 * A QUICK NOTE ABOUT CHANGING THE FONT/TYPEFACE:
 				 *
 				 * You can create your own typeface to use with TextDisplay. The default typeface
-				 * can be found in the bobEngine module drawable folder is named 'characters.png'.
+				 * can be found in the bobEngine module drawable folder and is named 'characters.png'.
 				 *
 				 * CHARACTER ARRANGEMENT:
 				 *
@@ -72,7 +72,7 @@ public class MainActivity extends Activity {
 				 * with a string that contains all the characters on your typeface graphic in the order that they
 				 * are arranged in your graphic.
 				 *
-				 * ***Use the setGraphic(Graphic g, int columns, int rows) function to set your graphic!
+				 * ***Use the setGraphic(Graphic g, int columns, int rows) method to set your graphic!
 				 *
 				 * KERNING:
 				 *

@@ -49,6 +49,8 @@ import android.view.MotionEvent;
  */
 public class Controller {
 
+	public static final int MAX_CONTROLLERS = 4;
+
 	// Button and Axis Constants
 	public static final int A = 0;
 	public static final int B = 1;
@@ -172,7 +174,7 @@ public class Controller {
 	 */
 	private void newpress(int controller, int keyCode) {
 		if (myOwner != null && myOwner.getCurrentRoom() != null && getButton(keyCode) != -1) {
-			myOwner.getCurrentRoom().newpress(controller, getButton(keyCode));
+			myOwner.getCurrentRoom().signifyNewpress(controller, getButton(keyCode));
 			updateHeld(controller, keyCode, true);
 		}
 	}
@@ -185,7 +187,7 @@ public class Controller {
 	 */
 	private void released(int controller, int keyCode) {
 		if (myOwner != null && myOwner.getCurrentRoom() != null && getButton(keyCode) != -1) {
-			myOwner.getCurrentRoom().released(controller, getButton(keyCode));
+			myOwner.getCurrentRoom().signifyReleased(controller, getButton(keyCode));
 			updateHeld(controller, keyCode, false);
 		}
 	}
@@ -328,7 +330,7 @@ public class Controller {
 			}
 		}
 
-		return false;
+		return myOwner.onKeyUp(keyCode, event);
 	}
 
 	@TargetApi(19)
@@ -460,6 +462,6 @@ public class Controller {
 		}
 
 
-		return false;
+		return myOwner.onGenericMotionEvent(event);
 	}
 }

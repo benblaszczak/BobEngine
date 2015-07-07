@@ -38,27 +38,16 @@ public class GameRoom extends Room {
         rand = new Random();
 
         // Initialize game objects
-        bug = new Bug(nextInstance(), this);
-        bg1 = new Background(nextInstance(), this);
-        bg2 = new Background(nextInstance(), this);
-        scoreDis = new NumberDisplay(nextInstance(), this); // NumberDisplay is a built in GameObject for displaying numbers
+        bug = new Bug(this);
+        bg1 = new Background(this);
+        bg2 = new Background(this);
+        scoreDis = new NumberDisplay(this);        // NumberDisplay is a built in GameObject for displaying numbers
 
         topFlowers = new Flower[NUM_FLOW];
         bottomFlowers = new Flower[NUM_FLOW];
         for (int i = 0; i < NUM_FLOW; i++) {
-            topFlowers[i] = new Flower(nextInstance(), this);
-            bottomFlowers[i] = new Flower(nextInstance(), this);
-        }
-
-        // Add the objects to the room.
-        addObject(bug);
-        addObject(bg1);
-        addObject(bg2);
-        addObject(scoreDis);
-
-        for (int i = 0; i < NUM_FLOW; i++) {
-            addObject(topFlowers[i]);
-            addObject(bottomFlowers[i]);
+            topFlowers[i] = new Flower(this);
+            bottomFlowers[i] = new Flower(this);
         }
     }
 

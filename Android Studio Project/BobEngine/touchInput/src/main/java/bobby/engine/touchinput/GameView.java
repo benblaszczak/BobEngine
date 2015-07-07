@@ -15,23 +15,17 @@ public class GameView extends BobView {
 	
 	public GameView(Context context) {
 		super(context);
-		
-		// TODO Initialization
-		
+
 		start = new StartRoom(this);
 	}
 
 	@Override
 	protected void onCreateGraphics() {
-		// TODO Load graphics
-		
 		icon = getGraphicsHelper().addGraphic(R.drawable.ic_launcher);
 	}
 
 	@Override
 	protected void onCreateRooms() {
-		// TODO Set up rooms
-		
 		start.set();
 		goToRoom(start);
 	}

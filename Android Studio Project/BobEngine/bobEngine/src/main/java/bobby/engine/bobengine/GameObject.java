@@ -75,14 +75,36 @@ public class GameObject {
 	private int maxQuads;
 
 	/**
+	 * Create a GameObject with the specified id number and specifed room
+	 * that you intend to add this object to. Does not automatically add this
+	 * object to the room.
+	 * @param id - ID number
+	 * @param room - Room that this object is in.
+	 */
+	public GameObject(int id, Room room) {
+		init(id, room, false);
+	}
+
+	/**
+	 * Create a GameObject in the specified room.
+	 * @param room The room that this object is in.
+	 */
+	public GameObject(Room room) {
+		init(room.nextInstance(), room, true);
+	}
+
+	/**
 	 * Initialization. Requires a unique Id number and the room containing this
 	 * GameObject.
 	 * @param id - ID number
-	 * @param containingRoom - Room that this object is in.
+	 * @param room - Room that this object is in.
 	 */
-	public GameObject(int id, Room containingRoom) {
+	private void init(int id, Room room, boolean addToRoom) {
 		this.id = id;
-		myRoom = containingRoom;
+		myRoom = room;
+		if (addToRoom) room.addObject(this);
+
+		myGraphic = new Graphic();
 
 		x = y = width = height = 100;
 
@@ -93,6 +115,8 @@ public class GameObject {
 		layer = 2;
 		visible = true;
 
+		quads = new Quad[DEFAULT_NUM_QUADS];
+
 		main = new Quad();
 		main.x = x;
 		main.y = y;
@@ -101,8 +125,6 @@ public class GameObject {
 		main.angle = angle;
 		main.visible = true;
 
-		quads = new Quad[DEFAULT_NUM_QUADS];
-		quads[0] = main;
 		maxQuads = DEFAULT_NUM_QUADS;
 	}
 
@@ -144,11 +166,11 @@ public class GameObject {
 	 * Returns this object's graphic's ID number
 	 */
 	public int getGraphicID() {
-		return main.getGraphicID();
+		return myGraphic.id;
 	}
 
 	public Graphic getGraphic() {
-		return main.getGraphic();
+		return myGraphic;
 	}
 
 	/**
@@ -194,6 +216,11 @@ public class GameObject {
 	public void setGraphic(Graphic graphic, int columns, int rows) {
 		myGraphic = graphic;
 		main.setGraphic(columns, rows);
+	}
+
+	public void setGraphic(Graphic.Parameters params) {
+		myGraphic = params.graphic;
+		main.setGraphic(params);
 	}
 
 	/**
@@ -263,6 +290,26 @@ public class GameObject {
 	}
 
 	/**
+	 * Animate this GameObject using a predefined animation.
+	 * @param anim - A predefined animation.
+	 */
+	public void animate(Animation anim) {
+		main.animate(anim);
+	}
+
+	/**
+	 * Animates this GameObject for a limited number of times.
+	 *
+	 * @param FPS speed
+	 * @param start start frame
+	 * @param end end frame
+	 * @param times times to play
+	 */
+	public void animateLimited(int FPS, int start, int end, int times) {
+		main.animateLimited(FPS, start, end, times);
+	}
+
+	/**
 	 * The animation will have finished when the final frame in the animation has been
 	 * shown for the correct amount of time determined by the FPS set by the call
 	 * to the animate() method.
@@ -282,7 +329,7 @@ public class GameObject {
 	public void addQuad(Quad q) {
 		int i = 0;
 
-		while (quads[i] != null && i <= quads.length) {
+		while (i < quads.length && quads[i] != null) {
 			i++;
 		}
 
@@ -365,13 +412,13 @@ public class GameObject {
 		int cursor = 0;
 
 		for (int i = 0; i < maxQuads; i++) {
-			if (quads[i] != null && quads[i].visible) numQuads++;
+			if (quads[i] != null && quads[i].visible && visible) numQuads++;
 		}
 
 		verts = new float[numQuads * Quad.VERT_SIZE];
 
 		for (int i = 0; i < maxQuads; i++) {
-			if (quads[i] != null && quads[i].visible) cursor = quads[i].getVertices(cursor, verts);
+			if (quads[i] != null && quads[i].visible && visible) cursor = quads[i].getVertices(cursor, verts);
 		}
 
 		return verts;
@@ -390,13 +437,13 @@ public class GameObject {
 		int cursor = 0;
 
 		for (int i = 0; i < getMaxQuads(); i++) {
-			if (quads[i] != null && quads[i].visible) numQuads++;
+			if (quads[i] != null && quads[i].visible && visible) numQuads++;
 		}
 
 		verts = new float[numQuads * Quad.GFX_VERT_SIZE];
 
 		for (int i = 0; i < getMaxQuads(); i++) {
-			if (quads[i] != null && quads[i].visible) cursor = quads[i].getGraphicVerts(cursor, verts);
+			if (quads[i] != null && quads[i].visible && visible) cursor = quads[i].getGraphicVerts(cursor, verts);
 		}
 
 		return verts;
@@ -413,7 +460,7 @@ public class GameObject {
 		int quadsOnScreen = 0;
 
 		for (int i = 0; i < getMaxQuads(); i++) {
-			if (quads[i] != null && quads[i].visible) quadsOnScreen++;
+			if (quads[i] != null && quads[i].visible && visible) quadsOnScreen++;
 		}
 
 		return 6 * quadsOnScreen;
@@ -520,7 +567,6 @@ public class GameObject {
 		main.width = width;
 		main.angle = angle;
 		main.frame = frame;
-		main.visible = visible;
 
 		for (int i = 0; i < getMaxQuads(); i++) {
 			if (quads[i] != null) quads[i].update(deltaTime);
@@ -606,7 +652,7 @@ public class GameObject {
 	 */
 	public class Quad {
 		// Constants
-		public static final int VERT_SIZE = 12;
+		public static final int VERT_SIZE = 8;
 		public static final int GFX_VERT_SIZE = 8;
 
 		// General Attributes
@@ -622,6 +668,8 @@ public class GameObject {
 		private int animFPS;
 		private int startFrame;
 		private int endFrame;
+		private int timesTilStop;
+		private int timesPlayed;
 		private int frameCount;
 		private boolean animFinished;
 
@@ -646,7 +694,12 @@ public class GameObject {
 			animFPS = 0;
 			startFrame = 0;
 			endFrame = totalFrames - 1;
+			timesPlayed = 0;
+			timesTilStop = 0;
 			animFinished = false;
+
+			setGraphic(1);
+			addQuad(this);
 		}
 
 		/**
@@ -659,7 +712,7 @@ public class GameObject {
 			// Animate
 			animFinished = false;
 
-			if (animFPS > 0) {
+			if (animFPS > 0 && !(timesPlayed >= timesTilStop && timesTilStop > 0)) {
 				if (startFrame <= endFrame) {
 					if (frame < startFrame || frame > endFrame) {
 						frame = startFrame;
@@ -682,15 +735,21 @@ public class GameObject {
 					if (frame > endFrame) {
 						frame = startFrame;
 						animFinished = true;
+						timesPlayed++;
 					}
 				} else {
 					if (frame < endFrame) {
 						animFinished = true;
 						frame = startFrame;
+						timesPlayed++;
 					}
 				}
 			} else {
 				animFinished = true;
+			}
+
+			if (timesPlayed >= timesTilStop && timesTilStop > 0) {
+				frame = endFrame;
 			}
 		}
 
@@ -727,6 +786,10 @@ public class GameObject {
 			setPreciseGraphic(0, 0, 1, 1f / (float) columns, rows);
 		}
 
+		public void setGraphic(Graphic.Parameters params) {
+			setGraphic(params.graphic, params.x, params.y, params.height, params.width, params.rows);
+		}
+
 		/**
 		 * Set graphic information for this quad using pixel coordinates. Should only be used
 		 * when there is only one drawable folder.
@@ -752,11 +815,11 @@ public class GameObject {
 		 */
 		public void setGraphic(Graphic graphicSheet, int x, int y, int height, int width, int frames) {
 			myGraphic = graphicSheet;
-			tX = x / graphicSheet.width;
-			tY = y / graphicSheet.height;
+			tX = (float) x / (float) graphicSheet.width;
+			tY = (float) y / (float) graphicSheet.height;
 
-			animWidth = width / graphicSheet.width;
-			animHeight = height / graphicSheet.height;
+			animWidth = (float) width / (float) graphicSheet.width;
+			animHeight = (float) height / (float) graphicSheet.height;
 			frameRow = frames;
 		}
 
@@ -801,6 +864,39 @@ public class GameObject {
 			animFPS = FPS;
 			startFrame = start;
 			endFrame = end;
+			timesTilStop = 0;
+		}
+
+		/**
+		 * Animates this quad using a predefined animation.
+		 * @param anim - a predefined animation.
+		 */
+		public void animate(Animation anim) {
+			if (anim.fps != animFPS && anim.startFrame != startFrame && anim.endFrame != endFrame && anim.loop != timesTilStop) {
+				timesPlayed = 0;
+			}
+
+			animFPS = anim.fps;
+			startFrame = anim.startFrame;
+			endFrame = anim.endFrame;
+			timesTilStop = anim.loop;
+		}
+
+		/**
+		 * Animates this quad for a limited number of times.
+		 *
+		 * @param FPS speed
+		 * @param start start frame
+		 * @param end end frame
+		 * @param times times to play
+		 */
+		public void animateLimited(int FPS, int start, int end, int times) {
+			if (FPS != animFPS && start != startFrame && end != endFrame && times != timesTilStop) {
+				timesPlayed = 0;
+			}
+
+			animate(FPS, start, end);
+			timesTilStop = times;
 		}
 
 		/**
@@ -825,21 +921,21 @@ public class GameObject {
 
 				allVertices[cursor] = (float) ((x - (x - width / 2)) * cos - (y - (y - height / 2)) * sin + x);       // Bottom Left X
 				allVertices[cursor + 1] = (float) ((x - (x - width / 2)) * sin + (y - (y - height / 2)) * cos + y);   // Bottom Left Y
-				allVertices[cursor + 3] = (float) ((x - (x - width / 2)) * cos - (y - (y + height / 2)) * sin + x);   // Top Left X
-				allVertices[cursor + 4] = (float) ((x - (x - width / 2)) * sin + (y - (y + height / 2)) * cos + y);   // Top Left Y
-				allVertices[cursor + 6] = (float) ((x - (x + width / 2)) * cos - (y - (y - height / 2)) * sin + x);   // Bottom Right X
-				allVertices[cursor + 7] = (float) ((x - (x + width / 2)) * sin + (y - (y - height / 2)) * cos + y);   // Bottom Right Y
-				allVertices[cursor + 9] = (float) ((x - (x + width / 2)) * cos - (y - (y + height / 2)) * sin + x);   // Top Right X
-				allVertices[cursor + 10] = (float) ((x - (x + width / 2)) * sin + (y - (y + height / 2)) * cos + y);  // Top Right Y
+				allVertices[cursor + 2] = (float) ((x - (x - width / 2)) * cos - (y - (y + height / 2)) * sin + x);   // Top Left X
+				allVertices[cursor + 3] = (float) ((x - (x - width / 2)) * sin + (y - (y + height / 2)) * cos + y);   // Top Left Y
+				allVertices[cursor + 4] = (float) ((x - (x + width / 2)) * cos - (y - (y - height / 2)) * sin + x);   // Bottom Right X
+				allVertices[cursor + 5] = (float) ((x - (x + width / 2)) * sin + (y - (y - height / 2)) * cos + y);   // Bottom Right Y
+				allVertices[cursor + 6] = (float) ((x - (x + width / 2)) * cos - (y - (y + height / 2)) * sin + x);   // Top Right X
+				allVertices[cursor + 7] = (float) ((x - (x + width / 2)) * sin + (y - (y + height / 2)) * cos + y);   // Top Right Y
 			} else {
 				allVertices[cursor] = (float) (x - width / 2);         // Bottom Left X
 				allVertices[cursor + 1] = (float) (y - height / 2);    // Bottom Left Y
-				allVertices[cursor + 3] = allVertices[cursor + 0];     // Top Left X (Same as Bottom X)
-				allVertices[cursor + 4] = (float) (y + height / 2);    // Top Left Y
-				allVertices[cursor + 6] = (float) (x + width / 2);     // Bottom Right X
-				allVertices[cursor + 7] = allVertices[cursor + 1];     // Bottom Right Y (Same as Left Y)
-				allVertices[cursor + 9] = allVertices[cursor + 6];     // Top Right X (Same as Bottom X)
-				allVertices[cursor + 10] = allVertices[cursor + 4];    // Top Right Y (Same as Left Y)
+				allVertices[cursor + 2] = allVertices[cursor + 0];     // Top Left X (Same as Bottom X)
+				allVertices[cursor + 3] = (float) (y + height / 2);    // Top Left Y
+				allVertices[cursor + 4] = (float) (x + width / 2);     // Bottom Right X
+				allVertices[cursor + 5] = allVertices[cursor + 1];     // Bottom Right Y (Same as Left Y)
+				allVertices[cursor + 6] = allVertices[cursor + 4];     // Top Right X (Same as Bottom X)
+				allVertices[cursor + 7] = allVertices[cursor + 3];     // Top Right Y (Same as Left Y)
 			}
 
 			cursor += VERT_SIZE;
@@ -884,6 +980,8 @@ public class GameObject {
 		 *         beyond the screen's bounds.
 		 */
 		public boolean onScreen() {
+			if (!visible) return false;
+
 			if (!isOnScreen) {
 				boolean flip = false;
 				if (width < 0) flip = true;
@@ -902,6 +1000,20 @@ public class GameObject {
 			} else {
 				return true;
 			}
+		}
+	}
+
+	public class Animation {
+		public int startFrame;
+		public int endFrame;
+		public int fps;
+		public int loop;
+
+		public Animation(int start, int end, int fps, int loop) {
+			startFrame = start;
+			endFrame = end;
+			this.fps = fps;
+			this.loop = loop;
 		}
 	}
 }
