@@ -791,7 +791,7 @@ public class Room {
 	 */
 	public GameObject objectAtPosition(double x, double y) {
 
-		for (int l = 0; l <= DEF_LAYERS; l++) {
+		for (int l = 0; l < layers; l++) {
 			for (int o = 0; o < instances; o++) {
 				if (objects[l][o] != null && objectAtPosition(objects[l][o], x, y)) {
 					return objects[l][o];

@@ -40,9 +40,9 @@ public class Graphic {
 
 	private boolean isLoaded;   // Flag that indicates if this graphic is loaded
 
-	private int cleanupsTilRemoval;
-	private boolean shouldBeLoaded;
-	private boolean shouldRemove;
+	private int cleanupsTilRemoval;  // Number of GraphicsHelper.cleanup() calls that this Graphic should persist through
+	private boolean shouldBeLoaded;  // Flag that indicates this Graphic should be loaded.
+	private boolean shouldRemove;    // Flag that indicates this Graphic should be removed from the GraphicsHelper.
 
 	
 	/**
@@ -54,7 +54,7 @@ public class Graphic {
 		id = 0;
 		isLoaded = false;
 
-		cleanupsTilRemoval = 1;
+		cleanupsTilRemoval = GraphicsHelper.DEF_CLEANUPS;
 		shouldBeLoaded = false;
 		shouldRemove = false;
 		persistent = false;
@@ -80,7 +80,7 @@ public class Graphic {
 		this.useMipMaps = useMipMaps;
 		isLoaded = false;
 
-		cleanupsTilRemoval = 1;
+		cleanupsTilRemoval = GraphicsHelper.DEF_CLEANUPS;
 		shouldBeLoaded = false;
 		shouldRemove = false;
 		persistent = false;

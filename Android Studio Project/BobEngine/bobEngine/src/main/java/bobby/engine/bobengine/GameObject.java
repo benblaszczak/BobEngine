@@ -638,6 +638,8 @@ public class GameObject {
 	 *         beyond the screen's bounds.
 	 */
 	public boolean onScreen() {
+		if (!visible) return false;
+
 		for (int i = 0; i < getMaxQuads(); i++) {
 			if (quads[i] != null && quads[i].onScreen()) {
 				return true;

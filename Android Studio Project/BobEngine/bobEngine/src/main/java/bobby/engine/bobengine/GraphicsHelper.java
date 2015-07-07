@@ -41,8 +41,8 @@ import android.util.Log;
 public class GraphicsHelper {
 
 	// Constants
-	private int START_NUM_TEX = 1;                  // Starting maximum number of textures (graphics)
-	private int DEF_CLEANUPS = 2;                   // Number of cleanups until a graphic is removed.
+	private final static int START_NUM_TEX = 50;     // Starting maximum number of textures (graphics)
+	public final static int DEF_CLEANUPS = 2;        // Default number of cleanups until a graphic is removed.
 
 	// Variables
 	private int numGFX;                              // Number of added graphics
@@ -51,7 +51,7 @@ public class GraphicsHelper {
 	private boolean useMipMaps;                      // Flag indicates if added graphics should be mip mapped
 	private int magFilter;                           // Upscale filter to use
 	private int minFilter;                           // Downscale filter to use
-	private int	cleanupsTilRemoval;
+	private int	cleanupsTilRemoval;                  // Number of cleanups until a graphic is removed.
 
 	// Object
 	private Context context;
