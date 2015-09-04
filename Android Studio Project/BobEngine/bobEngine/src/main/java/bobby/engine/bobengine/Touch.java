@@ -20,8 +20,6 @@
 
 package bobby.engine.bobengine;
 
-import android.annotation.SuppressLint;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -38,7 +36,7 @@ public class Touch implements OnTouchListener {
 	public final static int MAX_FINGERS = 10;       // The max number of fingers that can touch the screen.
 
 	// Variables
-	private int numTouches;
+	private int numTouches;                         // Current number of pointers on the screen
 	private boolean held[];
 
 	/** X positions of the pointers currently touching the screen. */
@@ -85,7 +83,9 @@ public class Touch implements OnTouchListener {
 	public boolean areaTouched(double x1, double y1, double x2, double y2) {
 		for (int i = 0; i < MAX_FINGERS; i++) {
 			if (X[i] > x1 && X[i] < x2 && X[i] >= 0) {
-				if (Y[i] < y1 && Y[i] > y2 && X[i] >= 0) { return true; }
+				if (Y[i] < y1 && Y[i] > y2 && X[i] >= 0) {
+					return true;
+				}
 			}
 		}
 
@@ -108,11 +108,37 @@ public class Touch implements OnTouchListener {
 	public int areaTouchedByIndex(double x1, double y1, double x2, double y2) {
 		for (int i = 0; i < MAX_FINGERS; i++) {
 			if (X[i] > x1 && X[i] < x2 && X[i] >= 0) {
-				if (Y[i] < y1 && Y[i] > y2 && X[i] >= 0) { return i; }
+				if (Y[i] < y1 && Y[i] > y2 && X[i] >= 0) {
+					return i;
+				}
 			}
 		}
 
 		return -1;
+	}
+
+	/**
+	 * Determines if the index is touching the area.
+	 *
+	 * @param index The index to check
+	 * @param x1
+	 *            X coord of the top-left corner of the box
+	 * @param y1
+	 *            Y coord of the top-left corner
+	 * @param x2
+	 *            X coord of the bottom-right corner
+	 * @param y2
+	 *            Y coord of the bottom-right corner
+	 * @return ID of the index touching the area or -1 if the area is not being touched.
+	 */
+	public boolean areaTouchedByIndex(int index, double x1, double y1, double x2, double y2) {
+		if (X[index] > x1 && X[index] < x2 && X[index] >= 0) {
+			if (Y[index] < y1 && Y[index] > y2 && X[index] >= 0) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -123,9 +149,14 @@ public class Touch implements OnTouchListener {
 	 * @return True if o is being touched by any pointer, false otherwise.
 	 */
 	public boolean objectTouched(GameObject o) {
-		if (areaTouched(o.x - o.width / 2, o.y + o.height / 2, o.x + o.width / 2, o.y - o.height / 2)) { return true; }
+		if (!o.followCamera) {
+			double camLeft = o.getRoom().getCameraLeftEdge();
+			double camBot = o.getRoom().getCameraBottomEdge();
 
-		return false;
+			return areaTouched(o.x - Math.abs(o.width) / 2 - camLeft, o.y + Math.abs(o.height) / 2 - camBot, o.x + Math.abs(o.width) / 2 - camLeft, o.y - Math.abs(o.height) / 2 - camBot);
+		}
+
+		return areaTouched(o.x - Math.abs(o.width) / 2, o.y + Math.abs(o.height) / 2, o.x + Math.abs(o.width) / 2, o.y - Math.abs(o.height) / 2);
 	}
 
 	/**
@@ -136,7 +167,32 @@ public class Touch implements OnTouchListener {
 	 * @return The ID of the index touching object o, -1 if o is not being touched.
 	 */
 	public int objectTouchedByIndex(GameObject o) {
-		return areaTouchedByIndex(o.x - o.width / 2, o.y + o.height / 2, o.x + o.width / 2, o.y - o.height / 2);
+		if (!o.followCamera) {
+			double camLeft = o.getRoom().getCameraLeftEdge();
+			double camBot = o.getRoom().getCameraBottomEdge();
+
+			return areaTouchedByIndex(o.x - Math.abs(o.width) / 2 - camLeft, o.y + Math.abs(o.height) / 2 - camBot, o.x + Math.abs(o.width) / 2 - camLeft, o.y - Math.abs(o.height) / 2 - camBot);
+		}
+
+		return areaTouchedByIndex(o.x - Math.abs(o.width) / 2, o.y + Math.abs(o.height) / 2, o.x + Math.abs(o.width) / 2, o.y - Math.abs(o.height) / 2);
+	}
+
+	/**
+	 * Returns the ID of the index touching object o.
+	 *
+	 * @param o
+	 *            - GameObject to check if is touched
+	 * @return The ID of the index touching object o, -1 if o is not being touched.
+	 */
+	public boolean objectTouchedByIndex(int index, GameObject o) {
+		if (!o.followCamera) {
+			double camLeft = o.getRoom().getCameraLeftEdge();
+			double camBot = o.getRoom().getCameraBottomEdge();
+
+			return areaTouchedByIndex(index, o.x - Math.abs(o.width) / 2 - camLeft, o.y + Math.abs(o.height) / 2 - camBot, o.x + Math.abs(o.width) / 2 - camLeft, o.y - Math.abs(o.height) / 2 - camBot);
+		}
+
+		return areaTouchedByIndex(index, o.x - Math.abs(o.width) / 2, o.y + Math.abs(o.height) / 2, o.x + Math.abs(o.width) / 2, o.y - Math.abs(o.height) / 2);
 	}
 
 	/**
@@ -165,6 +221,8 @@ public class Touch implements OnTouchListener {
 	 * @return True if index number of fingers are touching the screen, false otherwise.
 	 */
 	public boolean held(int index) {
+		if (index < 0 || index >= MAX_FINGERS) return false;
+
 		if (held[index]) {
 			return true;
 		}

@@ -474,7 +474,7 @@ public abstract class BobView extends GLSurfaceView {
 		 * parameter of type BobView, this function will return null.
 		 * @throws IllegalArgumentException if roomType does not inherit Room.
 		 */
-		public Room getRoom(Class<?> roomType) {
+		public Room getRoom(Class<? extends Room> roomType) {
 			if (!Room.class.isAssignableFrom(roomType)) {                                      // Check if roomType is a Room
 				throw new IllegalArgumentException("Class roomType does not inherit Room.");   // Not a room, you silly head!
 			}
@@ -485,7 +485,7 @@ public abstract class BobView extends GLSurfaceView {
 			}
 
 			try {
-				Room newRoom = (Room) roomType.getConstructor(BobView.class).newInstance(owner); // Create a new instance of roomType
+				Room newRoom = roomType.getConstructor(BobView.class).newInstance(owner);        // Create a new instance of roomType
 				addRoom(newRoom);                                                                // Add the new instance to the cache.
 				return newRoom;                                                                  // Return the new instance!
 			} catch (Exception e) {
@@ -509,7 +509,7 @@ public abstract class BobView extends GLSurfaceView {
 		 * @throws IllegalArgumentException if roomType does not inherit Room or the arguments in args do not
 		 *                                  match the parameters of any constructor of class roomType.
 		 */
-		public Room getRoom(Class roomType, Object... args) {
+		public Room getRoom(Class<? extends Room> roomType, Object... args) {
 			if (!Room.class.isAssignableFrom(roomType)) {                                       // Check if roomType is actually a Room
 				throw new IllegalArgumentException("Class roomType does not inherit Room.");    // Something other than a Room was passed
 			}

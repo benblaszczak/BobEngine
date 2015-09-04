@@ -33,8 +33,8 @@ import android.util.Log;
 
 public class GameObject {
 	// Constants
-	private final int MAX_COL_BOXES = 10;       // The maximum number of collision boxes this GameObject can have
-	private final int DEFAULT_NUM_QUADS = 5;    // The default max number of quads
+	private static final int MAX_COL_BOXES = 10;       // The maximum number of collision boxes this GameObject can have
+	private static final int DEFAULT_NUM_QUADS = 5;    // The default max number of quads
 
 	// Data
 	/** X-Coord; Midpoint!. */
@@ -53,7 +53,10 @@ public class GameObject {
 	public int id;
 	/** This object's current frame. */
 	public int frame;
+	/** This object's visibility. */
 	public boolean visible;
+	/** Flag indicating if this object should follow the camera */
+	public boolean followCamera;
 
 	/** This object's number of collision boxes. */
 	private int colBoxes;
@@ -62,6 +65,7 @@ public class GameObject {
 	/** The room that this object is in. */
 	protected Room myRoom;
 
+	/** This object's graphic */
 	private Graphic myGraphic;
 
 	/**
@@ -114,6 +118,7 @@ public class GameObject {
 		colBoxes = 0;
 		layer = 2;
 		visible = true;
+		followCamera = false;
 
 		quads = new Quad[DEFAULT_NUM_QUADS];
 
@@ -209,7 +214,7 @@ public class GameObject {
 	/**
 	 * Set the graphic for this object with a specific number of columns of frames.
 	 *
-	 * @param graphic
+	 * @param graphic The Graphic object to use. This should be added to your GraphicsHelper.
 	 * @param columns The number of columns of frames
 	 * @param rows The number of frames in a column
 	 */
@@ -218,6 +223,10 @@ public class GameObject {
 		main.setGraphic(columns, rows);
 	}
 
+	/**
+	 * Set the graphic for this object using a Parameters object.
+	 * @param params Predefined parameter object
+	 */
 	public void setGraphic(Graphic.Parameters params) {
 		myGraphic = params.graphic;
 		main.setGraphic(params);
@@ -287,6 +296,10 @@ public class GameObject {
 	 */
 	public void animate(int FPS, int start, int end) {
 		main.animate(FPS, start, end);
+
+		if (FPS == 0) {
+			stopAnimation(start);
+		}
 	}
 
 	/**
@@ -295,6 +308,10 @@ public class GameObject {
 	 */
 	public void animate(Animation anim) {
 		main.animate(anim);
+
+		if (anim.fps == 0) {
+			stopAnimation(anim.startFrame);
+		}
 	}
 
 	/**
@@ -307,6 +324,23 @@ public class GameObject {
 	 */
 	public void animateLimited(int FPS, int start, int end, int times) {
 		main.animateLimited(FPS, start, end, times);
+	}
+
+	/**
+	 * Stop the animation. The object will display the most recently shown
+	 * frame.
+	 */
+	public void stopAnimation() {
+		main.stopAnimation();
+	}
+
+	/**
+	 * Stop the current animation and set the frame to display.
+	 * @param frame The frame number to show after the animation stops
+	 */
+	public void stopAnimation(int frame) {
+		main.stopAnimation(frame);
+		this.frame = frame;
 	}
 
 	/**
@@ -326,7 +360,7 @@ public class GameObject {
 	 *
 	 * @param q The Quad to add
 	 */
-	public void addQuad(Quad q) {
+	public int addQuad(Quad q) {
 		int i = 0;
 
 		while (i < quads.length && quads[i] != null) {
@@ -338,6 +372,16 @@ public class GameObject {
 		}
 
 		quads[i] = q;
+
+		return i;
+	}
+
+	/**
+	 * Add a quad to the first empty space in the list. NOTE: if the list is full,
+	 * this method will double the size of the list to make room for the new quad.
+	 */
+	public int addQuad() {
+		return new Quad().getID();
 	}
 
 	/**
@@ -348,11 +392,12 @@ public class GameObject {
 	 * drawn. Quad 0 is drawn first, therefor will be behind all the other
 	 * quads.
 	 *
-	 * @param i - The place in the list to put q
+	 * @param i - The place in the list to put q, will also become the ID for the new Quad
 	 * @param q - The new quad for place i
 	 */
 	public void setQuad(int i, Quad q) {
 		quads[i] = q;
+		if (q != null) q.me = i;
 	}
 
 	/**
@@ -360,7 +405,7 @@ public class GameObject {
 	 * If set to a number less than the current max, quads at the end
 	 * of the list will simply be removed from the list.
 	 *
-	 * @param max
+	 * @param max The max number of Quads to use.
 	 */
 	public void setMaxQuads(int max){
 		if (max != maxQuads) {
@@ -378,8 +423,10 @@ public class GameObject {
 
 	/**
 	 * Returns the max number of quads that can be added to this GameObject.
-	 * This can be changed with setMaxQuads(int max).
-	 * @return
+	 * This can be changed with setMaxQuads(int max). This is not a hard limit.
+	 * If a new Quad is added with addQuad(Quad q) after the max has been
+	 * reached, the max will be doubled and the new Quad will be added.
+	 * @return The max number of quads that can be added to this GameObject.
 	 */
 	public int getMaxQuads() {
 		return quads.length;
@@ -393,6 +440,11 @@ public class GameObject {
 		return main;
 	}
 
+	/**
+	 * Get the Quad with ID i.
+	 * @param i The ID of the Quad to get.
+	 * @return The Quad with ID i if it exists, else returns null.
+	 */
 	public Quad getQuad(int i) {
 		if (i > 0 && i < quads.length) return quads[i];
 		else return null;
@@ -465,41 +517,6 @@ public class GameObject {
 
 		return 6 * quadsOnScreen;
 	}
-	
-	/**
-	 * Returns an array containing the contents of a and b.
-	 * Useful for rendering more than one quad with one game
-	 * object. Either a or b can be null. If both are null, the
-	 * function will return null.
-	 * 
-	 * @param a
-	 * @param b
-	 * @return {a + b}, or null if both a and b are null
-	 */
-	public float[] concatenate(float a[], float b[]) {
-		if (a != null && b != null) {
-			float[] totVert = new float[a.length + b.length];
-
-			for (int i = 0; i < a.length; i++) {
-				totVert[i] = a[i];
-			}
-
-			for (int i = 0; i < b.length; i++) {
-				totVert[a.length + i] = b[i];
-			}
-
-			return totVert;
-		}
-		else if (a == null) {
-			return b;
-		}
-		else if (b == null) {
-			return a;
-		}
-		else {
-			return null;
-		}
-	}
 
 	/**
 	 * Returns this game object's containing room.
@@ -557,7 +574,7 @@ public class GameObject {
 	 * updating, frame changing, and animation. You should override the step() method
 	 * for game logic.
 	 * 
-	 * @param deltaTime
+	 * @param deltaTime lag correction factor
 	 */
 	public void update(double deltaTime) {
 		step(deltaTime);
@@ -638,8 +655,6 @@ public class GameObject {
 	 *         beyond the screen's bounds.
 	 */
 	public boolean onScreen() {
-		if (!visible) return false;
-
 		for (int i = 0; i < getMaxQuads(); i++) {
 			if (quads[i] != null && quads[i].onScreen()) {
 				return true;
@@ -664,6 +679,14 @@ public class GameObject {
 		public double width;    // width of this quad
 		public double angle;    // Rotation angle of this quad
 		public boolean visible; // Visibility of this object
+
+		private int me;
+
+		private boolean matchX;         // Flag that indicates this Quad should match the X position of the parent GameObject
+		private boolean matchY;         // Indicates this Quad should match the Y position of the GameObject.
+		private boolean matchWidth;     // Indicates this Quad should match the width of the GameObject.
+		private boolean matchHeight;    // Indicates this Quad should match the height of the GameObject.
+		private boolean matchAngle;     // Indicates this Quad should match the angle of the GameObject.
 
 		// Animation variables and attributes
 		public int frame;
@@ -691,6 +714,8 @@ public class GameObject {
 			angle = 0;
 			visible = true;
 
+			matchX = matchY = matchWidth = matchHeight = matchAngle = false;
+
 			totalFrames = 1;
 			frameRow = 1;
 			animFPS = 0;
@@ -701,15 +726,22 @@ public class GameObject {
 			animFinished = false;
 
 			setGraphic(1);
-			addQuad(this);
+			me = addQuad(this);
 		}
 
 		/**
 		 * Update event that happens every frame.
-		 * @param deltaTime
+		 * @param deltaTime lag correction factor
 		 */
 		public void update(double deltaTime) {
 			isOnScreen = false;
+
+			// Match x and y, width, height, and angle
+			if (matchX) this.x = GameObject.this.x;
+			if (matchY) this.y = GameObject.this.y;
+			if (matchWidth) this.width = GameObject.this.width;
+			if (matchHeight) this.height = GameObject.this.height;
+			if (matchAngle) this.angle = GameObject.this.angle;
 
 			// Animate
 			animFinished = false;
@@ -755,6 +787,10 @@ public class GameObject {
 			}
 		}
 
+		public int getID() {
+			return me;
+		}
+
 		/**
 		 * Returns this quad's graphic's ID number
 		 */
@@ -788,6 +824,11 @@ public class GameObject {
 			setPreciseGraphic(0, 0, 1, 1f / (float) columns, rows);
 		}
 
+		/**
+		 * Set the graphic for this quad with a predefined Parameters object.
+		 *
+		 * @param params Should contain the parameters to use with this Quad
+		 */
 		public void setGraphic(Graphic.Parameters params) {
 			setGraphic(params.graphic, params.x, params.y, params.height, params.width, params.rows);
 		}
@@ -867,6 +908,10 @@ public class GameObject {
 			startFrame = start;
 			endFrame = end;
 			timesTilStop = 0;
+
+			if (FPS == 0) {
+				stopAnimation(start);
+			}
 		}
 
 		/**
@@ -874,7 +919,7 @@ public class GameObject {
 		 * @param anim - a predefined animation.
 		 */
 		public void animate(Animation anim) {
-			if (anim.fps != animFPS && anim.startFrame != startFrame && anim.endFrame != endFrame && anim.loop != timesTilStop) {
+			if (anim.fps != animFPS || anim.startFrame != startFrame || anim.endFrame != endFrame || anim.loop != timesTilStop) {
 				timesPlayed = 0;
 			}
 
@@ -882,6 +927,10 @@ public class GameObject {
 			startFrame = anim.startFrame;
 			endFrame = anim.endFrame;
 			timesTilStop = anim.loop;
+
+			if (anim.fps == 0) {
+				stopAnimation(anim.startFrame);
+			}
 		}
 
 		/**
@@ -893,12 +942,31 @@ public class GameObject {
 		 * @param times times to play
 		 */
 		public void animateLimited(int FPS, int start, int end, int times) {
-			if (FPS != animFPS && start != startFrame && end != endFrame && times != timesTilStop) {
+			if (FPS != animFPS || start != startFrame || end != endFrame || times != timesTilStop) {
 				timesPlayed = 0;
 			}
 
 			animate(FPS, start, end);
 			timesTilStop = times;
+		}
+
+		/**
+		 * Stops the current animation on the current frame.
+		 */
+		public void stopAnimation() {
+			animFPS = 0;
+			timesTilStop = 0;
+		}
+
+		/**
+		 * Stops the current animation and then sets the frame to frame.
+		 *
+		 * @param frame The frame to display after the animation has stopped.
+		 */
+		public void stopAnimation(int frame) {
+			animFPS = 0;
+			timesTilStop = 0;
+			this.frame = frame;
 		}
 
 		/**
@@ -912,10 +980,66 @@ public class GameObject {
 			return animFinished;
 		}
 
+		/**
+		 * If match is true, this Quad will match the X position of the GameObject.
+		 * @param match True to match the GO's X position, false otherwise.
+		 */
+		public void matchX(boolean match) {
+			matchX = match;
+		}
+
+		/**
+		 * If match is true, this Quad will match the Y position of the GameObject.
+		 * @param match True to match the GO's Y position, false otherwise.
+		 */
+		public void matchY(boolean match) {
+			matchY = match;
+		}
+
+		/**
+		 * If match is true, this Quad will match the width of the GameObject.
+		 * @param match True to match the GO's width, false otherwise.
+		 */
+		public void matchWidth(boolean match) {
+			matchWidth = match;
+		}
+
+		/**
+		 * If match is true, this Quad will match the height of the GameObject.
+		 * @param match True to match the GO's height, false otherwise.
+		 */
+		public void matchHeight(boolean match) {
+			matchHeight = match;
+		}
+
+		/**
+		 * If match is true, this Quad will match the angle of the GameObject.
+		 * @param match True to match the GO's angle, false otherwise.
+		 */
+		public void matchAngle(boolean match) {
+			matchAngle = match;
+		}
+
+		/**
+		 * Places the vertices for this Quad into allVertices at position
+		 * cursor. Returns the index of the next element in allVertices after the last
+		 * vertex for this Quad.
+		 *
+		 * @param cursor The location in allVertices to place this Quad's vertices
+		 * @param allVertices The array to place the vertices into
+		 * @return The next place in the array for the next set of vertices.
+		 */
 		public int getVertices(int cursor, float[] allVertices) {
 			// Data
 			double sin;
 			double cos;
+			double x = this.x;
+			double y = this.y;
+
+			if (followCamera) {
+				x = this.x + getRoom().getCameraLeftEdge();
+				y = this.y + getRoom().getCameraBottomEdge();
+			}
 
 			if (angle != 0) {                          // Don't do unnecessary calculations
 				cos = Math.cos(Math.toRadians(angle + 180));
@@ -944,6 +1068,15 @@ public class GameObject {
 			return cursor;
 		}
 
+		/**
+		 * Places the graphics vertices for this Quad into allGraphicVerts at position
+		 * cursor. Returns the index of the next element in allGraphicsVerts after the last
+		 * vertex for this Quad.
+		 *
+		 * @param cursor The location in allGraphicVerts to place this GO's vertices
+		 * @param allGraphicVerts The array to place the vertices into
+		 * @return The next place in the array for the next set of vertices.
+		 */
 		public int getGraphicVerts(int cursor, float[] allGraphicVerts) {
 			// Data
 			float leftX;   // Left X coordinate of the frame on the graphic sheet
@@ -982,15 +1115,25 @@ public class GameObject {
 		 *         beyond the screen's bounds.
 		 */
 		public boolean onScreen() {
-			if (!visible) return false;
-
 			if (!isOnScreen) {
 				boolean flip = false;
 				if (width < 0) flip = true;
 				width = Math.abs(width);
 
-				if (x > -width / 2 + getRoom().getCameraLeftEdge() && x < width / 2 + getRoom().getCameraRightEdge()) {
-					if (y > -height / 2 + getRoom().getCameraBottomEdge() && y < height / 2 + getRoom().getCameraTopEdge()) {
+				double screenLeft = getRoom().getCameraLeftEdge();
+				double screenRight = getRoom().getCameraRightEdge();
+				double screenTop = getRoom().getCameraTopEdge();
+				double screenBottom = getRoom().getCameraBottomEdge();
+
+				if (followCamera) {
+					screenLeft = 0;
+					screenRight = getRoom().getWidth();
+					screenBottom = 0;
+					screenTop = getRoom().getHeight();
+				}
+
+				if (x > -width / 2 + screenLeft && x < width / 2 + screenRight) {
+					if (y > -height / 2 + screenBottom && y < height / 2 + screenTop) {
 						if (flip) width = -width;
 						isOnScreen = true;
 						return true;
@@ -1005,12 +1148,23 @@ public class GameObject {
 		}
 	}
 
-	public class Animation {
+	/**
+	 * A predefined animation with start and end frames, fps, and loop fields.
+	 */
+	public static class Animation {
 		public int startFrame;
 		public int endFrame;
 		public int fps;
 		public int loop;
 
+		/**
+		 * Predefine an animation.
+		 *
+		 * @param start Start frame
+		 * @param end End frame
+		 * @param fps frames per second
+		 * @param loop number of times to loop
+		 */
 		public Animation(int start, int end, int fps, int loop) {
 			startFrame = start;
 			endFrame = end;

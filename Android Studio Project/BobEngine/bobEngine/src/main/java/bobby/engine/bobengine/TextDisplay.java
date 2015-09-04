@@ -96,6 +96,8 @@ public class TextDisplay extends GameObject {
 		kerning = DEF_KERN;
 		order = DEF_ORDER;
 		hasChanged = false;
+
+		text = "";
 	}
 
 	/**
@@ -138,6 +140,58 @@ public class TextDisplay extends GameObject {
 	 */
 	public void setKerning(double kerning[]) {
 		this.kerning = kerning;
+	}
+
+	/**
+	 * Set the widths of the characters to allow proper kerning. <br/><br/>
+	 *
+	 * Characters should be aligned to the left of the frame on graphic sheet. Kerning
+	 * values are the width of the character in pixels divided by the width of a single
+	 * frame. (For a character that takes up the whole frame, this would be 1.)
+	 * <br/><br/>
+	 * Kerning values should be in the same order as set by setOrder().
+	 *
+	 * This override will set all kerning values to 1 for fixed width typefaces.
+	 */
+	public void setKerning() {
+		for (int i = 0; i < kerning.length; i++) {
+			kerning[i] = 1;
+		}
+	}
+
+
+	/**
+	 * Set the widths of the characters to allow proper kerning. <br/><br/>
+	 *
+	 * Characters should be aligned to the left of the frame on graphic sheet. Kerning
+	 * values are the width of the character in pixels divided by the width of a single
+	 * frame. (For a character that takes up the whole frame, this would be 1.)
+	 * <br/><br/>
+	 * Kerning values should be in the same order as set by setOrder().
+	 *
+	 * This override will set all kerning values to all.
+	 */
+	public void setKerning(double all) {
+		for (int i = 0; i < kerning.length; i++) {
+			kerning[i] = all;
+		}
+	}
+
+	/**
+	 * Set the widths of the characters to allow proper kerning. <br/><br/>
+	 *
+	 * Characters should be aligned to the left of the frame on graphic sheet. Kerning
+	 * values are the width of the character in pixels divided by the width of a single
+	 * frame. (For a character that takes up the whole frame, this would be 1.)
+	 * <br/><br/>
+	 * Kerning values should be in the same order as set by setOrder().
+	 *
+	 * This override will set the value of char c to k.
+	 */
+	public void setKerning(char c, double k) {
+		if (order.indexOf(c) != -1) {
+			kerning[order.indexOf(c)] = k;
+		}
 	}
 
 	/**
@@ -197,6 +251,12 @@ public class TextDisplay extends GameObject {
 		}
 
 		return 1;
+	}
+
+	public void setFont(Font f) {
+		setKerning(f.getKerning());
+		setOrder(f.getOrder());
+		setGraphic(getView().getGraphicsHelper().addGraphic(f.getDrawable()) , f.getColumns(), f.getRows());
 	}
 
 	/**
@@ -293,12 +353,12 @@ public class TextDisplay extends GameObject {
 
 					/* Move all previous characters to the left by half the width of character i so that the line is centered */
 					for (int l = i; l >= firstChar; l--) {
-						characters[l].x -= width * getKerning(text.charAt(i)) / 2;
+						if (characters[l] != null) characters[l].x -= width * getKerning(text.charAt(i)) / 2;
 					}
 
 					if (cursor - x > boxWidth / 2 && wordWidth < boxWidth) {  // Word wrap, need to go to the next line
 						for (int l = i; l >= firstChar; l--) { // Add half the width of the current word to the x of each character on this line
-							characters[l].x += wordWidth / 2;  //    because the current word will be moving down a line.
+							if (characters[l] != null) characters[l].x += wordWidth / 2;  //    because the current word will be moving down a line.
 						}
 
 						i = wordStart;  // Go back to the beginning of the word
@@ -314,13 +374,13 @@ public class TextDisplay extends GameObject {
 
 					/* Move each character on the line to the left by the width of the new character i */
 					for (int l = i; l >= firstChar; l--) {
-						characters[l].x -= width * getKerning(text.charAt(i));
+						if (characters[l] != null) characters[l].x -= width * getKerning(text.charAt(i));
 					}
 
 					/* Word wrap, end of line reached */
 					if (x - characters[firstChar].x - width * getKerning(text.charAt(firstChar)) / 2 > boxWidth && wordWidth < boxWidth) {
-						for (int l = i; l >= firstChar; l--) { // Move all characters on the line to the right by the width of the current word
-							characters[l].x += wordWidth;      //    because the current word is moving down to the next line
+						for (int l = i; l >= firstChar; l--) {                        // Move all characters on the line to the right by the width of the current word
+							if (characters[l] != null) characters[l].x += wordWidth;  //    because the current word is moving down to the next line
 						}
 
 						i = wordStart;  // Go back to the beginning of the word
@@ -339,8 +399,10 @@ public class TextDisplay extends GameObject {
 		}
 
 		for (int i = 0; i < characters.length; i++) {
-			characters[i].xOff = characters[i].x - x;  // Calculate the x offset of the character in case the whole display is moved
-			characters[i].yOff = characters[i].y - y;  // and the y position relative to the y position of the display
+			if (characters[i] != null) {
+				characters[i].xOff = characters[i].x - x;  // Calculate the x offset of the character in case the whole display is moved
+				characters[i].yOff = characters[i].y - y;  // and the y position relative to the y position of the display
+			}
 		}
 
 		for (int i = text.length(); i < characters.length; i++) { // Hide all extra characters
@@ -388,5 +450,120 @@ public class TextDisplay extends GameObject {
 		public double yOff;
 		public int line;
 
+	}
+
+	/**
+	 * Predefinable font values.
+	 */
+	public static class Font {
+		private String order = DEF_ORDER;
+		private double kerning[] = DEF_KERN;
+
+		private int drawable;
+		private int rows;
+		private int columns;
+
+		public Font(int drawable, int columns, int rows) {
+			this.drawable = drawable;
+			this.rows = rows;
+			this.columns = columns;
+		}
+
+		/**
+		 * Set the widths of the characters to allow proper kerning. <br/><br/>
+		 *
+		 * Characters should be aligned to the left of the frame on graphic sheet. Kerning
+		 * values are the width of the character in pixels divided by the width of a single
+		 * frame. (For a character that takes up the whole frame, this would be 1.)
+		 * <br/><br/>
+		 * Kerning values should be in the same order as set by setOrder().
+		 *
+		 * @param kerning
+		 */
+		public void setKerning(double kerning[]) {
+			this.kerning = kerning;
+		}
+
+		/**
+		 * Set the widths of the characters to allow proper kerning. <br/><br/>
+		 *
+		 * Characters should be aligned to the left of the frame on graphic sheet. Kerning
+		 * values are the width of the character in pixels divided by the width of a single
+		 * frame. (For a character that takes up the whole frame, this would be 1.)
+		 * <br/><br/>
+		 * Kerning values should be in the same order as set by setOrder().
+		 *
+		 * This override will set all kerning values to 1 for fixed width typefaces.
+		 */
+		public void setKerning() {
+			for (int i = 0; i < kerning.length; i++) {
+				kerning[i] = 1;
+			}
+		}
+
+
+		/**
+		 * Set the widths of the characters to allow proper kerning. <br/><br/>
+		 *
+		 * Characters should be aligned to the left of the frame on graphic sheet. Kerning
+		 * values are the width of the character in pixels divided by the width of a single
+		 * frame. (For a character that takes up the whole frame, this would be 1.)
+		 * <br/><br/>
+		 * Kerning values should be in the same order as set by setOrder().
+		 *
+		 * This override will set all kerning values to all.
+		 */
+		public void setKerning(double all) {
+			for (int i = 0; i < kerning.length; i++) {
+				kerning[i] = all;
+			}
+		}
+
+		/**
+		 * Set the widths of the characters to allow proper kerning. <br/><br/>
+		 *
+		 * Characters should be aligned to the left of the frame on graphic sheet. Kerning
+		 * values are the width of the character in pixels divided by the width of a single
+		 * frame. (For a character that takes up the whole frame, this would be 1.)
+		 * <br/><br/>
+		 * Kerning values should be in the same order as set by setOrder().
+		 *
+		 * This override will set the value of char c to k.
+		 */
+		public void setKerning(char c, double k) {
+			if (order.indexOf(c) != -1) {
+				kerning[order.indexOf(c)] = k;
+			}
+		}
+
+		/**
+		 * Set the order of the characters on the graphic sheet. Characters should
+		 * be arranged in columns.
+		 * @param order The first character in this string should be the top left character
+		 *              on the graphic sheet. The second should be the one underneath the first, etc.
+		 */
+		public void setOrder(String order) {
+			this.order = order;
+		}
+
+		public double[] getKerning() {
+			return kerning;
+		}
+
+		public String getOrder() {
+			return order;
+		}
+
+		public int getDrawable() {
+			return drawable;
+		}
+
+		public int getRows() {
+			return rows;
+		}
+
+		public int getColumns() {
+			return columns;
+		}
 	}
 }

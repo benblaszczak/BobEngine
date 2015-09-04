@@ -179,6 +179,14 @@ public class BobHelper {
 	}
 
 	/**
+	 * Set the save file to use with saveInt()... getSavedInt()... etc.
+	 * @param fileName
+	 */
+	public void setSaveFile(String fileName) {
+		save = fileName;
+	}
+
+	/**
 	 * Save an integer value. It can be retrieved even after the application has quit
 	 * by calling getSavedInt();
 	 *
@@ -284,5 +292,53 @@ public class BobHelper {
 		SharedPreferences prefs = activity.getSharedPreferences(save, activity.MODE_PRIVATE);
 
 		return prefs.getString(name, "");
+	}
+
+	/**
+	 * Get a saved value.
+	 *
+	 * @param name - name of the saved value.
+	 * @return saved value of name. 0 if name doesn't exist.
+	 */
+	public int getSavedInt(String name, final int DEFAULT) {
+		SharedPreferences prefs = activity.getSharedPreferences(save, activity.MODE_PRIVATE);
+
+		return prefs.getInt(name, DEFAULT);
+	}
+
+	/**
+	 * Get a saved value.
+	 *
+	 * @param name - name of the saved value.
+	 * @return saved value of name. 0f if name doesn't exist.
+	 */
+	public float getSavedFloat(String name, final float DEFAULT) {
+		SharedPreferences prefs = activity.getSharedPreferences(save, activity.MODE_PRIVATE);
+
+		return prefs.getFloat(name, DEFAULT);
+	}
+
+	/**
+	 * Get a saved value.
+	 *
+	 * @param name - name of the saved value.
+	 * @return saved value of name. false if name doesn't exist.
+	 */
+	public boolean getSavedBool(String name, final boolean DEFAULT) {
+		SharedPreferences prefs = activity.getSharedPreferences(save, activity.MODE_PRIVATE);
+
+		return prefs.getBoolean(name, DEFAULT);
+	}
+
+	/**
+	 * Get a saved value.
+	 *
+	 * @param name - name of the saved value.
+	 * @return saved value of name. "" if name doesn't exist.
+	 */
+	public String getSavedString(String name, final String DEFAULT) {
+		SharedPreferences prefs = activity.getSharedPreferences(save, activity.MODE_PRIVATE);
+
+		return prefs.getString(name, DEFAULT);
 	}
 }

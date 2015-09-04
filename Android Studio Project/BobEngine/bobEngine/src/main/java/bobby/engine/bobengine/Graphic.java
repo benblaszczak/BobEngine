@@ -138,6 +138,15 @@ public class Graphic {
 	}
 
 	/**
+	 * Forces a cleanup regardless of the number of times this Graphic has been
+	 * through a cleanup.
+	 */
+	public void forceCleanup() {
+		cleanupsTilRemoval = 0;
+		remove();
+	}
+
+	/**
 	 * Indicate that this graphic should be unloaded and removed from the GraphicsHelper
 	 */
 	public void remove() {
@@ -203,6 +212,9 @@ public class Graphic {
 		shouldRemove = false;
 	}
 
+	/**
+	 * This class allows you to predefine parameters for GameObject.setGraphic(...).
+	 */
 	public static class Parameters {
 		public Graphic graphic;
 		public int x;

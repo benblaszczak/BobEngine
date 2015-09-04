@@ -24,13 +24,13 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
+import java.util.ArrayList;
 
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
 import android.app.Activity;
 import android.opengl.GLES10;
-import android.util.Log;
 
 /**
  * Rooms are collections of GameObjects. They handle updating and rendering each
@@ -41,7 +41,7 @@ import android.util.Log;
  */
 public class Room {
 	// Constants
-	public final int OBJECTS = 8000;                        // Maximum number of quads. This is kind of sloppy. I should find a better way to do this.
+	public final int OBJECTS = 8000;                        // Maximum number of objects. This is kind of sloppy. I should find a better way to do this.
 	public final int DEF_LAYERS = 10;                       // Default number of layers.
 	private final int VERTEX_BYTES = 4 * 3 * 4 * OBJECTS;   // 4 bytes per float * 3 coords per vertex * 4 vertices * max objects
 	private final int TEX_BYTES = 4 * 2 * 4 * OBJECTS;      // 4 bytes per float * 2 coords per vertex * 4 vertices
@@ -67,25 +67,25 @@ public class Room {
 	private int buttonReleased[] = new int[Controller.MAX_CONTROLLERS];
 
 	// Camera variables
-	private int camx;
-	private int camy;
-	private double camzoom;
-	private double canchorx;
-	private double canchory;
+	private double camX;
+	private double camY;
+	private double camZoom;
+	private double cAnchorX;
+	private double cAnchorY;
 	private float camLeft;
 	private float camRight;
 	private float camTop;
 	private float camBottom;
 
 	// Objects
-	protected GameObject[][] objects;
+	private ArrayList<GameObject>[] obs;
 	private GameObject g;
-	private BobView myView;                                // This room's containing BobView.
+	private BobView view;                 // This room's containing BobView.
 
 	// openGL buffers
-	public FloatBuffer vertexBuffer;                       // Buffer that holds the room's vertices
-	public ShortBuffer indexBuffer[];                      // Buffer that holds the room's indices
-	public FloatBuffer textureBuffer;                      // Buffer that holds the room's texture coords
+	public FloatBuffer vertexBuffer;      // Buffer that holds the room's vertices
+	public ShortBuffer indexBuffer[];     // Buffer that holds the room's indices
+	public FloatBuffer textureBuffer;     // Buffer that holds the room's texture coordinates
 
 	public Room(BobView container) {
 		init(container, DEF_LAYERS);
@@ -96,8 +96,11 @@ public class Room {
 	}
 
 	private void init(BobView container, int layers) {
-		myView = container;
-		objects = new GameObject[layers][OBJECTS];
+		view = container;
+		obs = new ArrayList[layers];
+		for (int i = 0; i < layers; i++) {
+			obs[i] = new ArrayList<GameObject>(OBJECTS);
+		}
 
 		instances = 0;
 
@@ -134,12 +137,20 @@ public class Room {
 			red[i] = green[i] = blue[i] = alpha[i] = 1f;
 		}
 
+		for (int i = 0; i < buttonNewpress.length; i++) {
+			buttonNewpress[i] = -1;
+		}
+
+		for (int i = 0; i < buttonReleased.length; i++) {
+			buttonReleased[i] = -1;
+		}
+
 		// Camera initialization
-		camx = 0;
-		camy = 0;
-		camzoom = 1;
-		canchorx = 0;
-		canchory = 0;
+		camX = 0;
+		camY = 0;
+		camZoom = 1;
+		cAnchorX = 0;
+		cAnchorY = 0;
 	}
 
 	/**
@@ -148,28 +159,28 @@ public class Room {
 	 * @return BobView containing this Room.
 	 */
 	public BobView getView() {
-		return myView;
+		return view;
 	}
 
 	/**
 	 * Returns the activity containing the BobView that contains this Room.
 	 */
 	public Activity getActivity() {
-		return myView.getActivity();
+		return view.getActivity();
 	}
 
 	/**
 	 * Get the Touch touch listener for this Room's containing BobView.
 	 */
 	public Touch getTouch() {
-		return myView.getTouch();
+		return view.getTouch();
 	}
 
 	/**
 	 * Get the controller helper for this Room's containing BobView.
 	 */
 	public Controller getController() {
-		return myView.getController();
+		return view.getController();
 	}
 
 	/**
@@ -190,7 +201,8 @@ public class Room {
 	 *            - GameObject to add.
 	 */
 	public void addObject(GameObject o) {
-		objects[o.layer][o.id] = o;
+		//objects[o.layer][o.id] = o;
+		obs[o.layer].add(o);
 	}
 
 	/**
@@ -201,7 +213,7 @@ public class Room {
 	 *            - GameObject to remove.
 	 */
 	public void deleteObject(GameObject o) {
-		objects[o.layer][o.id] = null;
+		obs[o.layer].remove(obs[o.layer].indexOf(o));
 	}
 
 	/**
@@ -209,16 +221,32 @@ public class Room {
 	 */
 	public void clearObjects() {
 		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < instances; o++) {
-				objects[l][o] = null;
+			obs[l].clear();
+		}
+	}
+
+	/**
+	 * Indicate to the GraphicsHelper that the Graphics used by GameObjects in this Room
+	 * have been used. This method is automatically called each frame if this Room
+	 * is the current Room.
+	 */
+	public void indicateGraphicsUsed() {
+		for (int l = 0; l < layers; l++) {
+			for (int o = 0; o < obs[l].size(); o++) {
+				if (obs[l].get(o) != null) obs[l].get(o).getGraphic().indicateUsed(getView().getGraphicsHelper().getCleanupsTilRemoval());
 			}
 		}
 	}
 
-	public void indicateGraphicsUsed() {
+	/**
+	 * Clean up all the Graphics used by GameObjects in this Room. This will clean up
+	 * all the Graphics used in this Room regardless of the number of times the Graphics
+	 * have been through a cleanup.
+	 */
+	public void clearAllGraphics() {
 		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < instances; o++) {
-				if (objects[l][o] != null) objects[l][o].getGraphic().indicateUsed(getView().getGraphicsHelper().getCleanupsTilRemoval());
+			for (int o = 0; o < obs[l].size(); o++) {
+				if (obs[l].get(o) != null) obs[l].get(o).getGraphic().forceCleanup();
 			}
 		}
 	}
@@ -230,7 +258,7 @@ public class Room {
 	 * @return Height of the room, in pixels.
 	 * */
 	public int getHeight() {
-		return myView.getHeight();
+		return view.getHeight();
 	}
 
 	/**
@@ -240,7 +268,7 @@ public class Room {
 	 * @return Width of the room, in pixels.
 	 * */
 	public int getWidth() {
-		return myView.getWidth();
+		return view.getWidth();
 	}
 
 	/**
@@ -264,15 +292,15 @@ public class Room {
 	/**
 	 * Change the x position of the camera.
 	 */
-	public void setCameraX(int x) {
-		camx = x;
+	public void setCameraX(double x) {
+		camX = x;
 	}
 
 	/**
 	 * Change the y position of the camera.
 	 */
-	public void setCameraY(int y) {
-		camy = y;
+	public void setCameraY(double y) {
+		camY = y;
 	}
 
 	/**
@@ -285,22 +313,22 @@ public class Room {
 	 * @param y anchor y position
 	 */
 	public void setCameraAnchor(int x, int y) {
-		canchorx = x;
-		canchory = y;
+		cAnchorX = x;
+		cAnchorY = y;
 	}
 
 	/**
 	 * Get the current x position of the camera.
 	 */
 	public double getCameraX() {
-		return camx;
+		return camX;
 	}
 
 	/**
 	 * Get the current y position of the camera.
 	 */
 	public double getCameraY() {
-		return camy;
+		return camY;
 	}
 
 	/**
@@ -335,14 +363,14 @@ public class Room {
 	 * Set the zoom factor of the camera.
 	 */
 	public void setCameraZoom(double zoom) {
-		camzoom = zoom;
+		camZoom = zoom;
 	}
 
 	/**
 	 * Get the current zoom factor of the camera.
 	 */
 	public double getCameraZoom() {
-		return camzoom;
+		return camZoom;
 	}
 
 	/**
@@ -367,8 +395,7 @@ public class Room {
 	 * room's draw method to draw both rooms at once. If overridden, call
 	 * super.draw(gl).
 	 *
-	 * @param gl
-	 *            - openGL ES 1.0 object to do pass drawing information to.
+	 * @param gl OpenGL ES 1.0 object to do pass drawing information to.
 	 */
 	public void draw(GL10 gl) {
 		// Update camera
@@ -384,19 +411,20 @@ public class Room {
 
 		for (int l = 0; l < layers; l++) {
 			for (int t = 0; t <= numG; t++) {
-				int obs = 0;
+				int numObs = 0;
 
-				for (int o = 0; o < instances; o++) {
-					g = objects[l][o];
+				for (int o = 0; o < obs[l].size(); o++) {
+					//g = objects[l][o];
+					g = obs[l].get(o);
 
 					if (g != null && g.getGraphicID() == t) {
 						if (g.onScreen()) {
-							obs++;
+							numObs++;
 						}
 					}
 				}
 
-				if (obs > 0) {
+				if (numObs > 0) {
 					vertexBuffer.clear();
 					textureBuffer.clear();
 
@@ -405,8 +433,9 @@ public class Room {
 					indexBuffer[l].position(0);
 					index = 0;
 
-					for (int o = 0; o < instances; o++) {
-						g = objects[l][o];
+					for (int o = 0; o < obs[l].size(); o++) {
+						//g = objects[l][o];
+						g = obs[l].get(o);
 
 						if (g != null && g.getGraphicID() == t) {
 							if (g.onScreen()) {
@@ -457,9 +486,10 @@ public class Room {
 
 		// Load any recently used graphics that are not loaded.
 		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < instances; o++) {
-				if (objects[l][o] != null) {
-					g = objects[l][o];
+			for (int o = 0; o < obs[l].size(); o++) {
+				if (obs[l].get(o) != null) {
+					//g = objects[l][o];
+					g = obs[l].get(o);
 
 					if (g.getGraphic().shouldLoad()) {
 						getView().getGraphicsHelper().addGraphic(g.getGraphic());
@@ -494,29 +524,29 @@ public class Room {
 		step(deltaTime);
 
 		// Update camera edges
-		camLeft = (float) (camx + canchorx - getView().getRenderer().getCameraWidth() * camzoom * (canchorx / getView().getRenderer().getCameraWidth()));
-		camRight = (float) (camx + canchorx + getView().getRenderer().getCameraWidth() * camzoom * ((getView().getRenderer().getCameraWidth() - canchorx) / getView().getRenderer().getCameraWidth()));
-		camTop = (float) (camy + canchory + getView().getRenderer().getCameraHeight() * camzoom * ((getView().getRenderer().getCameraHeight() - canchory) / getView().getRenderer().getCameraHeight()));
-		camBottom = (float) (camy + canchory - getView().getRenderer().getCameraHeight() * camzoom * (canchory / getView().getRenderer().getCameraHeight()));
+		camLeft = (float) (camX + cAnchorX - getView().getRenderer().getCameraWidth() * camZoom * (cAnchorX / getView().getRenderer().getCameraWidth()));
+		camRight = (float) (camX + cAnchorX + getView().getRenderer().getCameraWidth() * camZoom * ((getView().getRenderer().getCameraWidth() - cAnchorX) / getView().getRenderer().getCameraWidth()));
+		camTop = (float) (camY + cAnchorY + getView().getRenderer().getCameraHeight() * camZoom * ((getView().getRenderer().getCameraHeight() - cAnchorY) / getView().getRenderer().getCameraHeight()));
+		camBottom = (float) (camY + cAnchorY - getView().getRenderer().getCameraHeight() * camZoom * (cAnchorY / getView().getRenderer().getCameraHeight()));
 
 		// Perform step even for each object
 		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < instances; o++) {
-				if (objects[l][o] != null) {
-					objects[l][o].update(deltaTime);
+			for (int o = 0; o < obs[l].size(); o++) {
+				if (obs[l].get(o) != null) {
+					obs[l].get(o).update(deltaTime);
 				}
 			}
 		}
 
 		// Fix layers
 		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < instances; o++) {
-				if (objects[l][o] != null) {
-					g = objects[l][o];
+			for (int o = 0; o < obs[l].size(); o++) {
+				if (obs[l].get(o) != null) {
+					g = obs[l].get(o);
 
 					if (g.layer != l) {
-						objects[g.layer][o] = objects[l][o];
-						objects[l][o] = null;
+						obs[g.layer].add(g);
+						obs[l].remove(o);
 					}
 				}
 			}
@@ -577,9 +607,9 @@ public class Room {
 	public void newpress(int index) {
 		// Perform step even for each object
 		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < instances; o++) {
-				if (objects[l][o] != null) {
-					objects[l][o].newpress(index);
+			for (int o = 0; o < obs[l].size(); o++) {
+				if (obs[l].get(o) != null) {
+					obs[l].get(o).newpress(index);
 				}
 			}
 		}
@@ -593,9 +623,9 @@ public class Room {
 	public void newpress(int controller, int button) {
 		// Perform step even for each object
 		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < instances; o++) { // I have no idea why, but these loops originally started at instance and count DOWN to 0... wut.
-				if (objects[l][o] != null) {
-					objects[l][o].newpress(controller, button);
+			for (int o = 0; o < obs[l].size(); o++) { // I have no idea why, but these loops originally started at instance and count DOWN to 0... wut.
+				if (obs[l].get(o) != null) {
+					obs[l].get(o).newpress(controller, button);
 				}
 			}
 		}
@@ -609,9 +639,9 @@ public class Room {
 	public void released(int index) {
 		// Perform released event for each object
 		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < instances; o++) {
-				if (objects[l][o] != null) {
-					objects[l][o].released(index);
+			for (int o = 0; o < obs[l].size(); o++) {
+				if (obs[l].get(o) != null) {
+					obs[l].get(o).released(index);
 				}
 			}
 		}
@@ -625,9 +655,9 @@ public class Room {
 	public void released(int controller, int button) {
 		// Perform released event for each object
 		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < instances; o++) {
-				if (objects[l][o] != null) {
-					objects[l][o].released(controller, button);
+			for (int o = 0; o < obs[l].size(); o++) {
+				if (obs[l].get(o) != null) {
+					obs[l].get(o).released(controller, button);
 				}
 			}
 		}
@@ -636,7 +666,7 @@ public class Room {
 	/**
 	 * Find the angle between two points.
 	 *
-	 * @return The angle between (x1, y1) and (x2, y2)
+	 * @return The angle between (x1, y1) and (x2, y2) in radians
 	 */
 	public double getAngle(double x, double y, double x2, double y2) {
 		if (x < x2) return Math.atan((y - y2) / (x - x2));
@@ -792,9 +822,9 @@ public class Room {
 	public GameObject objectAtPosition(double x, double y) {
 
 		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < instances; o++) {
-				if (objects[l][o] != null && objectAtPosition(objects[l][o], x, y)) {
-					return objects[l][o];
+			for (int o = 0; o < obs[l].size(); o++) {
+				if (obs[l].get(o) != null && objectAtPosition(obs[l].get(o), x, y)) {
+					return obs[l].get(o);
 				}
 			}
 		}

@@ -1,21 +1,20 @@
 /**
  * BobEngine - 2D game engine for Android
- *
+ * <p/>
  * Copyright (C) 2014, 2015 Benjamin Blaszczak
- *
+ * <p/>
  * BobEngine is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser Public License
  * version 2.1 as published by the free software foundation.
- *
+ * <p/>
  * BobEngine is provided without warranty; without even the implied
- * warranty of merchantability or fitness for a particular 
+ * warranty of merchantability or fitness for a particular
  * purpose. See the GNU Lesser Public License for more details.
- *
+ * <p/>
  * You should have received a copy of the GNU Lesser General
  * Public License along with BobEngine; if not, write to the
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth
  * Floor, Boston, MA 02110-1301 USA
- *
  */
 
 package bobby.engine.bobengine;
@@ -164,9 +163,12 @@ public class BobRenderer implements Renderer {
 		if (OUTPUT_FPS) {
 			double fps = (double) 1000 / (double) averageDelta;
 
-			if (1000.0 / timeElapsed < low || low == -1) low = 1000.0 / timeElapsed;
-			if (1000.0 / timeElapsed > high || high == -1) high = 1000.0 / timeElapsed;
-			if (1000.0 / timeElapsed < 30) Log.d("fps", "FRAME DROPPED. FPS: " + Double.toString(1000.0 / timeElapsed));
+			if (1000.0 / timeElapsed < low || low == -1)
+				low = 1000.0 / timeElapsed;
+			if (1000.0 / timeElapsed > high || high == -1)
+				high = 1000.0 / timeElapsed;
+			if (1000.0 / timeElapsed < 30)
+				Log.d("fps", "FRAME DROPPED. FPS: " + Double.toString(1000.0 / timeElapsed));
 
 			if (SystemClock.uptimeMillis() % 100 == 0) {
 				Log.d("fps", "FPS: " + Double.toString(fps) +
