@@ -7,6 +7,7 @@
       <module fileurl="file://$PROJECT_DIR$/bobEngineTest/bobEngineTest.iml" filepath="$PROJECT_DIR$/bobEngineTest/bobEngineTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/cameraexample/cameraexample.iml" filepath="$PROJECT_DIR$/cameraexample/cameraexample.iml" />
       <module fileurl="file://$PROJECT_DIR$/controllerexample/controllerexample.iml" filepath="$PROJECT_DIR$/controllerexample/controllerexample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/draggameobject/draggameobject.iml" filepath="$PROJECT_DIR$/draggameobject/draggameobject.iml" />
       <module fileurl="file://$PROJECT_DIR$/jumpybug/jumpybug.iml" filepath="$PROJECT_DIR$/jumpybug/jumpybug.iml" />
       <module fileurl="file://$PROJECT_DIR$/splashscreensandrooms/splashscreensandrooms.iml" filepath="$PROJECT_DIR$/splashscreensandrooms/splashscreensandrooms.iml" />
       <module fileurl="file://$PROJECT_DIR$/template/template.iml" filepath="$PROJECT_DIR$/template/template.iml" />

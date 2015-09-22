@@ -21,7 +21,7 @@
 package bobby.engine.bobengine;
 
 import android.annotation.TargetApi;
-import android.util.Log;
+import android.os.Build;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -46,10 +46,13 @@ import android.view.MotionEvent;
  * from your main activity to this.</b>
  *
  * Created by Benjamin on 4/9/2015.
+ *
+ * @modified 9/21/15
  */
 public class Controller {
 
 	public static final int MAX_CONTROLLERS = 4;
+	public static final int NUM_BUTTONS = 12;
 
 	// Button and Axis Constants
 	public static final int A = 0;
@@ -65,6 +68,9 @@ public class Controller {
 	public static final int D_UP = 8;
 	public static final int D_DOWN = 9;
 
+	public static final int START = 10;
+	public static final int SELECT = 11;
+
 	public static final int RS_X = 10;
 	public static final int RS_Y = 11;
 	public static final int LS_X = 12;
@@ -77,20 +83,20 @@ public class Controller {
 	public static final int AXIS_D_UD = 17;
 
 	// owner
-	BobView myOwner;
+	BobView view;
 
 	// held values
-	private boolean held[][] = new boolean[4][10];
+	private boolean held[][] = new boolean[MAX_CONTROLLERS][NUM_BUTTONS];
 
 	// Axis values
-	private double rsx[] = new double[4];
-	private double rsy[] = new double[4];
-	private double lsx[] = new double[4];
-	private double lsy[] = new double[4];
-	private double rt[] = new double[4];
-	private double lt[] = new double[4];
-	private double dlr[] = new double[4];
-	private double dud[] = new double[4];
+	private double rsx[] = new double[MAX_CONTROLLERS];
+	private double rsy[] = new double[MAX_CONTROLLERS];
+	private double lsx[] = new double[MAX_CONTROLLERS];
+	private double lsy[] = new double[MAX_CONTROLLERS];
+	private double rt[] = new double[MAX_CONTROLLERS];
+	private double lt[] = new double[MAX_CONTROLLERS];
+	private double dlr[] = new double[MAX_CONTROLLERS];
+	private double dud[] = new double[MAX_CONTROLLERS];
 
 	// States
 	private boolean RSdpad;
@@ -102,7 +108,7 @@ public class Controller {
 	private int lastPlayerUp;
 
 	public Controller(BobView owner) {
-		myOwner = owner;
+		view = owner;
 		simpleDPAD = false;
 		RSdpad = false;
 		LSdpad = false;
@@ -110,7 +116,10 @@ public class Controller {
 		lastPlayerDown = -1;
 		lastPlayerUp = -1;
 
-		myOwner.setController(this);
+		view.setController(this);
+		view.setFocusable(true);
+		view.setFocusableInTouchMode(true);
+		view.requestFocus();
 	}
 
 	/**
@@ -118,8 +127,8 @@ public class Controller {
 	 * @param owner
 	 */
 	public void setView(BobView owner) {
-		myOwner = owner;
-		myOwner.setController(this);
+		view = owner;
+		view.setController(this);
 	}
 
 	/**
@@ -173,8 +182,8 @@ public class Controller {
 	 * @param keyCode
 	 */
 	private void newpress(int controller, int keyCode) {
-		if (myOwner != null && myOwner.getCurrentRoom() != null && getButton(keyCode) != -1) {
-			myOwner.getCurrentRoom().signifyNewpress(controller, getButton(keyCode));
+		if (view != null && view.getCurrentRoom() != null && getButton(keyCode) != -1) {
+			view.getCurrentRoom().signifyNewpress(controller, getButton(keyCode));
 			updateHeld(controller, keyCode, true);
 		}
 	}
@@ -186,8 +195,8 @@ public class Controller {
 	 * @param keyCode
 	 */
 	private void released(int controller, int keyCode) {
-		if (myOwner != null && myOwner.getCurrentRoom() != null && getButton(keyCode) != -1) {
-			myOwner.getCurrentRoom().signifyReleased(controller, getButton(keyCode));
+		if (view != null && view.getCurrentRoom() != null && getButton(keyCode) != -1) {
+			view.getCurrentRoom().signifyReleased(controller, getButton(keyCode));
 			updateHeld(controller, keyCode, false);
 		}
 	}
@@ -286,6 +295,12 @@ public class Controller {
 			case KeyEvent.KEYCODE_BUTTON_L1:
 				button = L1;
 				break;
+			case KeyEvent.KEYCODE_BUTTON_START:
+				button = START;
+				break;
+			case KeyEvent.KEYCODE_BUTTON_SELECT:
+				button = SELECT;
+				break;
 		}
 
 		return button;
@@ -305,8 +320,9 @@ public class Controller {
 			if (event.getRepeatCount() == 0 || player != lastPlayerDown) {
 				newpress(player, keyCode);
 				lastPlayerDown = player;
-				return true;
 			}
+
+			return true;
 		}
 
 		return false;
@@ -326,11 +342,12 @@ public class Controller {
 			if (event.getRepeatCount() == 0 || player != lastPlayerUp) {
 				released(player, keyCode);
 				lastPlayerUp = player;
-				return true;
 			}
+
+			return true;
 		}
 
-		return myOwner.onKeyUp(keyCode, event);
+		return false;
 	}
 
 	@TargetApi(19)
@@ -462,6 +479,6 @@ public class Controller {
 		}
 
 
-		return myOwner.onGenericMotionEvent(event);
+		return false;
 	}
 }

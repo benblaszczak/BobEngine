@@ -27,6 +27,8 @@ import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
@@ -36,6 +38,7 @@ import android.view.WindowManager;
  * should be extended to create custom BobViews that contain Rooms and Graphics.
  *
  * @author Ben
+ * @modified 9/21/15
  */
 public abstract class BobView extends GLSurfaceView {
 
@@ -49,7 +52,7 @@ public abstract class BobView extends GLSurfaceView {
 	private Room currentRoom;                              // The room that is currently being updated and drawn
 	private Activity myActivity;                           // The activity that this BobView belongs to.
 	private Touch myTouch;                                 // An object which handles touch screen input
-	private Controller myController;                       // Object that assists in handing controller input
+	private Controller controller;                       // Object that assists in handing controller input
 	private BobRenderer renderer;                          // This BobView's renderer
 	private GraphicsHelper graphicsHelper;                 // An object that assists in loading graphics
 	private RoomCache cache;                               // A cache that can be used to store instances of rooms or create new instances
@@ -247,14 +250,14 @@ public abstract class BobView extends GLSurfaceView {
 	 * @param controller
 	 */
 	public void setController(Controller controller) {
-		myController = controller;
+		this.controller = controller;
 	}
 
 	/**
 	 * Returns this BobView's controller helper.
 	 */
 	public Controller getController() {
-		return myController;
+		return controller;
 	}
 
 	/**
@@ -385,8 +388,36 @@ public abstract class BobView extends GLSurfaceView {
 	@Override
 	public void onResume() {
 		setFocusable(true);
+		setFocusableInTouchMode(true);
 		requestFocus();
 		super.onResume();
+	}
+
+	@Override
+	public boolean onKeyDown(int index, KeyEvent event) {
+		if (controller != null && controller.onKeyDown(index, event)) {
+			return true;
+		}
+
+		return super.onKeyDown(index, event);
+	}
+
+	@Override
+	public boolean onKeyUp(int index, KeyEvent event) {
+		if (controller != null && controller.onKeyUp(index, event)) {
+			return true;
+		}
+
+		return super.onKeyUp(index, event);
+	}
+
+	@Override
+	public boolean onGenericMotionEvent(MotionEvent event) {
+		if (controller != null && controller.onGenericMotionEvent(event)) {
+			return true;
+		}
+
+		return super.onGenericMotionEvent(event);
 	}
 
 	/**

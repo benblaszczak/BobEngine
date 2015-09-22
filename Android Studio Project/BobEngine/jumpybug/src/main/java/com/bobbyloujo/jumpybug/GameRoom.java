@@ -69,6 +69,7 @@ public class GameRoom extends Room {
         scoreDis.y = getHeight() * 3 / 4;
         scoreDis.width = getWidth() / 5;
         scoreDis.height = scoreDis.width;
+        scoreDis.layer = 3;
         scoreDis.setNumber(score);
         scoreDis.setAlignment(1); // 0 for left alignment, 1 for center, 2 for right
 

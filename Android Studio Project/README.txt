@@ -14,3 +14,4 @@ jumpybug - Flappy Bird clone that serves as an example of a full game
 controllerexample - shows how to get input from the a physical gamepad
 textdisplayexample - shows how to use TextDisplay
 splashscreensandrooms - shows how to use Rooms and SplashActivity
+draggameobject - shows how to drag a GameObject with a finger, styli, etc.

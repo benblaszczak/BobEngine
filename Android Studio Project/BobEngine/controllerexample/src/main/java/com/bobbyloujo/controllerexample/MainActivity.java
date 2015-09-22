@@ -17,6 +17,8 @@ import bobby.engine.bobengine.Room;
  * This Activity is a test driver for getting input from a game controller (gamepad).
  *
  * Created by Benjamin Blaszczak on 4/14/15
+ *
+ * @modified 9/21/15
  */
 public class MainActivity extends BobActivity {
 
@@ -103,6 +105,12 @@ public class MainActivity extends BobActivity {
 							case Controller.R1:
 								buttonName = "R1";
 								break;
+							case Controller.START:
+								buttonName = "Start";
+								break;
+							case Controller.SELECT:
+								buttonName = "Select";
+								break;
 							default:
 								buttonName = "Some other button.";
 						}
@@ -132,6 +140,12 @@ public class MainActivity extends BobActivity {
 								break;
 							case Controller.R1:
 								buttonName = "R1";
+								break;
+							case Controller.START:
+								buttonName = "Start";
+								break;
+							case Controller.SELECT:
+								buttonName = "Select";
 								break;
 							default:
 								buttonName = "Some other button.";
@@ -165,7 +179,6 @@ public class MainActivity extends BobActivity {
 			}
 		};
 
-
 		/**
 		 * IMPORTANT - ASSIGNING A CONTROLLER TO A BOBVIEW
 		 *
@@ -179,28 +192,5 @@ public class MainActivity extends BobActivity {
 		rl.addView(view);
 		rl.addView(buttonPressed);
 		setContentView(rl);
-	}
-
-	/* IMPORTANT EVENT HANDLING */
-
-	/**
-	 * Below are the events that Android fires when it receives input
-	 * from a gamepad or keyboard. You must pass these events on to your
-	 * Controller object so that it can interpret them.
-	 */
-
-	@Override
-	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		return controller.onKeyUp(keyCode, event);
-	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		return controller.onKeyDown(keyCode, event);
-	}
-
-	@Override
-	public boolean onGenericMotionEvent(MotionEvent event) {
-		return controller.onGenericMotionEvent(event);
 	}
 }

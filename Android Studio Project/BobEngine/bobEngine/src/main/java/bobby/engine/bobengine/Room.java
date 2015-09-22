@@ -20,6 +20,9 @@
 
 package bobby.engine.bobengine;
 
+import android.app.Activity;
+import android.opengl.GLES10;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -29,15 +32,12 @@ import java.util.ArrayList;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
-import android.app.Activity;
-import android.opengl.GLES10;
-
 /**
  * Rooms are collections of GameObjects. They handle updating and rendering each
  * object in the room.
  *
  * @author Ben
- *
+ * @modified 9/21/15
  */
 public class Room {
 	// Constants
@@ -49,7 +49,6 @@ public class Room {
 
 	// Variables
 	private int instances = 0;                              // The number of objects in this room
-	private int index;                                      // The number of indices for all quads
 	private short indices[] = new short[6];                 // The order in which to draw the vertices
 	private int lastIndex[];                                // The number of indices last frame for each layer
 
@@ -60,26 +59,25 @@ public class Room {
 	private float alpha[];        // alpha values for each layer
 
 	// Input variables
-	private boolean newpress[] = new boolean[Touch.MAX_FINGERS];
-	private boolean released[] = new boolean[Touch.MAX_FINGERS];
+	private boolean newpress[] = new boolean[Touch.MAX_FINGERS];         // Flags to indicate if a newpress event needs to be handled
+	private boolean released[] = new boolean[Touch.MAX_FINGERS];         // Flags to indicate if a released event needs to be handled
 
-	private int buttonNewpress[] = new int[Controller.MAX_CONTROLLERS];
-	private int buttonReleased[] = new int[Controller.MAX_CONTROLLERS];
+	private int buttonNewpress[] = new int[Controller.MAX_CONTROLLERS];  // Flags to indicate if a controller newpress event needs to be handled
+	private int buttonReleased[] = new int[Controller.MAX_CONTROLLERS];  // Flags to indicate if a controller released event needs to be handled
 
 	// Camera variables
-	private double camX;
-	private double camY;
-	private double camZoom;
-	private double cAnchorX;
-	private double cAnchorY;
-	private float camLeft;
-	private float camRight;
-	private float camTop;
-	private float camBottom;
+	private double camX;       // The X position of the camera.
+	private double camY;       // The Y position of the camera.
+	private double camZoom;    // The zoom level of the camera. 1 is default, 0> and <1 is zoomed in, >1 is zoomed out.
+	private double cAnchorX;   // The zoom anchor X position. This position will stay in the same place when the camera is zoomed in/out.
+	private double cAnchorY;   // The zoom anchor Y position.
+	private float camLeft;     // The left edge of the camera
+	private float camRight;    // The right edge of the camera
+	private float camTop;      // The top edge of the camera
+	private float camBottom;   // The bottom edge of the camera
 
 	// Objects
-	private ArrayList<GameObject>[] obs;
-	private GameObject g;
+	private ArrayList<GameObject> obs;    // List containing all the objects in this room.
 	private BobView view;                 // This room's containing BobView.
 
 	// openGL buffers
@@ -87,20 +85,18 @@ public class Room {
 	public ShortBuffer indexBuffer[];     // Buffer that holds the room's indices
 	public FloatBuffer textureBuffer;     // Buffer that holds the room's texture coordinates
 
-	public Room(BobView container) {
-		init(container, DEF_LAYERS);
+	public Room(BobView view) {
+		init(view, DEF_LAYERS);
 	}
 
-	public Room(BobView container, int layers) {
-		init(container, layers);
+	public Room(BobView view, int layers) {
+		init(view, layers);
 	}
 
-	private void init(BobView container, int layers) {
-		view = container;
-		obs = new ArrayList[layers];
-		for (int i = 0; i < layers; i++) {
-			obs[i] = new ArrayList<GameObject>(OBJECTS);
-		}
+	private void init(BobView view, int layers) {
+		this.view = view;
+
+		obs = new ArrayList<GameObject>(OBJECTS);
 
 		instances = 0;
 
@@ -202,7 +198,7 @@ public class Room {
 	 */
 	public void addObject(GameObject o) {
 		//objects[o.layer][o.id] = o;
-		obs[o.layer].add(o);
+		obs.add(o);
 	}
 
 	/**
@@ -213,16 +209,14 @@ public class Room {
 	 *            - GameObject to remove.
 	 */
 	public void deleteObject(GameObject o) {
-		obs[o.layer].remove(obs[o.layer].indexOf(o));
+		obs.remove(obs.indexOf(o));
 	}
 
 	/**
 	 * Removes all GameObjects from this room.
 	 */
 	public void clearObjects() {
-		for (int l = 0; l < layers; l++) {
-			obs[l].clear();
-		}
+		obs.clear();
 	}
 
 	/**
@@ -231,10 +225,8 @@ public class Room {
 	 * is the current Room.
 	 */
 	public void indicateGraphicsUsed() {
-		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < obs[l].size(); o++) {
-				if (obs[l].get(o) != null) obs[l].get(o).getGraphic().indicateUsed(getView().getGraphicsHelper().getCleanupsTilRemoval());
-			}
+		for (int o = 0; o < obs.size(); o++) {
+			if (obs.get(o) != null) obs.get(o).getGraphic().indicateUsed(getView().getGraphicsHelper().getCleanupsTilRemoval());
 		}
 	}
 
@@ -244,10 +236,8 @@ public class Room {
 	 * have been through a cleanup.
 	 */
 	public void clearAllGraphics() {
-		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < obs[l].size(); o++) {
-				if (obs[l].get(o) != null) obs[l].get(o).getGraphic().forceCleanup();
-			}
+		for (int o = 0; o < obs.size(); o++) {
+			if (obs.get(o) != null) obs.get(o).getGraphic().forceCleanup();
 		}
 	}
 
@@ -413,45 +403,41 @@ public class Room {
 			for (int t = 0; t <= numG; t++) {
 				int numObs = 0;
 
-				for (int o = 0; o < obs[l].size(); o++) {
-					//g = objects[l][o];
-					g = obs[l].get(o);
+				for (int o = 0; o < obs.size(); o++) {
+					GameObject g = obs.get(o);
 
-					if (g != null && g.getGraphicID() == t) {
-						if (g.onScreen()) {
-							numObs++;
-						}
+					if (g != null && g.getGraphicID() == t && g.layer == l && g.onScreen()) {
+						numObs++;
 					}
 				}
 
 				if (numObs > 0) {
+					int numIndices = 0;    // The number of indices for all objects
+
 					vertexBuffer.clear();
 					textureBuffer.clear();
 
 					vertexBuffer.position(0);
 					textureBuffer.position(0);
 					indexBuffer[l].position(0);
-					index = 0;
 
-					for (int o = 0; o < obs[l].size(); o++) {
-						//g = objects[l][o];
-						g = obs[l].get(o);
 
-						if (g != null && g.getGraphicID() == t) {
-							if (g.onScreen()) {
-								vertexBuffer.put(g.getVertices());
-								textureBuffer.put(g.getGraphicVerts());
-								index += g.getIndices();
-							}
+					for (int o = 0; o < obs.size(); o++) {
+						GameObject g = obs.get(o);
+
+						if (g != null && g.getGraphicID() == t && g.layer == l && g.onScreen()) {
+							vertexBuffer.put(g.getVertices());
+							textureBuffer.put(g.getGraphicVerts());
+							numIndices += g.getIndices();
 						}
 					}
 
-					if (index != lastIndex[l]) {
-						if (index > indices.length) {
-							indices = new short[index + 1];
+					if (numIndices != lastIndex[l]) {
+						if (numIndices > indices.length) {
+							indices = new short[numIndices + 1];
 						}
 
-						for (int i = 0; i < index; i += 6) {
+						for (int i = 0; i < numIndices; i += 6) {
 							indices[i + 0] = (short) (((i / 6) * 4) + 0);
 							indices[i + 1] = (short) (((i / 6) * 4) + 1);
 							indices[i + 2] = (short) (((i / 6) * 4) + 2);
@@ -462,7 +448,7 @@ public class Room {
 
 						indexBuffer[l].clear();
 						indexBuffer[l].put(indices);
-						lastIndex[l] = index;
+						lastIndex[l] = numIndices;
 					}
 
 					vertexBuffer.position(0);
@@ -479,21 +465,18 @@ public class Room {
 					gl.glTexCoordPointer(2, GL10.GL_FLOAT, 0, textureBuffer);
 
 					// Draw the vertices as triangle strip
-					gl.glDrawElements(GL10.GL_TRIANGLES, index, GL10.GL_UNSIGNED_SHORT, indexBuffer[l]);
+					gl.glDrawElements(GL10.GL_TRIANGLES, numIndices, GL10.GL_UNSIGNED_SHORT, indexBuffer[l]);
 				}
 			}
 		}
 
 		// Load any recently used graphics that are not loaded.
-		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < obs[l].size(); o++) {
-				if (obs[l].get(o) != null) {
-					//g = objects[l][o];
-					g = obs[l].get(o);
+		for (int o = 0; o < obs.size(); o++) {
+			if (obs.get(o) != null) {
+				GameObject g = obs.get(o);
 
-					if (g.getGraphic().shouldLoad()) {
-						getView().getGraphicsHelper().addGraphic(g.getGraphic());
-					}
+				if (g.getGraphic().shouldLoad()) {
+					getView().getGraphicsHelper().addGraphic(g.getGraphic());
 				}
 			}
 		}
@@ -505,7 +488,7 @@ public class Room {
 	 * room's step event to update both rooms at once. If overridden, call
 	 * super.update(deltaTime).
 	 *
-	 * @param deltaTime
+	 * @param deltaTime Lag correction multiplier.
 	 */
 	public void update(double deltaTime) {
 		// Handle input events
@@ -521,6 +504,7 @@ public class Room {
 			buttonReleased[i] = -1;
 		}
 
+		// Handle the step event
 		step(deltaTime);
 
 		// Update camera edges
@@ -529,26 +513,10 @@ public class Room {
 		camTop = (float) (camY + cAnchorY + getView().getRenderer().getCameraHeight() * camZoom * ((getView().getRenderer().getCameraHeight() - cAnchorY) / getView().getRenderer().getCameraHeight()));
 		camBottom = (float) (camY + cAnchorY - getView().getRenderer().getCameraHeight() * camZoom * (cAnchorY / getView().getRenderer().getCameraHeight()));
 
-		// Perform step even for each object
-		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < obs[l].size(); o++) {
-				if (obs[l].get(o) != null) {
-					obs[l].get(o).update(deltaTime);
-				}
-			}
-		}
-
-		// Fix layers
-		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < obs[l].size(); o++) {
-				if (obs[l].get(o) != null) {
-					g = obs[l].get(o);
-
-					if (g.layer != l) {
-						obs[g.layer].add(g);
-						obs[l].remove(o);
-					}
-				}
+		// Update each object
+		for (int o = 0; o < obs.size(); o++) {
+			if (obs.get(o) != null) {
+				obs.get(o).update(deltaTime);
 			}
 		}
 	}
@@ -567,7 +535,7 @@ public class Room {
 
 	/**
 	 * Tell this room to handle a newpress input event on the main thread.
-	 * @param index
+	 * @param index ID number of the pointer that triggered this event.
 	 */
 	public void signifyNewpress(int index) {
 		newpress[index] = true;
@@ -584,7 +552,7 @@ public class Room {
 
 	/**
 	 * Tell this room to handle a release input event on the main thread.
-	 * @param index
+	 * @param index ID number of the pointer that triggered this event.
 	 */
 	public void signifyReleased(int index) {
 		released[index] = true;
@@ -606,11 +574,9 @@ public class Room {
 	 */
 	public void newpress(int index) {
 		// Perform step even for each object
-		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < obs[l].size(); o++) {
-				if (obs[l].get(o) != null) {
-					obs[l].get(o).newpress(index);
-				}
+		for (int o = 0; o < obs.size(); o++) {
+			if (obs.get(o) != null) {
+				obs.get(o).newpress(index);
 			}
 		}
 	}
@@ -622,11 +588,9 @@ public class Room {
 	 */
 	public void newpress(int controller, int button) {
 		// Perform step even for each object
-		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < obs[l].size(); o++) { // I have no idea why, but these loops originally started at instance and count DOWN to 0... wut.
-				if (obs[l].get(o) != null) {
-					obs[l].get(o).newpress(controller, button);
-				}
+		for (int o = 0; o < obs.size(); o++) { // I have no idea why, but these loops originally started at instance and count DOWN to 0... wut.
+			if (obs.get(o) != null) {
+				obs.get(o).newpress(controller, button);
 			}
 		}
 	}
@@ -638,11 +602,9 @@ public class Room {
 	 */
 	public void released(int index) {
 		// Perform released event for each object
-		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < obs[l].size(); o++) {
-				if (obs[l].get(o) != null) {
-					obs[l].get(o).released(index);
-				}
+		for (int o = 0; o < obs.size(); o++) {
+			if (obs.get(o) != null) {
+				obs.get(o).released(index);
 			}
 		}
 	}
@@ -654,11 +616,9 @@ public class Room {
 	 */
 	public void released(int controller, int button) {
 		// Perform released event for each object
-		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < obs[l].size(); o++) {
-				if (obs[l].get(o) != null) {
-					obs[l].get(o).released(controller, button);
-				}
+		for (int o = 0; o < obs.size(); o++) {
+			if (obs.get(o) != null) {
+				obs.get(o).released(controller, button);
 			}
 		}
 	}
@@ -820,12 +780,9 @@ public class Room {
 	 * collision boxes. If yes, returns that object. If no, returns null.
 	 */
 	public GameObject objectAtPosition(double x, double y) {
-
-		for (int l = 0; l < layers; l++) {
-			for (int o = 0; o < obs[l].size(); o++) {
-				if (obs[l].get(o) != null && objectAtPosition(obs[l].get(o), x, y)) {
-					return obs[l].get(o);
-				}
+		for (int o = 0; o < obs.size(); o++) {
+			if (obs.get(o) != null && objectAtPosition(obs.get(o), x, y)) {
+				return obs.get(o);
 			}
 		}
 
