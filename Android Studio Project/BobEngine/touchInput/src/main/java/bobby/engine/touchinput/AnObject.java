@@ -54,8 +54,8 @@ public class AnObject extends GameObject {
 	 */
 	@Override
 	public void newpress(int index) {
-		x = getTouch().X[0];         // Use "getTouch()" to get lots of information about the input
-		y = getTouch().Y[0];         // These are the coords of the first index (the "oldest" finger on the screen)
+		x = getTouch().getX();         // Use "getTouch()" to get lots of information about the input
+		y = getTouch().getY();         // These are the coords of the first index (the "oldest" finger on the screen)
 		
 		if (index == 1) {            // A second finger!
 			getView().setBackgroundColor(1, 0, 0, 1);  // Red background. (RGBA)
