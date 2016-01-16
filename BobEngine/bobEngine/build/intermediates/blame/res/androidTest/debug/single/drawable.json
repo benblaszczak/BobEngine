@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "C:\\Users\\Benjamin\\AndroidStudioProjects\\PlanePopper\\bobEngine\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\characters.png",
+        "source": "C:\\Users\\Benjamin\\AndroidStudioProjects\\PlanePopper\\bobEngine\\build\\intermediates\\bundles\\debug\\res\\drawable\\characters.png"
+    },
+    {
+        "merged": "C:\\Users\\Benjamin\\AndroidStudioProjects\\PlanePopper\\bobEngine\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\numbers.png",
+        "source": "C:\\Users\\Benjamin\\AndroidStudioProjects\\PlanePopper\\bobEngine\\build\\intermediates\\bundles\\debug\\res\\drawable\\numbers.png"
+    },
+    {
+        "merged": "C:\\Users\\Benjamin\\AndroidStudioProjects\\PlanePopper\\bobEngine\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\logo.png",
+        "source": "C:\\Users\\Benjamin\\AndroidStudioProjects\\PlanePopper\\bobEngine\\build\\intermediates\\bundles\\debug\\res\\drawable\\logo.png"
+    },
+    {
+        "merged": "C:\\Users\\Benjamin\\AndroidStudioProjects\\PlanePopper\\bobEngine\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable\\ic_launcher.png",
+        "source": "C:\\Users\\Benjamin\\AndroidStudioProjects\\PlanePopper\\bobEngine\\build\\intermediates\\bundles\\debug\\res\\drawable\\ic_launcher.png"
+    }
+]

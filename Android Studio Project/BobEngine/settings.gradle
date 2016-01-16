@@ -1,3 +1,0 @@
-include ':bobEngineTest', ':cameraexample', ':jumpybug', ':bobEngine', ':controllerexample', ':textdisplayexample', ':splashscreensandrooms', ':draggameobject'
-include ':touchInput'
-include ':template'

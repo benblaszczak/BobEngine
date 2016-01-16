@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\draggameobject\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.0.1\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="d86429b0f0b3f3cafbeb78dda1b9d89119ccb05d">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\draggameobject\build\intermediates\pre-dexed\debug\classes-0760e76ada4d855a1a5d579117d19e2bb719057d.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\collisionsystemexample\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="eff495b86cda7a408ec033073ab670ee1d9ec4a6">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\collisionsystemexample\build\intermediates\pre-dexed\debug\classes-2f18cf26438349681c09d2262bf0e1c5cc8be455.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\draggameobject\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="30434061dded09c96055fc6395300ac7ae74768c">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\draggameobject\build\intermediates\pre-dexed\debug\classes-1375cdac36dccc29000ef67b8a03c04b9b9679fe.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\cameraexample\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="30434061dded09c96055fc6395300ac7ae74768c">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\cameraexample\build\intermediates\pre-dexed\debug\classes-5d645befc9004904858bec2bab8238b7c89992df.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\splashscreensandrooms\build\intermediates\exploded-aar\com.android.support\support-v4\22.0.0\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="4e86306289ace4aa0cfec44a05ed2b410d36989d">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\splashscreensandrooms\build\intermediates\pre-dexed\debug\classes-bc19ecd89a8a9ab5d0a9532448c22d248854f94a.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\textdisplayexample\build\intermediates\exploded-aar\com.android.support\appcompat-v7\22.0.0\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="d84409890828e07d344a3b9b1da545dba9897b51">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\textdisplayexample\build\intermediates\pre-dexed\debug\classes-6249745766dbb86fc45e9136dd551e1297e2637b.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\23.0.1\support-annotations-23.0.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="1fce89a6428c51467090d7f424e4c9c3dbd55f7e">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\draggameobject\build\intermediates\pre-dexed\debug\support-annotations-23.0.1-d267754b6c87e384bd2a50e4c7ea3a819233dbc8.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-v4\19.1.0\support-v4-19.1.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\bobEngineTest\build\intermediates\pre-dexed\debug\support-v4-19.1.0-29cbb9634a5288c62fafd71d132a47c501b317ce.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\cameraexample\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\libs\internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\cameraexample\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-59b2f6c42dcbe84b1c3b924090e403a3a945cf57.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\textdisplayexample\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="30434061dded09c96055fc6395300ac7ae74768c">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\textdisplayexample\build\intermediates\pre-dexed\debug\classes-bc8f4245620d8cfa461942e965e58e32323086e4.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-v4\19.1.0\support-v4-19.1.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\jumpybug\build\intermediates\pre-dexed\debug\support-v4-19.1.0-29cbb9634a5288c62fafd71d132a47c501b317ce.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\draggameobject\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.1\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="c31e21b53ff2f74664e498248d01453a32e32d48">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\draggameobject\build\intermediates\pre-dexed\debug\classes-71521d24bd42ad1c3585a6cf36c92611071cfb04.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\cameraexample\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\cameraexample\build\intermediates\pre-dexed\debug\classes-2a7d285b601f1b12bd55479a92fdc85dff2d76c9.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\splashscreensandrooms\build\intermediates\exploded-aar\com.android.support\appcompat-v7\22.0.0\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="d84409890828e07d344a3b9b1da545dba9897b51">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\splashscreensandrooms\build\intermediates\pre-dexed\debug\classes-3ef24075da8215a4f8bc203a8ea8e782aa4eedf8.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\splashscreensandrooms\build\intermediates\exploded-aar\com.android.support\support-v4\22.0.0\libs\internal_impl-22.0.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="b5b92f469d515a13d778900f6d50c03d12f35504">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\splashscreensandrooms\build\intermediates\pre-dexed\debug\internal_impl-22.0.0-244854f612be50e74425335d5e51a21e7d4b06a3.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\jumpybug\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="30434061dded09c96055fc6395300ac7ae74768c">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\jumpybug\build\intermediates\pre-dexed\debug\classes-aeee8225e61b9b4e5acccf7a93943f5ffbea90c2.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\collisionsystemexample\build\intermediates\exploded-aar\com.android.support\support-v4\23.1.0\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="ddde541c289c8b816a8f8fd6c325d80788c522a6">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\collisionsystemexample\build\intermediates\pre-dexed\debug\classes-952a0f695ba0e576f9ed71784d0702b74082999b.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\splashscreensandrooms\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="30434061dded09c96055fc6395300ac7ae74768c">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\splashscreensandrooms\build\intermediates\pre-dexed\debug\classes-cca5a1035a8dcd45b971fcfab01ae94cf413bfdb.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\collisionsystemexample\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.1.0\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="57ae0d750ff83f0c738d21720224ac7ea866a094">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\collisionsystemexample\build\intermediates\pre-dexed\debug\classes-7d3d694e100c5c4b116f60e61aa24388c6e38263.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\collisionsystemexample\build\intermediates\exploded-aar\com.android.support\support-v4\23.1.0\libs\internal_impl-23.1.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="8716243bf04bae8d6c9ca94d27b9a9be7236f0a3">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\collisionsystemexample\build\intermediates\pre-dexed\debug\internal_impl-23.1.0-3a8588e112c04e9d12531da7f6d04dad16280cd1.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\touchInput\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="30434061dded09c96055fc6395300ac7ae74768c">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\touchInput\build\intermediates\pre-dexed\debug\classes-0ab4c4f28fd3b16ce6ee1381f47f4a8fc7506f4e.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\textdisplayexample\build\intermediates\exploded-aar\com.android.support\support-v4\22.0.0\libs\internal_impl-22.0.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="b5b92f469d515a13d778900f6d50c03d12f35504">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\textdisplayexample\build\intermediates\pre-dexed\debug\internal_impl-22.0.0-bd4cbdd919b2104b45aa3602501429e4d3bbab62.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\template\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="30434061dded09c96055fc6395300ac7ae74768c">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\template\build\intermediates\pre-dexed\debug\classes-adee8f7b92ba3f154c1c96e10abcb36d9e03e108.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\22.0.0\support-annotations-22.0.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="685d0b2c590447e85284ed84712cb363ba04eff8">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\splashscreensandrooms\build\intermediates\pre-dexed\debug\support-annotations-22.0.0-dfd68dcdd7e7d007a418636d5af0d6e103245f0d.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\cameraexample\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\cameraexample\build\intermediates\pre-dexed\debug\classes-93c427184b818c34f1e5daa47153d1ee8c1761f8.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\bobEngineTest\build\intermediates\exploded-aar\BobEngine\bobEngine\unspecified\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="30434061dded09c96055fc6395300ac7ae74768c">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\bobEngineTest\build\intermediates\pre-dexed\debug\classes-983b0891845027867407965ca4e411e613ee8839.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\draggameobject\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.1\libs\internal_impl-23.0.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="aa92916125166649d8ad4ba3940c3dd7515596d3">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\draggameobject\build\intermediates\pre-dexed\debug\internal_impl-23.0.1-4330c9794a98a5821598233396ac9da8b59142e6.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\21.0.3\support-annotations-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\cameraexample\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-c3c289dc48ddbbb6ba661feedf62cf3cc08f67e5.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\Mailbox\BobEngine\textdisplayexample\build\intermediates\exploded-aar\com.android.support\support-v4\22.0.0\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="4e86306289ace4aa0cfec44a05ed2b410d36989d">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\textdisplayexample\build\intermediates\pre-dexed\debug\classes-744ce88d04f8122c6b96a1c6d675214c9ab010e4.jar" />
+    </item>
+    <item
+        jar="C:\Users\Benjamin\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\23.1.0\support-annotations-23.1.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="92e3fc113ec3ee36b64603a38857b95700025633">
+        <dex dex="C:\Users\Benjamin\Mailbox\BobEngine\collisionsystemexample\build\intermediates\pre-dexed\debug\support-annotations-23.1.0-df5251e305cb45f48b8c60cfe6577dfd838b8af8.jar" />
+    </item>
+
+</items>
