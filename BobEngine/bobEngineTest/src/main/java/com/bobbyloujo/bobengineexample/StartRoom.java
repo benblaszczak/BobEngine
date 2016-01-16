@@ -21,7 +21,7 @@ public class StartRoom extends Room {
 		setGridWidth(20);
 		setGridUnitY(getGridUnitX());
 
-		icons = new ManyIcons(this);
+		//icons = new ManyIcons(this);
 
 		/*
 		text = new TextDisplay(this);
@@ -55,17 +55,17 @@ public class StartRoom extends Room {
 		text.scale = 2;
 		*/
 
-		/*
+
 		big = new BobEngineMothership();
 		big.transform.x = getWidth() / 4;
 		big.transform.y = getHeight() / 2;
 
 		addComponent(big);
-		*/
+
 	}
 
 	public void set() {
-		icons.set();
+		//icons.set();
 	}
 
 	@Override

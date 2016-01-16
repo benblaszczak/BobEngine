@@ -12,15 +12,15 @@ public class StartRoom extends Room {
 	// Objects
 	private GameObject title;           // The title graphic
 	private GameObject playButton;      // The Play button
-	private Background background;   // Background panels
+	private Background background;      // Background panels
 
 	public StartRoom(BobView container) {
 		super(container);
 
 		getView().setBackgroundColor(0, 1, 1, 1);
 
-		setGridHeight(160);
-		setGridUnitX(getGridUnitY());
+		setGridHeight(160);            // The grid should be 160 units tall
+		setGridUnitX(getGridUnitY());  // We want square units, the units on the X axis should be the same as the Y
 
 		// Initialize objects
 		/**
