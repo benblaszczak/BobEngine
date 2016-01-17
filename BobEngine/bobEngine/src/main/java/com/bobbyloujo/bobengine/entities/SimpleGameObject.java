@@ -22,6 +22,7 @@ package com.bobbyloujo.bobengine.entities;
 import com.bobbyloujo.bobengine.systems.quadrenderer.AnimatedGraphicAreaTransform;
 import com.bobbyloujo.bobengine.components.Transform;
 import com.bobbyloujo.bobengine.graphics.Graphic;
+import com.bobbyloujo.bobengine.systems.quadrenderer.QuadRenderSystem;
 
 /**
  * This lightweight Entity only has what is needed to output a graphic to the screen.
@@ -71,6 +72,17 @@ public class SimpleGameObject extends Entity {
 	}
 
 	/**
+	 * Set the graphic for this object with a specific number of columns of frames.
+	 *
+	 * @param graphic The Graphic object to use. This should be added to your GraphicsHelper.
+	 * @param columns The number of columns of frames
+	 * @param rows The number of frames in a column
+	 */
+	public void setGraphic(Graphic graphic, int columns, int rows) {
+		setPreciseGraphic(graphic, 0, 0, 1, 1f / (float) columns, rows);
+	}
+
+	/**
 	 * Set the graphic for this object using a Parameters object.
 	 * @param params Predefined parameter object
 	 */
@@ -97,6 +109,26 @@ public class SimpleGameObject extends Entity {
 		removeFromRenderer();
 		removeComponent(this.graphic);
 		this.graphic = new AnimatedGraphicAreaTransform(x, y, width, height, frameRows, graphic.width, graphic.height);
+		addComponent(this.graphic);
+
+		getRoom().getQuadRenderSystem(graphic).addEntity(this);
+	}
+
+	/**
+	 * Set graphic information for this object with precise values for x, y,
+	 * width, height. Use this when there is more than one drawable folder.
+	 *
+	 * @param graphic The graphic sheet to use.
+	 * @param x The x coordinate of the graphic on the sheet, from 0 to 1.
+	 * @param y The y coordinate of the graphic on the sheet, from 0 to 1.
+	 * @param height The height of a single frame of the graphic on the sheet, from 0 to 1.
+	 * @param width The width of a single frame of the graphic on the sheet, from 0 to 1.
+	 * @param frameRows The number of frameRows the graphic has.
+	 */
+	public void setPreciseGraphic(Graphic graphic, float x, float y, float height, float width, int frameRows) {
+		removeFromRenderer();
+		removeComponent(this.graphic);
+		this.graphic = new AnimatedGraphicAreaTransform(x, y, width, height, frameRows);
 		addComponent(this.graphic);
 
 		getRoom().getQuadRenderSystem(graphic).addEntity(this);

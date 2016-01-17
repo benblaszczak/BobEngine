@@ -140,6 +140,23 @@ public class Entity implements Component {
 	}
 
 	/**
+	 * Returns the first Component of the specified type that is found.
+	 * @param type Class type of the component to search for.
+	 * @return A Component of the specified type if found, null otherwise.
+	 */
+	public <T extends Component> T getComponent(Class<T> type) {
+		T c = null;
+
+		for (int i = 0; i < components.size() && c == null; i++) {
+			if (type.isInstance(components.get(i))) {
+				c = (T) components.get(i);
+			}
+		}
+
+		return c;
+	}
+
+	/**
 	 * Get a list of all the components belonging to this Entity and this
 	 * Entity's components.
 	 *

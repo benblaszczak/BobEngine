@@ -89,6 +89,61 @@ public class Transform implements Transformation {
 		return false;
 	}
 
+	/**
+	 * Returns the real X position after all parent transformations have been
+	 * applied.
+	 *
+	 * @return The real X position after all parent transformations have been
+	 * applied.
+	 */
+	public double getRealX() {
+		return getRealX(this);
+	}
+
+	/**
+	 * Returns the real Y position after all parent transformations have been
+	 * applied.
+	 *
+	 * @return The real Y position after all parent transformations have been
+	 * applied.
+	 */
+	public double getRealY() {
+		return getRealY(this);
+	}
+
+	/**
+	 * Returns the real angle after all parent transformations have been
+	 * applied.
+	 *
+	 * @return The real angle after all parent transformations have been
+	 * applied.
+	 */
+	public double getRealAngle() {
+		return getRealAngle(this);
+	}
+
+	/**
+	 * Returns the real scale after all parent transformations have been
+	 * applied.
+	 *
+	 * @return The real scale after all parent transformations have been
+	 * applied.
+	 */
+	public double getRealScale() {
+		return getRealScale(this);
+	}
+
+	/**
+	 * Returns the real visibility after all parent transformations have been
+	 * applied.
+	 *
+	 * @return The real visibility after all parent transformations have been
+	 * applied.
+	 */
+	public boolean getRealVisibility() {
+		return getRealVisibility(this);
+	}
+
 	/* TRANSFORMATION METHODS */
 
 	@Override public Transformation getParent() {
