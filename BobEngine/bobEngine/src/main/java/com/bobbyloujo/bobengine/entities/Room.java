@@ -386,6 +386,7 @@ public class Room extends Entity {
 	 * screens. This ratio is based off of the initial orientation of the device
 	 * when the BobView is initialized!
 	 */
+	@Deprecated
 	public double getRatioX() {
 		return getView().getRatioX();
 	}
@@ -395,6 +396,7 @@ public class Room extends Entity {
 	 * size screens. This ratio is based off of the initial orientation of the
 	 * device when the BobView is initialized!
 	 */
+	@Deprecated
 	public double getRatioY() {
 		return getView().getRatioY();
 	}
@@ -572,10 +574,10 @@ public class Room extends Entity {
 		step(deltaTime);
 
 		// Update camera edges
-		camLeft = (float) (camX + cAnchorX - getView().getRenderer().getCameraWidth() * camZoom * (cAnchorX / getView().getRenderer().getCameraWidth()));
-		camRight = (float) (camX + cAnchorX + getView().getRenderer().getCameraWidth() * camZoom * ((getView().getRenderer().getCameraWidth() - cAnchorX) / getView().getRenderer().getCameraWidth()));
-		camTop = (float) (camY + cAnchorY + getView().getRenderer().getCameraHeight() * camZoom * ((getView().getRenderer().getCameraHeight() - cAnchorY) / getView().getRenderer().getCameraHeight()));
-		camBottom = (float) (camY + cAnchorY - getView().getRenderer().getCameraHeight() * camZoom * (cAnchorY / getView().getRenderer().getCameraHeight()));
+		camLeft = (float) (camX * gridUnitX + cAnchorX - getView().getRenderer().getCameraWidth() * camZoom * (cAnchorX / getView().getRenderer().getCameraWidth()));
+		camRight = (float) (camX * gridUnitX + cAnchorX + getView().getRenderer().getCameraWidth() * camZoom * ((getView().getRenderer().getCameraWidth() - cAnchorX) / getView().getRenderer().getCameraWidth()));
+		camTop = (float) (camY * gridUnitY + cAnchorY + getView().getRenderer().getCameraHeight() * camZoom * ((getView().getRenderer().getCameraHeight() - cAnchorY) / getView().getRenderer().getCameraHeight()));
+		camBottom = (float) (camY * gridUnitY + cAnchorY - getView().getRenderer().getCameraHeight() * camZoom * (cAnchorY / getView().getRenderer().getCameraHeight()));
 
 		// Update each object
 		for (int u = 0; u < updatables.size(); u++) {

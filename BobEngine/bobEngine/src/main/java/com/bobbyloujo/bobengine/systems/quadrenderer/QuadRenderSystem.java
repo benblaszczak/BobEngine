@@ -399,10 +399,10 @@ public class QuadRenderSystem implements Renderable {
 		double scale = t.getScale();
 		boolean followCamera = t.shouldFollowCamera();
 
-		double screenLeft = room.getCameraLeftEdge();
-		double screenRight = room.getCameraRightEdge();
-		double screenTop = room.getCameraTopEdge();
-		double screenBottom = room.getCameraBottomEdge();
+		double screenLeft = room.getCameraLeftEdge() / room.getGridUnitX();
+		double screenRight = room.getCameraRightEdge() / room.getGridUnitX();
+		double screenTop = room.getCameraTopEdge() / room.getGridUnitY();
+		double screenBottom = room.getCameraBottomEdge() / room.getGridUnitY();
 
 		parent = t.getParent();
 
@@ -473,8 +473,8 @@ public class QuadRenderSystem implements Renderable {
 		}
 
 		if (t.shouldFollowCamera()) {
-			x += room.getCameraLeftEdge();
-			y += room.getCameraBottomEdge();
+			x += room.getCameraLeftEdge() / room.getGridUnitX();
+			y += room.getCameraBottomEdge() / room.getGridUnitX();
 		}
 
 		height *= scale;
