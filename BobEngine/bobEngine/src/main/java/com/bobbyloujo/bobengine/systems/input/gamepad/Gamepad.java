@@ -20,6 +20,8 @@
 package com.bobbyloujo.bobengine.systems.input.gamepad;
 
 import android.annotation.TargetApi;
+import android.graphics.ImageFormat;
+import android.util.Log;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -109,7 +111,7 @@ public class Gamepad {
 
 	public Gamepad(BobView owner) {
 		view = owner;
-		simpleDPAD = false;
+		simpleDPAD = true;
 		RSdpad = false;
 		LSdpad = false;
 
@@ -131,12 +133,14 @@ public class Gamepad {
 		view.setGamepad(this);
 	}
 
+	/* UTILITY METHODS */
+
 	/**
 	 * For controllers that provide axis values for the directional pad
 	 * rather than simple button presses, act as though an axis value above
 	 * 0.5 or below -0.5 is a button press.
 	 *
-	 * @param simpleDPAD
+	 * @param simpleDPAD true if DPAD should register as button presses, false otherwise
 	 */
 	public void useSimpleDPAD(boolean simpleDPAD) {
 		this.simpleDPAD = simpleDPAD;
@@ -146,7 +150,7 @@ public class Gamepad {
 	 * Indicate whether the right stick should fire dpad events. Use the right
 	 * stick as a dpad.
 	 *
-	 * @param RSdpad
+	 * @param RSdpad true if the right stick should be used as a DPAD, false otherwise
 	 */
 	public void useRSasDPAD(boolean RSdpad) {
 		this.RSdpad = RSdpad;
@@ -156,110 +160,118 @@ public class Gamepad {
 	 * Indicate whether the left stick should fire dpad events. Use the left
 	 * stick as a dpad.
 	 *
-	 * @param LSdpad
+	 * @param LSdpad true if the left stick should be used as a DPAD, false otherwise
 	 */
 	public void useLSasDPAD(boolean LSdpad) {
 		this.LSdpad = LSdpad;
 	}
 
 	/**
+	 * Determine if a button is being held.
+	 *
+	 * @param gamepad Gamepad number
+	 * @param button Gamepad button
+	 * @return True if the specified button on the specified gamepad is being held.
+	 */
+	public boolean held(int gamepad, int button) {
+		if (gamepad >= 1 && gamepad <= MAX_CONTROLLERS && button >= 0 && button <= 9) {
+			return held[gamepad - 1][button];
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Returns the value of the specified axis on the specified gamepad. Options for
+	 * axis are:
+	 * <br /><br />
+	 * Gamepad.RS_X    - for the right stick X axis  <br />
+	 * ...RS_Y         - for the right stick Y axis  <br />
+	 * ...LS_X         - for the left stick X axis   <br />
+	 * ...LS_Y         - for the left stick Y axis   <br />
+	 * ...RTRIGGER     - for the right trigger (R2)  <br />
+	 * ...LTRIGGER     - for the left trigger (L2)   <br />
+	 * ...AXIS_D_LR    - for the dpad left and right <br />
+	 * ...AXIS_D_UD    - for the dpad up and down    <br />
+	 *
+	 * @param gamepad Gamepad number
+	 * @param axis Axis ID
+	 * @return Value of the specified axis on the specified gamepad.
+	 */
+	public double getAxisValue(int gamepad, int axis) {
+
+		if (gamepad < 1 || gamepad > MAX_CONTROLLERS) {
+			throw new IllegalArgumentException("Invalid gamepad number.");
+		}
+
+		switch (axis) {
+			case RS_X:
+				return rsx[gamepad - 1];
+			case RS_Y:
+				return rsy[gamepad - 1];
+			case LS_X:
+				return lsx[gamepad - 1];
+			case LS_Y:
+				return lsy[gamepad - 1];
+			case RTRIGGER:
+				return rt[gamepad - 1];
+			case LTRIGGER:
+				return lt[gamepad - 1];
+			case AXIS_D_LR:
+				return dlr[gamepad - 1];
+			case AXIS_D_UD:
+				return dud[gamepad - 1];
+			default:
+				throw new IllegalArgumentException("Invalid axis identifier.");
+		}
+	}
+
+	/* INTERNAL METHODS */
+
+	/**
 	 * Update the held state of the specified button.
 	 *
-	 * @param controller
-	 * @param keyCode
-	 * @param state
+	 * @param gamepad Gamepad number
+	 * @param keyCode KeyEvent key code
+	 * @param state true if the button is held, false otherwise
 	 */
-	private void updateHeld(int controller, int keyCode, boolean state){
-		if (controller >= 0 && controller <= 4 && getButton(keyCode) != -1) {
-			held[controller][getButton(keyCode)] = state;
+	private void updateHeld(int gamepad, int keyCode, boolean state){
+		if (gamepad >= 1 && gamepad <= MAX_CONTROLLERS && getButton(keyCode) != -1) {
+			held[gamepad - 1][getButton(keyCode)] = state;
 		}
 	}
 
 	/**
 	 * Cause newpress event.
 	 *
-	 * @param controller
-	 * @param keyCode
+	 * @param gamepad Gamepad number
+	 * @param keyCode KeyEvent key code.
 	 */
-	private void newpress(int controller, int keyCode) {
+	private void newpress(int gamepad, int keyCode) {
 		if (view != null && view.getCurrentRoom() != null && getButton(keyCode) != -1) {
-			view.getCurrentRoom().signifyNewpress(controller, getButton(keyCode));
-			updateHeld(controller, keyCode, true);
+			view.getCurrentRoom().signifyNewpress(gamepad, getButton(keyCode));
+			updateHeld(gamepad, keyCode, true);
 		}
 	}
 
 	/**
 	 * Cause released event.
 	 *
-	 * @param controller
-	 * @param keyCode
+	 * @param gamepad gamepad number
+	 * @param keyCode KeyEvent key code
 	 */
-	private void released(int controller, int keyCode) {
+	private void released(int gamepad, int keyCode) {
 		if (view != null && view.getCurrentRoom() != null && getButton(keyCode) != -1) {
-			view.getCurrentRoom().signifyReleased(controller, getButton(keyCode));
-			updateHeld(controller, keyCode, false);
+			view.getCurrentRoom().signifyReleased(gamepad, getButton(keyCode));
+			updateHeld(gamepad, keyCode, false);
 		}
 	}
 
 	/**
-	 * Determine if a button is being held.
-	 *
-	 * @param controller
-	 * @param button
-	 * @return True if the specified button on the specified controller is being held.
-	 */
-	public boolean held(int controller, int button) {
-		if (controller >= 0 && controller <= 4 && button >= 0 && button <= 9)
-			return held[controller][button];
-		else
-			return false;
-	}
-
-	/**
-	 * Returns the value of the specified axis on the specified controller. Options for
-	 * axis are:
-	 *
-	 * Controller.RS_X - for the right stick X axis
-	 * ...RS_Y         - for the right stick Y axis
-	 * ...LS_X
-	 * ...LS_Y
-	 * ...RTRIGGER     - for the right trigger (R2)
-	 * ...LTRIGGER     - for the left trigger (L2)
-	 * ...AXIS_D_LR    - for the dpad left and right
-	 * ...AXIS_D_UD    - for the dpad up and down
-	 *
-	 * @param controller
-	 * @param axis
-	 * @return
-	 */
-	public double getAxisValue(int controller, int axis) {
-		switch (axis) {
-			case RS_X:
-				return rsx[controller];
-			case RS_Y:
-				return rsy[controller];
-			case LS_X:
-				return lsx[controller];
-			case LS_Y:
-				return lsy[controller];
-			case RTRIGGER:
-				return rt[controller];
-			case LTRIGGER:
-				return lt[controller];
-			case AXIS_D_LR:
-				return dlr[controller];
-			case AXIS_D_UD:
-				return dud[controller];
-			default:
-				return -2;
-		}
-	}
-
-	/**
-	 * Convert the KeyEvent key code into a Controller key code. Returns -1
-	 * if the key code does not have a matching Controller key code.
-	 * @param keyCode
-	 * @return
+	 * Convert the KeyEvent key code into a Gamepad key code. Returns -1
+	 * if the key code does not have a matching Gamepad key code.
+	 * @param keyCode a KeyEvent key code
+	 * @return Gamepad key code
 	 */
 	public int getButton(int keyCode) {
 		int button = -1;
@@ -305,6 +317,8 @@ public class Gamepad {
 
 		return button;
 	}
+
+	/* INPUT EVENTS */
 
 	@TargetApi(19)
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -352,9 +366,9 @@ public class Gamepad {
 
 	@TargetApi(19)
 	public boolean onGenericMotionEvent(MotionEvent event) {
-		int player;      // The player number (controller number) that caused this event
+		int player;              // The player number (controller number) that caused this event
 
-		boolean right = false;
+		boolean right = false;   // DPAD flags
 		boolean left = false;
 		boolean up = false;
 		boolean down = false;
@@ -366,113 +380,129 @@ public class Gamepad {
 				player = 1;
 			}
 
-			rsx[player] = event.getAxisValue(MotionEvent.AXIS_Z);
-			rsy[player] = event.getAxisValue(MotionEvent.AXIS_RZ);
-			lsx[player] = event.getAxisValue(MotionEvent.AXIS_X);
-			lsy[player] = event.getAxisValue(MotionEvent.AXIS_Y);
+			rsx[player - 1] = event.getAxisValue(MotionEvent.AXIS_Z);
+			rsy[player - 1] = event.getAxisValue(MotionEvent.AXIS_RZ);
+			lsx[player - 1] = event.getAxisValue(MotionEvent.AXIS_X);
+			lsy[player - 1] = event.getAxisValue(MotionEvent.AXIS_Y);
 
-			rt[player] = event.getAxisValue(MotionEvent.AXIS_RTRIGGER);
-			lt[player] = event.getAxisValue(MotionEvent.AXIS_LTRIGGER);
+			rt[player - 1] = event.getAxisValue(MotionEvent.AXIS_RTRIGGER);
+			lt[player - 1] = event.getAxisValue(MotionEvent.AXIS_LTRIGGER);
 
-			dlr[player] = event.getAxisValue(MotionEvent.AXIS_HAT_X);
-			dud[player] = event.getAxisValue(MotionEvent.AXIS_HAT_Y);
+			dlr[player - 1] = event.getAxisValue(MotionEvent.AXIS_HAT_X);
+			dud[player - 1] = event.getAxisValue(MotionEvent.AXIS_HAT_Y);
 
-			if (simpleDPAD) {
-				// DPAD RIGHT
-				if (dlr[player] > 0.5) {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_RIGHT, true);
+			if (simpleDPAD) {                  // Use the DPAD to fire button press events even if the DPAD is the weird axis nonsense.
+				if (dlr[player - 1] > 0.5) {   // DPAD RIGHT
 					right = true;
-				} else {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_RIGHT, false);
 				}
 
-				// DPAD LEFT
-				if (dlr[player] < -0.5) {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_LEFT, true);
+				if (dlr[player - 1] < -0.5) {  // DPAD LEFT
 					left = true;
-				} else {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_LEFT, false);
 				}
 
-				// DPAD DOWN
-				if (dud[player] > 0.5) {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_DOWN, true);
+				if (dud[player - 1] > 0.5) {   // DPAD DOWN
 					down = true;
-				} else {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_DOWN, false);
 				}
 
-				// DPAD UP
-				if (dud[player] < -0.5) {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_UP, true);
+				if (dud[player - 1] < -0.5) {  // DPAD UP
 					up = true;
-				} else {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_UP, false);
 				}
 			}
 
-			if (RSdpad) {
-				// DPAD RIGHT
-				if (rsx[player] > 0.5 || right) {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_RIGHT, true);
+			if (RSdpad) {                  // Use the right analog stick as a DPAD
+				if (rsx[player - 1] > 0.5) {   // DPAD RIGHT
 					right = true;
-				} else {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_RIGHT, false);
 				}
 
-				// DPAD LEFT
-				if (rsx[player] < -0.5 || left) {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_LEFT, true);
+				if (rsx[player - 1] < -0.5) {  // DPAD LEFT
 					left = true;
-				} else {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_LEFT, false);
 				}
 
-				// DPAD DOWN
-				if (rsy[player] > 0.5 || down) {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_DOWN, true);
+				if (rsy[player - 1] > 0.5) {   // DPAD DOWN
 					down = true;
-				} else {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_DOWN, false);
 				}
 
-				// DPAD UP
-				if (rsy[player] < -0.5 || up) {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_UP, true);
+				if (rsy[player - 1] < -0.5) {  // DPAD UP
 					up = true;
-				} else {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_UP, false);
 				}
 			}
 
-			if (LSdpad) {
-				// DPAD RIGHT
-				if (lsx[player] > 0.5 || right) {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_RIGHT, true);
-				} else {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_RIGHT, false);
+			if (LSdpad) {                  // Use the left analog stick as a DPAD
+				if (lsx[player - 1] > 0.5) {   // DPAD RIGHT
+					right = true;
 				}
 
-				// DPAD LEFT
-				if (lsx[player] < -0.5 || left) {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_LEFT, true);
-				} else {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_LEFT, false);
+				if (lsx[player - 1] < -0.5) {  // DPAD LEFT
+					left = true;
 				}
 
-				// DPAD DOWN
-				if (lsy[player] > 0.5 || down) {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_DOWN, true);
-				} else {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_DOWN, false);
+				if (lsy[player - 1] > 0.5) {   // DPAD DOWN
+					down = true;
 				}
 
-				// DPAD UP
-				if (lsy[player] < -0.5 || up) {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_UP, true);
-				} else {
-					updateHeld(player, KeyEvent.KEYCODE_DPAD_UP, false);
+				if (lsy[player - 1] < -0.5) {  // DPAD UP
+					up = true;
 				}
+			}
+
+			// Fire right dpad events
+			if (right) {
+				if (!held(player, Gamepad.D_RIGHT)) {
+					newpress(player, KeyEvent.KEYCODE_DPAD_RIGHT);
+				}
+
+				updateHeld(player, KeyEvent.KEYCODE_DPAD_RIGHT, true);
+			} else {
+				if (held(player, Gamepad.D_RIGHT)) {
+					released(player, KeyEvent.KEYCODE_DPAD_RIGHT);
+				}
+
+				updateHeld(player, KeyEvent.KEYCODE_DPAD_RIGHT, false);
+			}
+
+			// Fire left dpad events
+			if (left) {
+				if (!held(player, Gamepad.D_LEFT)) {                     // If left isn't already being held, fire newpress
+					newpress(player, KeyEvent.KEYCODE_DPAD_LEFT);
+				}
+
+				updateHeld(player, KeyEvent.KEYCODE_DPAD_LEFT, true);    // Left is held.
+			} else {                                                     // Left not being pressed.
+				if (held(player, Gamepad.D_LEFT)) {                      // If left was previously being held, fire release
+					released(player, KeyEvent.KEYCODE_DPAD_LEFT);
+				}
+
+				updateHeld(player, KeyEvent.KEYCODE_DPAD_LEFT, false);   // Left is not held.
+			}
+
+			// Fire down dpad events
+			if (down) {
+				if (!held(player, Gamepad.D_DOWN)) {
+					newpress(player, KeyEvent.KEYCODE_DPAD_DOWN);
+				}
+
+				updateHeld(player, KeyEvent.KEYCODE_DPAD_DOWN, true);
+			} else {
+				if (held(player, Gamepad.D_DOWN)) {
+					released(player, KeyEvent.KEYCODE_DPAD_DOWN);
+				}
+
+				updateHeld(player, KeyEvent.KEYCODE_DPAD_DOWN, false);
+			}
+
+			// Fire up dpad events
+			if (up) {
+				if (!held(player, Gamepad.D_UP)) {
+					newpress(player, KeyEvent.KEYCODE_DPAD_UP);
+				}
+
+				updateHeld(player, KeyEvent.KEYCODE_DPAD_UP, true);
+			} else {
+				if (held(player, Gamepad.D_UP)) {
+					released(player, KeyEvent.KEYCODE_DPAD_UP);
+				}
+
+				updateHeld(player, KeyEvent.KEYCODE_DPAD_UP, false);
 			}
 
 			return true;

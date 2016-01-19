@@ -19,10 +19,12 @@
  */
 package com.bobbyloujo.bobengine.systems.input.gamepad;
 
+import com.bobbyloujo.bobengine.components.Component;
+
 /**
  * Created by Benjamin on 11/14/2015.
  */
-public interface GamepadInputHandler {
+public interface GamepadInputHandler extends Component {
 	void newpress(int player, int button);
 	void released(int player, int button);
 }
