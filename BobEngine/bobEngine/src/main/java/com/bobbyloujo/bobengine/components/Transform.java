@@ -28,7 +28,7 @@ import com.bobbyloujo.bobengine.entities.Room;
  * <br />
  * <br />
  * This class also contains some static utility methods for finding
- * information about Transformables.
+ * information about Transformations.
  *
  * Created by Benjamin on 9/25/2015.
  */

@@ -68,7 +68,7 @@ public class SimpleGameObject extends Entity {
 	 */
 	public void setGraphic(Graphic graphic) {
 		g = graphic;
-		getRoom().getQuadRenderSystem(g).addEntity(this);
+		getRoom().getQuadRenderSystem(g).addEntity(this); // todo this doesn't work if the object has not been added to a room
 	}
 
 	/**
