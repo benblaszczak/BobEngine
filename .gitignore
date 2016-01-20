@@ -1,6 +1,6 @@
 # Android Studio
 /build
-
+/bobEngine/build/
 
 # Windows image file caches
 Thumbs.db
