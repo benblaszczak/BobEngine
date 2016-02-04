@@ -57,9 +57,11 @@ public class GraphicsHelper {
 
 	// Object
 	private Context context;
+	private Graphic defGraphic;
 
 	public GraphicsHelper(Context context) {
 		this.context = context;
+		defGraphic = new Graphic();
 
 		numGFX = 0;
 		graphics = new Graphic[START_NUM_TEX];
@@ -91,6 +93,14 @@ public class GraphicsHelper {
 		this.useMipMaps = useMipMaps;
 		this.minFilter = minFilter;
 		this.magFilter = magFilter;
+	}
+
+	/**
+	 * Returns a default graphic.
+	 * @return
+	 */
+	public Graphic getDefaultGraphic() {
+		return defGraphic;
 	}
 
 	/**

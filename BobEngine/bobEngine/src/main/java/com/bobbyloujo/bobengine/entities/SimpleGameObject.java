@@ -37,29 +37,47 @@ public class SimpleGameObject extends Entity {
 
 	// Private data
 	private Graphic g;
+	private QuadRenderSystem renderSystem;
 
 	public SimpleGameObject() {
 		super();
-
-		g = null;
 
 		transform = new Transform();
 		graphic = new AnimatedGraphicAreaTransform();
 
 		addComponent(transform);
 		addComponent(graphic);
+
+		setGraphic(getView().getGraphicsHelper().getDefaultGraphic());
 	}
 
 	public SimpleGameObject(Entity parent) {
 		super(parent);
 
-		g = null;
-
 		transform = new Transform();
 		graphic = new AnimatedGraphicAreaTransform();
 
 		addComponent(transform);
 		addComponent(graphic);
+
+		setGraphic(getView().getGraphicsHelper().getDefaultGraphic());
+	}
+
+	@Override
+	public void onParentAssigned() {
+		if (renderSystem == null || renderSystem.getGraphic() != g) {
+			removeFromRenderer();
+			renderSystem = getRoom().getQuadRenderSystem(g);
+			renderSystem.addEntity(this);
+		}
+	}
+
+	/**
+	 * Get the QuadRenderSystem that is rendering this SimpleGameObject.
+	 * @return The QuadRenderSystem that is rendering this SimpleGameObject if it exists, null otherwise.
+	 */
+	public QuadRenderSystem getRenderSystem() {
+		return renderSystem;
 	}
 
 	/**
@@ -67,8 +85,23 @@ public class SimpleGameObject extends Entity {
 	 * @param graphic The Graphic!
 	 */
 	public void setGraphic(Graphic graphic) {
+		removeFromRenderer();
 		g = graphic;
-		getRoom().getQuadRenderSystem(g).addEntity(this); // todo this doesn't work if the object has not been added to a room
+
+		if (g != null && getRoom() != null) {
+			renderSystem = getRoom().getQuadRenderSystem(g);
+			renderSystem.addEntity(this);
+		}
+	}
+
+	/**
+	 * Set the graphic for this object with a specific number of frames.
+	 *
+	 * @param graphic The Graphic object to use. This should be added to your GraphicsHelper.
+	 * @param frames The number of frames this Graphic has.
+	 */
+	public void setGraphic(Graphic graphic, int frames) {
+		setPreciseGraphic(graphic, 0, 0, 1, 1, frames);
 	}
 
 	/**
@@ -111,7 +144,12 @@ public class SimpleGameObject extends Entity {
 		this.graphic = new AnimatedGraphicAreaTransform(x, y, width, height, frameRows, graphic.width, graphic.height);
 		addComponent(this.graphic);
 
-		getRoom().getQuadRenderSystem(graphic).addEntity(this);
+		g = graphic;
+
+		if (getRoom() != null) {
+			renderSystem = getRoom().getQuadRenderSystem(g);
+			renderSystem.addEntity(this);
+		}
 	}
 
 	/**
@@ -131,7 +169,12 @@ public class SimpleGameObject extends Entity {
 		this.graphic = new AnimatedGraphicAreaTransform(x, y, width, height, frameRows);
 		addComponent(this.graphic);
 
-		getRoom().getQuadRenderSystem(graphic).addEntity(this);
+		g = graphic;
+
+		if (getRoom() != null) {
+			renderSystem = getRoom().getQuadRenderSystem(g);
+			renderSystem.addEntity(this);
+		}
 	}
 
 	/**
@@ -139,7 +182,9 @@ public class SimpleGameObject extends Entity {
 	 * object.
 	 */
 	public void removeFromRenderer() {
-		getRoom().getQuadRenderSystem(g).removeEntity(this);
+		if (renderSystem != null) {
+			renderSystem.removeEntity(this);
+		}
 	}
 
 	/**

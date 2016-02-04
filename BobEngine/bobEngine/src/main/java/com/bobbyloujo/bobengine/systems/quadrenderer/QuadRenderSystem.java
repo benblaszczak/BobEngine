@@ -368,7 +368,7 @@ public class QuadRenderSystem implements Renderable {
 			indexBuffer[layer].position(0);
 
 			// Add color
-			gl.glColor4f(red[layer], green[layer], blue[layer], alpha[layer]);
+			gl.glColor4f(red[layer] * alpha[layer], green[layer] * alpha[layer], blue[layer] * alpha[layer], alpha[layer]);
 
 			// Bind the texture
 			gl.glBindTexture(GL11.GL_TEXTURE_2D, gID);
