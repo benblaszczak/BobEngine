@@ -79,6 +79,10 @@ public class TextDisplay extends Entity implements Transformation, Updatable {
 	// Variables
 	private int columns;          // Number of columns of frames in the the graphic
 	private int rows;             // Number of rows of frames in the graphic
+	private int xOnGfx;           // X position in pixels on the graphic sheet.
+	private int yOnGfx;           // Y position in pixels on the graphic sheet.
+	private int widthOnGfx;       // Width in pixels on the graphic sheet.
+	private int heightOnGfx;      // Height in pixels on the graphic sheet.
 
 	private double boxWidth;
 	private double realWidth;
@@ -286,7 +290,12 @@ public class TextDisplay extends Entity implements Transformation, Updatable {
 		this.graphic = getView().getGraphicsHelper().addGraphic(f.drawable);
 		setKerning(f.getKerning());
 		setOrder(f.getOrder());
-		setGraphic(getView().getGraphicsHelper().addGraphic(f.getDrawable()) , f.getColumns(), f.getRows());
+
+		if (f.width == 0) {
+			setGraphic(this.graphic, f.rows, f.columns);
+		} else {
+			setGraphic(this.graphic, f.rows, f.columns, f.x, f.y, f.width, f.height);
+		}
 	}
 
 	/**
@@ -345,9 +354,10 @@ public class TextDisplay extends Entity implements Transformation, Updatable {
 				if (characters[i] == null) characters[i] = new Character(getRoom());  // Create a new character object if needed
 				characters[i].transform.visible = true;                               // This character should be visible
 				characters[i].transform.parent = this;
+				characters[i].transform.layer = layer;
 				characters[i].transform.height = height;
 				characters[i].transform.width = width;
-				characters[i].graphic.makeGrid(rows, columns);
+				characters[i].graphic.makeGrid(rows, columns, xOnGfx, yOnGfx, widthOnGfx, heightOnGfx, graphic.width, graphic.height);
 				characters[i].setGraphic(graphic);                                    // and graphic info
 				characters[i].graphic.frame = getFrameFromChar(text.charAt(i));       // and the correct frame
 
@@ -367,9 +377,9 @@ public class TextDisplay extends Entity implements Transformation, Updatable {
 					}
 				}
 
-				characters[i].transform.y = -line * height * scale - height * scale / 2;  // Set the y according to the line character i is on
-				characters[i].transform.x = cursor + width * scale / 2;                   // Place the character at the cursor
-				wordWidth += width * getKerning(text.charAt(i));                          // Increase the width of the current word according to the width of the character
+				characters[i].transform.y = -line * height - height / 2;    // Set the y according to the line character i is on
+				characters[i].transform.x = cursor + width / 2;             // Place the character at the cursor
+				wordWidth += width * getKerning(text.charAt(i));            // Increase the width of the current word according to the width of the character
 				lineWidth += width * getKerning(text.charAt(i));
 
 				if (alignment == LEFT) {                                    // Align the characters such that each line begins at x
@@ -391,7 +401,9 @@ public class TextDisplay extends Entity implements Transformation, Updatable {
 
 					/* Move all previous characters to the left by half the width of character i so that the line is centered */
 					for (int l = i; l >= firstChar; l--) {
-						if (characters[l] != null) characters[l].transform.x -= width * getKerning(text.charAt(i)) / 2;
+						if (characters[l] != null) {
+							characters[l].transform.x -= width * getKerning(text.charAt(i)) / 2;
+						}
 					}
 
 					if (cursor > boxWidth / 2 && wordWidth < boxWidth) {                        // Word wrap, need to go to the next line
@@ -454,6 +466,20 @@ public class TextDisplay extends Entity implements Transformation, Updatable {
 		this.graphic = graphic;
 		this.columns = cols;
 		this.rows = rows;
+		this.xOnGfx = 0;
+		this.yOnGfx = 0;
+		this.widthOnGfx = graphic.width;
+		this.heightOnGfx = graphic.height;
+	}
+
+	public void setGraphic(Graphic graphic, int rows, int cols, int x, int y, int width, int height) {
+		this.graphic = graphic;
+		this.columns = cols;
+		this.rows = rows;
+		this.xOnGfx = x;
+		this.yOnGfx = y;
+		this.widthOnGfx = width;
+		this.heightOnGfx = height;
 	}
 
 	@Override public Transformation getParent() {
@@ -519,11 +545,29 @@ public class TextDisplay extends Entity implements Transformation, Updatable {
 		private int drawable;
 		private int rows;
 		private int columns;
+		private int x;
+		private int y;
+		private int width;
+		private int height;
 
 		public Font(int drawable, int columns, int rows) {
 			this.drawable = drawable;
 			this.rows = rows;
 			this.columns = columns;
+			this.x = 0;
+			this.y = 0;
+			this.width = 0;
+			this.height = 0;
+		}
+
+		public Font(int drawable, int columns, int rows, int x, int y, int width, int height) {
+			this.drawable = drawable;
+			this.rows = rows;
+			this.columns = columns;
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
 		}
 
 		/**
@@ -621,6 +665,22 @@ public class TextDisplay extends Entity implements Transformation, Updatable {
 
 		public int getColumns() {
 			return columns;
+		}
+
+		public int getX() {
+			return x;
+		}
+
+		public int getY() {
+			return y;
+		}
+
+		public int getWidth() {
+			return width;
+		}
+
+		public int getHeight() {
+			return height;
 		}
 	}
 }

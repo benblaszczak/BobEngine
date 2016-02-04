@@ -91,6 +91,27 @@ public class AnimatedGraphicAreaTransform implements GraphicAreaTransformation, 
 	}
 
 	/**
+	 * This method will conveniently divide this graphic transform into a grid
+	 * of frames using only a portion of the graphic.
+	 *
+	 * @param rows The number of rows of frames.
+	 * @param cols The number of columns of frames.
+	 * @param x The X position on the graphic in pixels.
+	 * @param y The Y position on the graphic in pixels.
+	 * @param width The width on the graphic in pixels.
+	 * @param height The height on the graphic in pixels.
+	 * @param gfxWidth The width of the graphic sheet in pixels.
+	 * @param gfxHeight The height of the graphic sheet in pixels.
+	 */
+	public void makeGrid(int rows, int cols, int x, int y, int width, int height, int gfxWidth, int gfxHeight) {
+		this.x = (float) x / (float) gfxWidth;
+		this.y = (float) y / (float) gfxHeight;
+		this.width = (float) width / (float) gfxWidth / (float) cols;
+		this.height = (float) height / (float) gfxHeight;
+		this.rows = rows;
+	}
+
+	/**
 	 * Stop the animation. The object will display the most recently shown
 	 * frame.
 	 */
