@@ -145,8 +145,8 @@ public class QuadRenderSystem implements Renderable {
 		ArrayList<Transformation> transforms = entity.getComponentsOfType(Transformation.class);
 		ArrayList<GraphicAreaTransformation> graphicAreaTransformations = entity.getComponentsOfType(GraphicAreaTransformation.class);
 
-		if (!transforms.isEmpty() && transforms.size() == graphicAreaTransformations.size()) {
-			for (int i = 0; i < transforms.size(); i++) {
+		if (!transforms.isEmpty()) {
+			for (int i = 0; i < transforms.size() && i < graphicAreaTransformations.size(); i++) {
 				addTransform(transforms.get(i), graphicAreaTransformations.get(i));
 			}
 
@@ -165,11 +165,12 @@ public class QuadRenderSystem implements Renderable {
 		boolean success = false;
 
 		ArrayList<Transformation> transforms = entity.getComponentsOfType(Transformation.class);
-		ArrayList<GraphicAreaTransformation> graphicAreaTransformations = entity.getComponentsOfType(GraphicAreaTransformation.class);
 
-		if (!transforms.isEmpty() && transforms.size() == graphicAreaTransformations.size()) {
+		if (!transforms.isEmpty()) {
 			for (int i = 0; i < transforms.size(); i++) {
-				if (removeTransform(transforms.get(i), graphicAreaTransformations.get(i))) {
+				int t = this.transforms.indexOf(transforms.get(i));
+				if (t != -1) {
+					removeTransform(t);
 					success = true;
 				}
 			}
@@ -308,7 +309,7 @@ public class QuadRenderSystem implements Renderable {
 	 * Render the quads in this system.
 	 *
 	 * @param gl OpenGL ES 1 object.
-	 * @param layer
+	 * @param layer layer to render.
 	 */
 	public void render(GL10 gl, int layer) {
 		boolean obFound = false;
@@ -397,20 +398,28 @@ public class QuadRenderSystem implements Renderable {
 		double width = Math.abs(t.getWidth());
 		double height = t.getHeight();
 		double scale = t.getScale();
-		boolean followCamera = t.shouldFollowCamera();
+		boolean followCamera = Transform.getRealShouldFollowCamera(t);
 
-		double screenLeft = room.getCameraLeftEdge() / room.getGridUnitX();
-		double screenRight = room.getCameraRightEdge() / room.getGridUnitX();
-		double screenTop = room.getCameraTopEdge() / room.getGridUnitY();
-		double screenBottom = room.getCameraBottomEdge() / room.getGridUnitY();
+		double gridUnitX = room.getGridUnitX();
+		double gridUnitY = room.getGridUnitY();
+
+		double screenLeft = room.getCameraLeftEdge() / gridUnitX;
+		double screenRight = room.getCameraRightEdge() / gridUnitX;
+		double screenTop = room.getCameraTopEdge() / gridUnitY;
+		double screenBottom = room.getCameraBottomEdge() / gridUnitY;
 
 		parent = t.getParent();
 
 		while (parent != null) {
-			double cos = Math.cos(Math.toRadians(parent.getAngle()));
-			double sin = Math.sin(Math.toRadians(parent.getAngle()));
+			double cos = 1;
+			double sin = 0;
 			double oX = x;
 			double oY = y;
+
+			if (parent.getAngle() != 0) {
+				cos = Math.cos(Math.toRadians(parent.getAngle()));
+				sin = Math.sin(Math.toRadians(parent.getAngle()));
+			}
 
 			x = oX * cos - oY * sin;
 			y = oX * sin + oY * cos;
@@ -426,9 +435,9 @@ public class QuadRenderSystem implements Renderable {
 
 		if (followCamera) {
 			screenLeft = 0;
-			screenRight = room.getViewWidth();
+			screenRight = room.getWidth();
 			screenBottom = 0;
-			screenTop = room.getViewHeight();
+			screenTop = room.getHeight();
 		}
 
 		if (x > -width / 2 + screenLeft && x < width / 2 + screenRight) {
@@ -449,6 +458,7 @@ public class QuadRenderSystem implements Renderable {
 		double height = t.getHeight();
 		double angle = t.getAngle();
 		double scale = t.getScale();
+		boolean shouldFollowCamera = Transform.getRealShouldFollowCamera(t);
 
 		parent = t.getParent();
 
@@ -472,9 +482,9 @@ public class QuadRenderSystem implements Renderable {
 			parent = parent.getParent();
 		}
 
-		if (t.shouldFollowCamera()) {
+		if (shouldFollowCamera) {
 			x += room.getCameraLeftEdge() / room.getGridUnitX();
-			y += room.getCameraBottomEdge() / room.getGridUnitX();
+			y += room.getCameraBottomEdge() / room.getGridUnitY();
 		}
 
 		height *= scale;

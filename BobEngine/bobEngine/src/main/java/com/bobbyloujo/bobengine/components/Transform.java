@@ -315,4 +315,28 @@ public class Transform implements Transformation {
 
 		return t.getVisibility();
 	}
+
+	/**
+	 * Returns whether t should follow the camera after all parent transformations have been
+	 * applied.
+	 *
+	 * @param t The Transformation for which to determine if it should follow the camera
+	 * @return True if t should follow the camera after all parent transformations have been
+	 * applied, false otherwise.
+	 */
+	public static boolean getRealShouldFollowCamera(Transformation t) {
+		if (t.shouldFollowCamera()) return true;
+
+		Transformation parent = t.getParent();
+
+		while (parent != null) {
+			if (parent.shouldFollowCamera()) {
+				return true;
+			}
+
+			parent = parent.getParent();
+		}
+
+		return false;
+	}
 }

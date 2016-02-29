@@ -37,7 +37,7 @@ import javax.microedition.khronos.opengles.GL11;
 public class BobRenderer implements Renderer {
 
 	// Constants
-	private static final boolean OUTPUT_FPS = false;   // Setting this to true will output the FPS in logcat under the tag "fps"
+	private static final boolean OUTPUT_FPS = true;   // Setting this to true will output the FPS in logcat under the tag "fps"
 	private static final int FRAME_DROP_THRES = 30;
 
 	// Variables

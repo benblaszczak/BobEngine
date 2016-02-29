@@ -147,7 +147,7 @@ public class SimpleGameObject extends Entity {
 		g = graphic;
 
 		if (getRoom() != null) {
-			renderSystem = getRoom().getQuadRenderSystem(g);
+			renderSystem = getRoom().getQuadRenderSystem(graphic);
 			renderSystem.addEntity(this);
 		}
 	}

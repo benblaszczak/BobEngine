@@ -23,6 +23,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
+import com.bobbyloujo.bobengine.components.Transform;
+import com.bobbyloujo.bobengine.components.Transformation;
+import com.bobbyloujo.bobengine.entities.Entity;
+import com.bobbyloujo.bobengine.entities.Room;
 import com.bobbyloujo.bobengine.view.BobView;
 import com.bobbyloujo.bobengine.entities.GameObject;
 
@@ -136,7 +140,7 @@ public class Touch implements OnTouchListener {
 
 	/**
 	 * Returns true if GameObject o is touched.
-	 * 
+	 *
 	 * @param o
 	 *            - GameObject to check if is touched
 	 * @return True if o is being touched by any pointer, false otherwise.
@@ -148,13 +152,43 @@ public class Touch implements OnTouchListener {
 		double width = o.width;
 
 		if (!o.followCamera) {
-			double camLeft = o.getRoom().getCameraLeftEdge();
-			double camBot = o.getRoom().getCameraBottomEdge();
+			Room room = o.getRoom();
+			double camLeft = room.getCameraLeftEdge() / room.getGridUnitX();
+			double camBot = room.getCameraBottomEdge() / room.getGridUnitY();
 
 			return areaTouched(x - Math.abs(width) / 2 - camLeft, y + Math.abs(height) / 2 - camBot, x + Math.abs(width) / 2 - camLeft, y - Math.abs(height) / 2 - camBot);
 		}
 
 		return areaTouched(x - Math.abs(width) / 2, y + Math.abs(height) / 2, x + Math.abs(width) / 2, y - Math.abs(height) / 2);
+	}
+
+	/**
+	 * Returns true if Entity e has a Transformation component and is being touched.
+	 *
+	 * @param e Entity to check if is touched
+	 * @return True if e is being touched by any pointer, false otherwise.
+	 */
+	public boolean objectTouched(Entity e) {
+		Transformation t = e.getComponent(Transformation.class);
+
+		if (t != null) {
+			double x = Transform.getRealX(t);
+			double y = Transform.getRealY(t);
+			double height = t.getHeight() * Transform.getRealScale(t);
+			double width = t.getWidth() * Transform.getRealScale(t);
+
+			if (!t.shouldFollowCamera()) {
+				Room room = e.getRoom();
+				double camLeft = room.getCameraLeftEdge() / room.getGridUnitX();
+				double camBot = room.getCameraBottomEdge() / room.getGridUnitY();
+
+				return areaTouched(x - Math.abs(width) / 2 - camLeft, y + Math.abs(height) / 2 - camBot, x + Math.abs(width) / 2 - camLeft, y - Math.abs(height) / 2 - camBot);
+			}
+
+			return areaTouched(x - Math.abs(width) / 2, y + Math.abs(height) / 2, x + Math.abs(width) / 2, y - Math.abs(height) / 2);
+		}
+
+		return false;
 	}
 
 	/**
@@ -165,8 +199,9 @@ public class Touch implements OnTouchListener {
 	 */
 	public int getPointerTouchingObject(GameObject o) {
 		if (!o.followCamera) {
-			double camLeft = o.getRoom().getCameraLeftEdge();
-			double camBot = o.getRoom().getCameraBottomEdge();
+			Room room = o.getRoom();
+			double camLeft = room.getCameraLeftEdge() / room.getGridUnitX();
+			double camBot = room.getCameraBottomEdge() / room.getGridUnitY();
 
 			return getPointerTouchingArea(o.x - Math.abs(o.width) / 2 - camLeft, o.y + Math.abs(o.height) / 2 - camBot, o.x + Math.abs(o.width) / 2 - camLeft, o.y - Math.abs(o.height) / 2 - camBot);
 		}
@@ -183,13 +218,72 @@ public class Touch implements OnTouchListener {
 	 */
 	public boolean objectTouched(int index, GameObject o) {
 		if (!o.followCamera) {
-			double camLeft = o.getRoom().getCameraLeftEdge();
-			double camBot = o.getRoom().getCameraBottomEdge();
+			Room room = o.getRoom();
+			double camLeft = room.getCameraLeftEdge() / room.getGridUnitX();
+			double camBot = room.getCameraBottomEdge() / room.getGridUnitY();
 
 			return areaTouched(index, o.x - Math.abs(o.width) / 2 - camLeft, o.y + Math.abs(o.height) / 2 - camBot, o.x + Math.abs(o.width) / 2 - camLeft, o.y - Math.abs(o.height) / 2 - camBot);
 		}
 
 		return areaTouched(index, o.x - Math.abs(o.width) / 2, o.y + Math.abs(o.height) / 2, o.x + Math.abs(o.width) / 2, o.y - Math.abs(o.height) / 2);
+	}
+
+	/**
+	 * Determines if the Entity has a Transformation component that is being touched by the specified pointer.
+	 *
+	 * @param e Entity to check if is touched
+	 * @return True if the coordinates of the pointer's last position fall inside the bounds of Entity e
+	 *         as defined by e's Transformation component. The first Transformation component found will be used.
+	 */
+	public boolean objectTouched(int index, Entity e) {
+		Transformation t = e.getComponent(Transformation.class);
+
+		if (t != null) {
+			double x = Transform.getRealX(t);
+			double y = Transform.getRealY(t);
+			double height = t.getHeight() * Transform.getRealScale(t);
+			double width = t.getWidth() * Transform.getRealScale(t);
+
+			if (!t.shouldFollowCamera()) {
+				Room room = e.getRoom();
+				double camLeft = room.getCameraLeftEdge() / room.getGridUnitX();
+				double camBot = room.getCameraBottomEdge() / room.getGridUnitY();
+
+				return areaTouched(index, x - Math.abs(width) / 2 - camLeft, y + Math.abs(height) / 2 - camBot, x + Math.abs(width) / 2 - camLeft, y - Math.abs(height) / 2 - camBot);
+			}
+
+			return areaTouched(index, x - Math.abs(width) / 2, y + Math.abs(height) / 2, x + Math.abs(width) / 2, y - Math.abs(height) / 2);
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determines if the Transformation component is being touched by the specified pointer.
+	 *
+	 * @param t Transformation to check if is touched
+	 * @param e The Entity that t belongs to.
+	 * @return True if the coordinates of the pointer's last position fall inside the bounds of Transformation t.
+	 */
+	public boolean objectTouched(int index, Entity e, Transformation t) {
+		if (t != null) {
+			double x = Transform.getRealX(t);
+			double y = Transform.getRealY(t);
+			double height = t.getHeight() * Transform.getRealScale(t);
+			double width = t.getWidth() * Transform.getRealScale(t);
+
+			if (!t.shouldFollowCamera()) {
+				Room room = e.getRoom();
+				double camLeft = room.getCameraLeftEdge() / room.getGridUnitX();
+				double camBot = room.getCameraBottomEdge() / room.getGridUnitY();
+
+				return areaTouched(index, x - Math.abs(width) / 2 - camLeft, y + Math.abs(height) / 2 - camBot, x + Math.abs(width) / 2 - camLeft, y - Math.abs(height) / 2 - camBot);
+			}
+
+			return areaTouched(index, x - Math.abs(width) / 2, y + Math.abs(height) / 2, x + Math.abs(width) / 2, y - Math.abs(height) / 2);
+		}
+
+		return false;
 	}
 
 	/**

@@ -113,6 +113,7 @@ public class TextDisplay extends Entity implements Transformation, Updatable {
 		width = 50;
 		height = 50;
 		scale = 1;
+		layer = 2;
 		visible = true;
 		setBoxWidth(getRoom().getViewWidth());
 		alignment = LEFT;
@@ -139,8 +140,10 @@ public class TextDisplay extends Entity implements Transformation, Updatable {
 	 * @param text
 	 */
 	public void setText(final String text) {
-		this.text = text;
-		hasChanged = true;
+		if (!this.text.equals(text)) {
+			this.text = text;
+			hasChanged = true;
+		}
 	}
 
 	/**
@@ -357,6 +360,7 @@ public class TextDisplay extends Entity implements Transformation, Updatable {
 				characters[i].transform.layer = layer;
 				characters[i].transform.height = height;
 				characters[i].transform.width = width;
+				characters[i].transform.followCamera = followCamera;
 				characters[i].graphic.makeGrid(rows, columns, xOnGfx, yOnGfx, widthOnGfx, heightOnGfx, graphic.width, graphic.height);
 				characters[i].setGraphic(graphic);                                    // and graphic info
 				characters[i].graphic.frame = getFrameFromChar(text.charAt(i));       // and the correct frame
