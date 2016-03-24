@@ -402,6 +402,14 @@ public class Room extends Entity {
 	}
 
 	/**
+	 * Returns the number of layers this room renders.
+	 * @return The number of layers this room renders.
+	 */
+	public int getNumLayers() {
+		return layers;
+	}
+
+	/**
 	 * Change the x position of the camera.
 	 */
 	public void setCameraX(double x) {
