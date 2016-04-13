@@ -37,7 +37,6 @@ import javax.microedition.khronos.opengles.GL11;
 public class BobRenderer implements Renderer {
 
 	// Constants
-	private static final boolean OUTPUT_FPS = true;   // Setting this to true will output the FPS in logcat under the tag "fps"
 	private static final int FRAME_DROP_THRES = 30;
 
 	// Variables
@@ -46,6 +45,7 @@ public class BobRenderer implements Renderer {
 	private float averageDelta = OPTIMAL_TIME;        // Average amount of time a frame takes
 	private long lastTime;                            // Time the last frame took
 	private int frames = 0;                           // # of frames passed
+	private boolean outputFPS = false;
 
 	private double low;   // The lowest FPS
 	private double high;  // The highest FPS
@@ -151,7 +151,7 @@ public class BobRenderer implements Renderer {
 
 		lastTime = now;
 
-		if (OUTPUT_FPS && frames % 60 == 0) {
+		if (outputFPS && frames % 60 == 0) {
 			double fps = (double) 1000 / (double) averageDelta;
 
 			if (1000.0 / timeElapsed < low || low == -1) {
@@ -231,5 +231,13 @@ public class BobRenderer implements Renderer {
 	 */
 	public double getFPS() {
 		return 1000.0 / averageDelta;
+	}
+
+	/**
+	 * Determines if the FPS should be output to logcat.
+	 * @param outputFPS True to show FPS in logcat, false to not show FPS.
+	 */
+	public void outputFPS(boolean outputFPS) {
+		this.outputFPS = outputFPS;
 	}
 }

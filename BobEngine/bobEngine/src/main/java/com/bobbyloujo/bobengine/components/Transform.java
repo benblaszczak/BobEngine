@@ -75,9 +75,9 @@ public class Transform implements Transformation {
 
 		if (followCamera) {
 			screenLeft = 0;
-			screenRight = room.getViewWidth();
+			screenRight = room.getWidth();
 			screenBottom = 0;
-			screenTop = room.getViewHeight();
+			screenTop = room.getHeight();
 		}
 
 		if (x > -width / 2 + screenLeft && x < width / 2 + screenRight) {

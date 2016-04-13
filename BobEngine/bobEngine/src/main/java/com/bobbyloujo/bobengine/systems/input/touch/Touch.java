@@ -153,8 +153,8 @@ public class Touch implements OnTouchListener {
 
 		if (!o.followCamera) {
 			Room room = o.getRoom();
-			double camLeft = room.getCameraLeftEdge() / room.getGridUnitX();
-			double camBot = room.getCameraBottomEdge() / room.getGridUnitY();
+			double camLeft = room.getCameraLeftEdge();
+			double camBot = room.getCameraBottomEdge();
 
 			return areaTouched(x - Math.abs(width) / 2 - camLeft, y + Math.abs(height) / 2 - camBot, x + Math.abs(width) / 2 - camLeft, y - Math.abs(height) / 2 - camBot);
 		}
@@ -179,8 +179,8 @@ public class Touch implements OnTouchListener {
 
 			if (!t.shouldFollowCamera()) {
 				Room room = e.getRoom();
-				double camLeft = room.getCameraLeftEdge() / room.getGridUnitX();
-				double camBot = room.getCameraBottomEdge() / room.getGridUnitY();
+				double camLeft = room.getCameraLeftEdge();
+				double camBot = room.getCameraBottomEdge();
 
 				return areaTouched(x - Math.abs(width) / 2 - camLeft, y + Math.abs(height) / 2 - camBot, x + Math.abs(width) / 2 - camLeft, y - Math.abs(height) / 2 - camBot);
 			}
@@ -200,8 +200,8 @@ public class Touch implements OnTouchListener {
 	public int getPointerTouchingObject(GameObject o) {
 		if (!o.followCamera) {
 			Room room = o.getRoom();
-			double camLeft = room.getCameraLeftEdge() / room.getGridUnitX();
-			double camBot = room.getCameraBottomEdge() / room.getGridUnitY();
+			double camLeft = room.getCameraLeftEdge();
+			double camBot = room.getCameraBottomEdge();
 
 			return getPointerTouchingArea(o.x - Math.abs(o.width) / 2 - camLeft, o.y + Math.abs(o.height) / 2 - camBot, o.x + Math.abs(o.width) / 2 - camLeft, o.y - Math.abs(o.height) / 2 - camBot);
 		}
@@ -219,8 +219,8 @@ public class Touch implements OnTouchListener {
 	public boolean objectTouched(int index, GameObject o) {
 		if (!o.followCamera) {
 			Room room = o.getRoom();
-			double camLeft = room.getCameraLeftEdge() / room.getGridUnitX();
-			double camBot = room.getCameraBottomEdge() / room.getGridUnitY();
+			double camLeft = room.getCameraLeftEdge();
+			double camBot = room.getCameraBottomEdge();
 
 			return areaTouched(index, o.x - Math.abs(o.width) / 2 - camLeft, o.y + Math.abs(o.height) / 2 - camBot, o.x + Math.abs(o.width) / 2 - camLeft, o.y - Math.abs(o.height) / 2 - camBot);
 		}
@@ -246,8 +246,8 @@ public class Touch implements OnTouchListener {
 
 			if (!t.shouldFollowCamera()) {
 				Room room = e.getRoom();
-				double camLeft = room.getCameraLeftEdge() / room.getGridUnitX();
-				double camBot = room.getCameraBottomEdge() / room.getGridUnitY();
+				double camLeft = room.getCameraLeftEdge();
+				double camBot = room.getCameraBottomEdge();
 
 				return areaTouched(index, x - Math.abs(width) / 2 - camLeft, y + Math.abs(height) / 2 - camBot, x + Math.abs(width) / 2 - camLeft, y - Math.abs(height) / 2 - camBot);
 			}
@@ -274,8 +274,8 @@ public class Touch implements OnTouchListener {
 
 			if (!t.shouldFollowCamera()) {
 				Room room = e.getRoom();
-				double camLeft = room.getCameraLeftEdge() / room.getGridUnitX();
-				double camBot = room.getCameraBottomEdge() / room.getGridUnitY();
+				double camLeft = room.getCameraLeftEdge();
+				double camBot = room.getCameraBottomEdge();
 
 				return areaTouched(index, x - Math.abs(width) / 2 - camLeft, y + Math.abs(height) / 2 - camBot, x + Math.abs(width) / 2 - camLeft, y - Math.abs(height) / 2 - camBot);
 			}

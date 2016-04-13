@@ -48,7 +48,7 @@ public class SimpleGameObject extends Entity {
 		addComponent(transform);
 		addComponent(graphic);
 
-		setGraphic(getView().getGraphicsHelper().getDefaultGraphic());
+		setGraphic(getView().getGraphicsHelper().getDefaultGraphic(), false);
 	}
 
 	public SimpleGameObject(Entity parent) {
@@ -60,7 +60,7 @@ public class SimpleGameObject extends Entity {
 		addComponent(transform);
 		addComponent(graphic);
 
-		setGraphic(getView().getGraphicsHelper().getDefaultGraphic());
+		setGraphic(getView().getGraphicsHelper().getDefaultGraphic(), false);
 	}
 
 	@Override
@@ -85,13 +85,17 @@ public class SimpleGameObject extends Entity {
 	 * @param graphic The Graphic!
 	 */
 	public void setGraphic(Graphic graphic) {
-		removeFromRenderer();
-		g = graphic;
+		setPreciseGraphic(graphic, 0, 0, 1, 1, 1, true);
+	}
 
-		if (g != null && getRoom() != null) {
-			renderSystem = getRoom().getQuadRenderSystem(g);
-			renderSystem.addEntity(this);
-		}
+	/**
+	 * Tell this SimpleGameObject which Graphic to use.
+	 * @param graphic The Graphic!
+	 * @param addToRenderer True if this object should be automatically added to a render. False if
+	 *                      this object is going to be added to a renderer manually.
+	 */
+	public void setGraphic(Graphic graphic, boolean addToRenderer) {
+		setPreciseGraphic(graphic, 0, 0, 1, 1, 1, addToRenderer);
 	}
 
 	/**
@@ -101,7 +105,19 @@ public class SimpleGameObject extends Entity {
 	 * @param frames The number of frames this Graphic has.
 	 */
 	public void setGraphic(Graphic graphic, int frames) {
-		setPreciseGraphic(graphic, 0, 0, 1, 1, frames);
+		setPreciseGraphic(graphic, 0, 0, 1, 1, frames, true);
+	}
+
+	/**
+	 * Set the graphic for this object with a specific number of frames.
+	 *
+	 * @param graphic The Graphic object to use. This should be added to your GraphicsHelper.
+	 * @param frames The number of frames this Graphic has.
+	 * @param addToRenderer True if this object should be automatically added to a render. False if
+	 *                      this object is going to be added to a renderer manually.
+	 */
+	public void setGraphic(Graphic graphic, int frames, boolean addToRenderer) {
+		setPreciseGraphic(graphic, 0, 0, 1, 1, frames, addToRenderer);
 	}
 
 	/**
@@ -112,7 +128,20 @@ public class SimpleGameObject extends Entity {
 	 * @param rows The number of frames in a column
 	 */
 	public void setGraphic(Graphic graphic, int columns, int rows) {
-		setPreciseGraphic(graphic, 0, 0, 1, 1f / (float) columns, rows);
+		setPreciseGraphic(graphic, 0, 0, 1, 1f / (float) columns, rows, true);
+	}
+
+	/**
+	 * Set the graphic for this object with a specific number of columns of frames.
+	 *
+	 * @param graphic The Graphic object to use. This should be added to your GraphicsHelper.
+	 * @param columns The number of columns of frames
+	 * @param rows The number of frames in a column
+	 * @param addToRenderer True if this object should be automatically added to a render. False if
+	 *                      this object is going to be added to a renderer manually.
+	 */
+	public void setGraphic(Graphic graphic, int columns, int rows, boolean addToRenderer) {
+		setPreciseGraphic(graphic, 0, 0, 1, 1f / (float) columns, rows, addToRenderer);
 	}
 
 	/**
@@ -120,7 +149,17 @@ public class SimpleGameObject extends Entity {
 	 * @param params Predefined parameter object
 	 */
 	public void setGraphic(Graphic.Parameters params) {
-		setGraphic(params.graphic, params.x, params.y, params.height, params.width, params.rows);
+		setGraphic(params.graphic, params.x, params.y, params.height, params.width, params.rows, true);
+	}
+
+	/**
+	 * Set the graphic for this object using a Parameters object.
+	 * @param params Predefined parameter object
+	 * @param addToRenderer True if this object should be automatically added to a render. False if
+	 *                      this object is going to be added to a renderer manually.
+	 */
+	public void setGraphic(Graphic.Parameters params, boolean addToRenderer) {
+		setGraphic(params.graphic, params.x, params.y, params.height, params.width, params.rows, addToRenderer);
 	}
 
 	/**
@@ -137,16 +176,17 @@ public class SimpleGameObject extends Entity {
 	 * @param height The height of a single frame of the graphic on the sheet, in pixels.
 	 * @param width The width of a single frame of the graphic on the sheet, in pixels.
 	 * @param frameRows The number of rows of frames the graphic has.
+	 * @param addToRenderer True if this object should automatically be given a render system.
 	 */
-	public void setGraphic(Graphic graphic, int x, int y, int height, int width, int frameRows) {
-		removeFromRenderer();
+	public void setGraphic(Graphic graphic, int x, int y, int height, int width, int frameRows, boolean addToRenderer) {
 		removeComponent(this.graphic);
 		this.graphic = new AnimatedGraphicAreaTransform(x, y, width, height, frameRows, graphic.width, graphic.height);
 		addComponent(this.graphic);
 
 		g = graphic;
 
-		if (getRoom() != null) {
+		if (getRoom() != null && addToRenderer) {
+			removeFromRenderer();
 			renderSystem = getRoom().getQuadRenderSystem(graphic);
 			renderSystem.addEntity(this);
 		}
@@ -163,15 +203,16 @@ public class SimpleGameObject extends Entity {
 	 * @param width The width of a single frame of the graphic on the sheet, from 0 to 1.
 	 * @param frameRows The number of frameRows the graphic has.
 	 */
-	public void setPreciseGraphic(Graphic graphic, float x, float y, float height, float width, int frameRows) {
-		removeFromRenderer();
+	public void setPreciseGraphic(Graphic graphic, float x, float y, float height, float width, int frameRows, boolean addToRenderer) {
+
 		removeComponent(this.graphic);
 		this.graphic = new AnimatedGraphicAreaTransform(x, y, width, height, frameRows);
 		addComponent(this.graphic);
 
 		g = graphic;
 
-		if (getRoom() != null) {
+		if (getRoom() != null && addToRenderer) {
+			removeFromRenderer();
 			renderSystem = getRoom().getQuadRenderSystem(g);
 			renderSystem.addEntity(this);
 		}

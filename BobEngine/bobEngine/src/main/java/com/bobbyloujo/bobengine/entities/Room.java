@@ -189,7 +189,7 @@ public class Room extends Entity {
 		r = findQuadRenderSystem(g);
 
 		if (r == null) {
-			r = new QuadRenderSystem(this, g, layers, minSprites);
+			r = new QuadRenderSystem(g, minSprites);
 			addComponent(r);
 			renderables.add(r);
 		} else if (r.getBufferSize() < minSprites) {
@@ -452,31 +452,31 @@ public class Room extends Entity {
 	}
 
 	/**
-	 * Get the coordinate of the left edge of the camera.
+	 * Get the coordinate of the left edge of the camera in grid units.
 	 */
 	public float getCameraLeftEdge() {
-		return camLeft;
+		return camLeft / (float) gridUnitX;
 	}
 
 	/**
-	 * Get the coordinate of teh right edge of the screen.
+	 * Get the coordinate of the right edge of the screen in grid units.
 	 */
 	public float getCameraRightEdge() {
-		return camRight;
+		return camRight / (float) gridUnitX;
 	}
 
 	/**
-	 * Get the coordinate of the bottom edge of the screen.
+	 * Get the coordinate of the bottom edge of the screen in grid units.
 	 */
 	public float getCameraBottomEdge() {
-		return camBottom;
+		return camBottom / (float) gridUnitY;
 	}
 
 	/**
-	 * Get the coordinate of the top edge of the screen.
+	 * Get the coordinate of the top edge of the screen in grid units.
 	 */
 	public float getCameraTopEdge() {
-		return camTop;
+		return camTop / (float) gridUnitY;
 	}
 
 	/**
@@ -505,7 +505,7 @@ public class Room extends Entity {
 		// Update camera
 		gl.glMatrixMode(GLES10.GL_PROJECTION);
 		gl.glLoadIdentity();
-		gl.glOrthof(getCameraLeftEdge(), getCameraRightEdge(), getCameraBottomEdge(), getCameraTopEdge(), -1, 1);
+		gl.glOrthof(camLeft, camRight, camBottom, camTop, -1, 1);
 
 		// Draw graphics
 		gl.glMatrixMode(GLES10.GL_MODELVIEW);

@@ -77,6 +77,18 @@ public class RoomCache {
 	}
 
 	/**
+	 * If a room of roomType exists in this cache, remove it.
+	 * @param roomType The type of room to remove.
+	 */
+	public void removeRoom(Class<? extends Room> roomType) {
+		for (int i = 0; i < cache.length; i++) {                                          // Look through the cache for an instance of roomType.
+			if (cache[i] != null && cache[i].getClass() == roomType) {
+				cache[i] = null;
+			}
+		}
+	}
+
+	/**
 	 * Get the BobView used to initialize new Room instances.
 	 *
 	 * @return owner.

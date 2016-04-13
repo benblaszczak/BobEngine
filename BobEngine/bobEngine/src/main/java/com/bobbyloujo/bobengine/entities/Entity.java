@@ -22,6 +22,7 @@ package com.bobbyloujo.bobengine.entities;
 import android.app.Activity;
 
 import com.bobbyloujo.bobengine.components.Component;
+import com.bobbyloujo.bobengine.components.ParentAssignmentHandler;
 import com.bobbyloujo.bobengine.view.BobView;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ import java.util.ArrayList;
  *
  * Created by Ben on 9/24/2015.
  */
-public class Entity implements Component {
+public class Entity implements ParentAssignmentHandler {
 
 	// Constants
     public static final int INIT_COMP_CAPACITY = 1;  // The initial size of the Component list
@@ -77,6 +78,10 @@ public class Entity implements Component {
 			((Entity) component).parent = this;
 			((Entity) component).room = getRoom();
 			((Entity) component).onParentAssigned();
+		}
+
+		if (component instanceof ParentAssignmentHandler) {
+			((ParentAssignmentHandler) component).onParentAssigned(this);
 		}
 
 		success = components.add(component);
@@ -242,6 +247,14 @@ public class Entity implements Component {
 	 * This event is triggered any time a parent Entity is assigned to this Entity.
 	 */
 	public void onParentAssigned() {
+
+	}
+
+	/**
+	 * This event is triggered any time a parent Entity is assigned to this Entity.
+	 */
+	@Override
+	public void onParentAssigned(Entity parent) {
 
 	}
 }

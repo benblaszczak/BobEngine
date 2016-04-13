@@ -361,8 +361,8 @@ public class TextDisplay extends Entity implements Transformation, Updatable {
 				characters[i].transform.height = height;
 				characters[i].transform.width = width;
 				characters[i].transform.followCamera = followCamera;
-				characters[i].graphic.makeGrid(rows, columns, xOnGfx, yOnGfx, widthOnGfx, heightOnGfx, graphic.width, graphic.height);
 				characters[i].setGraphic(graphic);                                    // and graphic info
+				characters[i].graphic.makeGrid(rows, columns, xOnGfx, yOnGfx, widthOnGfx, heightOnGfx, graphic.width, graphic.height);
 				characters[i].graphic.frame = getFrameFromChar(text.charAt(i));       // and the correct frame
 
 				/* Check if we've started a new word */

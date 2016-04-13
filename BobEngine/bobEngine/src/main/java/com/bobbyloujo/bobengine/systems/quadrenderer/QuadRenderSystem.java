@@ -18,6 +18,8 @@
  */
 package com.bobbyloujo.bobengine.systems.quadrenderer;
 
+import android.util.Log;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -43,7 +45,7 @@ import com.bobbyloujo.bobengine.graphics.Graphic;
  * <p/>
  * Created by Benjamin on 9/25/2015.
  */
-public class QuadRenderSystem implements Renderable {
+public class QuadRenderSystem extends Entity implements Renderable {
 
 	public static final int DEF_INIT_TRANSFORMS = 3;
 
@@ -53,11 +55,9 @@ public class QuadRenderSystem implements Renderable {
 
 	private final int VERTEX_BYTES = 4 * 3 * 4;   // 4 bytes per float * 3 coords per vertex * 4 vertices
 	private final int TEX_BYTES = 4 * 2 * 4;      // 4 bytes per float * 2 coords per vertex * 4 vertices
-	private final int INDEX_BYTES = 4 * 4;        // 4 bytes per short * 4 indices per quad
+	private final int INDEX_BYTES = 4 * INDICES;  // 4 bytes per short * 6 indices per quad
 
-	private Room room;
 	private Graphic graphic;
-	private int layers;
 
 	private int numTransforms;
 	private ArrayList<Transformation> transforms;
@@ -79,26 +79,34 @@ public class QuadRenderSystem implements Renderable {
 	private float blue[];         // Blue values for each layer
 	private float alpha[];        // alpha values for each layer
 
-	public QuadRenderSystem(Room room, Graphic graphic, int layers) {
-		init(room, graphic, layers, DEF_INIT_TRANSFORMS);
+	public QuadRenderSystem(Graphic graphic) {
+		init(graphic, DEF_INIT_TRANSFORMS);
 	}
 
-	public QuadRenderSystem(Room room, Graphic graphic, int layers, int initTransforms) {
-		init(room, graphic, layers, initTransforms);
+	public QuadRenderSystem(Graphic graphic, int initTransforms) {
+		init(graphic, initTransforms);
 	}
 
-	private void init(Room room, Graphic graphic, int layers, int initTransforms) {
-		this.room = room;
+	private void init(Graphic graphic, int initTransforms) {
 		this.graphic = graphic;
-		this.layers = layers;
-
-		resizeBuffers(initTransforms);
-
-		lastIndex = new int[layers];
 
 		numTransforms = 0;
 		transforms = new ArrayList<Transformation>(initTransforms);
 		graphicTransforms = new ArrayList<GraphicAreaTransformation>(initTransforms);
+	}
+
+	@Override
+	public void onParentAssigned() {
+		int layers = getRoom().getNumLayers();
+
+		lastIndex = new int[layers];
+
+		float[] r,g,b,a;
+
+		r = red;
+		g = green;
+		b = blue;
+		a = alpha;
 
 		red = new float[layers];
 		green = new float[layers];
@@ -107,7 +115,16 @@ public class QuadRenderSystem implements Renderable {
 
 		for (int i = 0; i < layers; i++) {
 			red[i] = green[i] = blue[i] = alpha[i] = 1f;
+
+			if (r != null && i < r.length) {
+				red[i] = r[i];
+				green[i] = g[i];
+				blue[i] = b[i];
+				alpha[i] = a[i];
+			}
 		}
+
+		resizeBuffers(transforms.size());
 	}
 
 	/**
@@ -129,10 +146,80 @@ public class QuadRenderSystem implements Renderable {
 	 * @param a The alpha value, from 0-1
 	 */
 	public void setLayerColor(int layer, float r, float g, float b, float a) {
-		red[layer] = r;
-		green[layer] = g;
-		blue[layer] = b;
-		alpha[layer] = a;
+		if (getRoom() == null) {
+			float[] or, og, ob, oa; // original values
+			int layers = Room.DEF_LAYERS;
+
+			or = red;
+			og = green;
+			ob = blue;
+			oa = alpha;
+
+			if (layer >= Room.DEF_LAYERS) {
+				layers = layer+1;
+			}
+
+			red = new float[layers];
+			green = new float[layers];
+			blue = new float[layers];
+			alpha = new float[layers];
+
+			for (int i = 0; i < layers; i++) {
+				red[i] = green[i] = blue[i] = alpha[i] = 1f;
+
+				if (or != null && i < or.length) {
+					red[i] = or[i];
+					green[i] = og[i];
+					blue[i] = ob[i];
+					alpha[i] = oa[i];
+				}
+			}
+		}
+
+		if (layer < red.length && layer >= 0) {
+			red[layer] = r;
+			green[layer] = g;
+			blue[layer] = b;
+			alpha[layer] = a;
+		} else {
+			Log.e("BobEngine", "Can't change layer color. Layer not in range.");
+		}
+	}
+
+	/**
+	 * Returns the value of the color on the layer.
+	 * @param layer the layer
+	 * @return value of the color for the layer
+	 */
+	public float getRed(int layer) {
+		return red[layer];
+	}
+
+	/**
+	 * Returns the value of the color on the layer.
+	 * @param layer the layer
+	 * @return value of the color for the layer
+	 */
+	public float getGreen(int layer) {
+		return green[layer];
+	}
+
+	/**
+	 * Returns the value of the color on the layer.
+	 * @param layer the layer
+	 * @return value of the color for the layer
+	 */
+	public float getBlue(int layer) {
+		return blue[layer];
+	}
+
+	/**
+	 * Returns the value of the color on the layer.
+	 * @param layer the layer
+	 * @return value of the color for the layer
+	 */
+	public float getAlpha(int layer) {
+		return alpha[layer];
 	}
 
 	/**
@@ -285,6 +372,12 @@ public class QuadRenderSystem implements Renderable {
 		textureBuffer.position(0);
 
 		// Set up index buffer
+		int layers = Room.DEF_LAYERS;
+
+		if (getRoom() != null) {
+			layers = getRoom().getNumLayers();
+		}
+
 		vertexByteBuffer = ByteBuffer.allocateDirect(INDEX_BYTES * quads);
 		vertexByteBuffer.order(ByteOrder.nativeOrder());
 		indexBuffer = new ShortBuffer[layers];
@@ -326,7 +419,7 @@ public class QuadRenderSystem implements Renderable {
 			Transformation t = transforms.get(i);
 			GraphicAreaTransformation g = graphicTransforms.get(i);
 
-			if (t.getLayer() == layer && onScreen(t, room) && Transform.getRealVisibility(t)) {
+			if (t.getLayer() == layer && onScreen(t, getRoom()) && Transform.getRealVisibility(t)) {
 				if (!obFound) {
 					vertexBuffer.clear();
 					textureBuffer.clear();
@@ -388,7 +481,6 @@ public class QuadRenderSystem implements Renderable {
 	 * Room room.
 	 *
 	 * @param t the Transformation to inspect
-	 * @param room the Room whose bounds to use
 	 * @return True if the Transformation is on screen, false if not.
 	 */
 	public static boolean onScreen(Transformation t, Room room) {
@@ -403,10 +495,10 @@ public class QuadRenderSystem implements Renderable {
 		double gridUnitX = room.getGridUnitX();
 		double gridUnitY = room.getGridUnitY();
 
-		double screenLeft = room.getCameraLeftEdge() / gridUnitX;
-		double screenRight = room.getCameraRightEdge() / gridUnitX;
-		double screenTop = room.getCameraTopEdge() / gridUnitY;
-		double screenBottom = room.getCameraBottomEdge() / gridUnitY;
+		double screenLeft = room.getCameraLeftEdge();
+		double screenRight = room.getCameraRightEdge();
+		double screenTop = room.getCameraTopEdge();
+		double screenBottom = room.getCameraBottomEdge();
 
 		parent = t.getParent();
 
@@ -452,6 +544,7 @@ public class QuadRenderSystem implements Renderable {
 	private float[] getVertices(Transformation t) {
 		// Data
 		Transformation parent;
+		Room room = getRoom();
 		double x = t.getX();
 		double y = t.getY();
 		double width = t.getWidth();
@@ -483,8 +576,8 @@ public class QuadRenderSystem implements Renderable {
 		}
 
 		if (shouldFollowCamera) {
-			x += room.getCameraLeftEdge() / room.getGridUnitX();
-			y += room.getCameraBottomEdge() / room.getGridUnitY();
+			x += room.getCameraLeftEdge();
+			y += room.getCameraBottomEdge();
 		}
 
 		height *= scale;
