@@ -22,10 +22,10 @@ public class FlashingEffect implements Updatable, ParentAssignmentHandler {
     private boolean shouldPulse;
     private int direction;
 
-    private float redMin, redMax;
-    private float greenMin, greenMax;
-    private float blueMin, blueMax;
-    private float alphaMin, alphaMax;
+    private float redMin, redMax, redClear;
+    private float greenMin, greenMax, greenClear;
+    private float blueMin, blueMax, blueClear;
+    private float alphaMin, alphaMax, alphaClear;
 
     private int frames;
 
@@ -39,7 +39,9 @@ public class FlashingEffect implements Updatable, ParentAssignmentHandler {
 
         redMin = greenMin = blueMin = 0.5f;
         redMax = greenMax = blueMax = 1f;
-        alphaMin = alphaMax = 1;
+        alphaMin = alphaMax = 1f;
+
+        redClear = blueClear = greenClear = alphaClear = 1f;
     }
 
     public void goFromMaxToMin(boolean maxToMin) {
@@ -63,7 +65,7 @@ public class FlashingEffect implements Updatable, ParentAssignmentHandler {
     }
 
     public void setRepeats(int repeats) {
-        this.repeat = repeats;
+        this.loops = this.repeat = repeats;
     }
 
     public void setMinColor(float r, float g, float b, float a) {
@@ -78,6 +80,13 @@ public class FlashingEffect implements Updatable, ParentAssignmentHandler {
         this.greenMax = g;
         this.blueMax = b;
         this.alphaMax = a;
+    }
+
+    public void setClearColor(float r, float g, float b, float a) {
+        this.redClear = r;
+        this.greenClear = g;
+        this.blueClear = b;
+        this.alphaClear = a;
     }
 
     public void start() {
@@ -135,6 +144,16 @@ public class FlashingEffect implements Updatable, ParentAssignmentHandler {
                     ((QuadRenderSystem) renderer).setLayerColor(layer, red, green, blue, alpha);
                 } else if (renderer instanceof ShadeRenderer) {
                     ((ShadeRenderer) renderer).setLayerColor(layer, red, green, blue, alpha);
+                }
+            }
+
+            if (loops >= repeat && repeat != -1) {
+                if (renderer != null) {
+                    if (renderer instanceof QuadRenderSystem) {
+                        ((QuadRenderSystem) renderer).setLayerColor(layer, redClear, greenClear, blueClear, alphaClear);
+                    } else if (renderer instanceof ShadeRenderer) {
+                        ((ShadeRenderer) renderer).setLayerColor(layer, redClear, greenClear, blueClear, alphaClear);
+                    }
                 }
             }
         }

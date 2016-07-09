@@ -28,7 +28,7 @@ public class GameObjectWithBox extends SimpleGameObject implements Updatable, Co
 	public GameObjectWithBox(Room room, CollisionSystem collisionSystem) {
 		super(room);
 
-		getView().getGraphicsHelper().setParameters(false, GL10.GL_NEAREST, GL10.GL_NEAREST);
+		getView().getGraphicsHelper().setParameters(false, GL10.GL_NEAREST, GL10.GL_NEAREST, false);
 		Graphic g = getView().getGraphicsHelper().addGraphic(R.drawable.collisionsquare);
 
 		setGraphic(g);

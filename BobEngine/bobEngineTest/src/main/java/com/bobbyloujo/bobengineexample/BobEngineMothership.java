@@ -66,7 +66,7 @@ public class BobEngineMothership extends Entity implements Updatable {
 	private class Middle extends SimpleGameObject {
 		@Override
 		public void onParentAssigned() {
-			setGraphic(getView().getGraphicsHelper().addGraphic(R.drawable.ic_launcher));
+			setGraphic(getView().getGraphicsHelper().getGraphic(R.drawable.ic_launcher));
 
 			transform.parent = BobEngineMothership.this.transform;
 			transform.width = 2;
@@ -77,7 +77,7 @@ public class BobEngineMothership extends Entity implements Updatable {
 	private class Front extends SimpleGameObject {
 		@Override
 		public void onParentAssigned() {
-			setGraphic(getView().getGraphicsHelper().addGraphic(R.drawable.ic_launcher));
+			setGraphic(getView().getGraphicsHelper().getGraphic(R.drawable.ic_launcher));
 
 			transform.parent = BobEngineMothership.this.transform;
 			transform.width = 2;
@@ -89,7 +89,7 @@ public class BobEngineMothership extends Entity implements Updatable {
 	private class Back extends SimpleGameObject {
 		@Override
 		public void onParentAssigned() {
-			setGraphic(getView().getGraphicsHelper().addGraphic(R.drawable.ic_launcher));
+			setGraphic(getView().getGraphicsHelper().getGraphic(R.drawable.ic_launcher));
 
 			transform.parent = BobEngineMothership.this.transform;
 			transform.width = 2;
@@ -101,7 +101,7 @@ public class BobEngineMothership extends Entity implements Updatable {
 	private class LeftBig extends SimpleGameObject implements Updatable {
 		@Override
 		public void onParentAssigned() {
-			setGraphic(getView().getGraphicsHelper().addGraphic(R.drawable.ic_launcher));
+			setGraphic(getView().getGraphicsHelper().getGraphic(R.drawable.ic_launcher));
 
 			transform.parent = BobEngineMothership.this.transform;
 			transform.width = 2;
@@ -119,7 +119,7 @@ public class BobEngineMothership extends Entity implements Updatable {
 	private class LeftSmall extends SimpleGameObject {
 		@Override
 		public void onParentAssigned() {
-			setGraphic(getView().getGraphicsHelper().addGraphic(R.drawable.ic_launcher));
+			setGraphic(getView().getGraphicsHelper().getGraphic(R.drawable.ic_launcher));
 
 			transform.parent = BobEngineMothership.this.transform;
 			transform.width = 2;
@@ -133,7 +133,7 @@ public class BobEngineMothership extends Entity implements Updatable {
 	private class RightBig extends SimpleGameObject implements Updatable {
 		@Override
 		public void onParentAssigned() {
-			setGraphic(getView().getGraphicsHelper().addGraphic(R.drawable.ic_launcher));
+			setGraphic(getView().getGraphicsHelper().getGraphic(R.drawable.ic_launcher));
 
 			transform.parent = BobEngineMothership.this.transform;
 			transform.width = 2;
@@ -151,7 +151,7 @@ public class BobEngineMothership extends Entity implements Updatable {
 	private class RightSmall extends SimpleGameObject {
 		@Override
 		public void onParentAssigned() {
-			setGraphic(getView().getGraphicsHelper().addGraphic(R.drawable.ic_launcher));
+			setGraphic(getView().getGraphicsHelper().getGraphic(R.drawable.ic_launcher));
 
 			transform.parent = BobEngineMothership.this.transform;
 			transform.width = 2;

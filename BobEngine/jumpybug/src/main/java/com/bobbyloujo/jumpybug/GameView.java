@@ -53,15 +53,15 @@ public class GameView extends BobView {
          *
          * For more information, look up OpenGL texture filtering.
          */
-		getGraphicsHelper().setParameters(false, GL10.GL_NEAREST, GL10.GL_NEAREST);
+		getGraphicsHelper().setParameters(false, GL10.GL_NEAREST, GL10.GL_NEAREST, false);
 
 		// Now, add the graphics!
-		bug = getGraphicsHelper().addGraphic(R.drawable.bug);
-		title = getGraphicsHelper().addGraphic(R.drawable.title);
-		play = getGraphicsHelper().addGraphic(R.drawable.play);
-		flower = getGraphicsHelper().addGraphic(R.drawable.flower);
-		bg = getGraphicsHelper().addGraphic(R.drawable.background);
-		over = getGraphicsHelper().addGraphic(R.drawable.gameover);
+		bug = getGraphicsHelper().getGraphic(R.drawable.bug);
+		title = getGraphicsHelper().getGraphic(R.drawable.title);
+		play = getGraphicsHelper().getGraphic(R.drawable.play);
+		flower = getGraphicsHelper().getGraphic(R.drawable.flower);
+		bg = getGraphicsHelper().getGraphic(R.drawable.background);
+		over = getGraphicsHelper().getGraphic(R.drawable.gameover);
 	}
 
 

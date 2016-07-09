@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.PortUnreachableException;
 
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
@@ -44,6 +45,13 @@ import android.util.Log;
 public class GraphicsHelper {
 
 	// Constants
+	public final static int MIN_SMOOTH = GL11.GL_LINEAR;
+	public final static int MIN_SMOOTH_MIPMAP = GL11.GL_LINEAR_MIPMAP_LINEAR;
+	public final static int MAG_SMOOTH = GL11.GL_LINEAR;
+	public final static int MIN_PIXEL = GL11.GL_NEAREST;
+	public final static int MIN_PIXEL_MIPMAP = GL11.GL_NEAREST_MIPMAP_NEAREST;
+	public final static int MAG_PIXEL = GL11.GL_NEAREST;
+
 	private final static int START_NUM_TEX = 50;     // Starting maximum number of textures (graphics)
 	public final static int DEF_CLEANUPS = 2;        // Default number of cleanups until a graphic is removed.
 
@@ -51,6 +59,7 @@ public class GraphicsHelper {
 	private int numGFX;                              // Number of added graphics
 	private Graphic[] graphics;                      // Textures as drawables
 	private boolean useMipMaps;                      // Flag indicates if added graphics should be mip mapped
+	private boolean repeating;                       // Flag indicates if added graphics should repeat instead of clamping to the edge.
 	private int magFilter;                           // Upscale filter to use
 	private int minFilter;                           // Downscale filter to use
 	private int	cleanupsTilRemoval;                  // Number of cleanups until a graphic is removed.
@@ -67,6 +76,7 @@ public class GraphicsHelper {
 		graphics = new Graphic[START_NUM_TEX];
 
 		useMipMaps = true;
+		repeating = true;
 		magFilter = GL11.GL_LINEAR;
 		minFilter = GL11.GL_LINEAR_MIPMAP_LINEAR;
 		cleanupsTilRemoval = DEF_CLEANUPS;
@@ -77,7 +87,7 @@ public class GraphicsHelper {
 	 * is called. <br/>
 	 * <br/>
 	 * 
-	 * For 'retro' pixellated graphics, use (false, GL11.GL_NEAREST,
+	 * For 'retro' pixelated graphics, use (false, GL11.GL_NEAREST,
 	 * GL11.GL_NEAREST)
 	 * 
 	 * @param useMipMaps
@@ -89,10 +99,11 @@ public class GraphicsHelper {
 	 *            - Filter for upscaling. Must be an OpenGL filter (eg.
 	 *            GL11.GL_LINEAR (default))
 	 */
-	public void setParameters(boolean useMipMaps, int minFilter, int magFilter) {
+	public void setParameters(boolean useMipMaps, int minFilter, int magFilter, boolean repeating) {
 		this.useMipMaps = useMipMaps;
 		this.minFilter = minFilter;
 		this.magFilter = magFilter;
+		this.repeating = repeating;
 	}
 
 	/**
@@ -105,20 +116,20 @@ public class GraphicsHelper {
 
 	/**
 	 * Create a usable graphic from a drawable image.
-	 * 
+	 *
 	 * @param drawable
 	 *            - Drawable resource in R.drawable.&#42;
-     * @param shouldLoad
-     *            - Can be set to false if you don't want the graphic to be loaded right away.
+	 * @param shouldLoad
+	 *            - Can be set to false if you don't want the graphic to be loaded right away.
 	 * @return A Graphic object containing information about the newly created
 	 *         graphic. Store this somewhere where it can be accessed by
 	 *         GameObjects (Like as a static property in a BobView).
 	 */
-	public Graphic addGraphic(int drawable, boolean shouldLoad) {
+	public Graphic getGraphic(int drawable, boolean shouldLoad) {
 		// Data
 		int graphic = 1;
 
-		Graphic alreadyAdded = findGraphic(drawable, useMipMaps, minFilter, magFilter);
+		Graphic alreadyAdded = findGraphic(drawable, useMipMaps, minFilter, magFilter, repeating);
 		if (alreadyAdded != null) {
 			return alreadyAdded;
 		}
@@ -164,17 +175,46 @@ public class GraphicsHelper {
 			}
 
 			if (bmp != null){
-				graphics[graphic] = new Graphic(drawable, bmp.getHeight(), bmp.getWidth(), minFilter, magFilter, useMipMaps);
+				graphics[graphic] = new Graphic(drawable, bmp.getHeight(), bmp.getWidth(), minFilter, magFilter, useMipMaps, repeating);
 				bmp.recycle();
 			}
 		} catch (OutOfMemoryError e) {
-			graphics[graphic] = new Graphic(drawable, 100, 100, minFilter, magFilter, useMipMaps);
+			graphics[graphic] = new Graphic(drawable, 100, 100, minFilter, magFilter, useMipMaps, repeating);
 			Log.e("BobEngine", "Image too large. Unable to get height and width.");
 		}
-		
+
 		if (shouldLoad) graphics[graphic].load();
 
 		return graphics[graphic];
+	}
+
+	/**
+	 * Create a usable graphic from a drawable image. This graphic will be loaded when the view is created.
+	 *
+	 * @param drawable
+	 *            - Drawable resource in R.drawable.&#42;
+	 * @return A Graphic object containing information about the newly created
+	 *         graphic. Store this somewhere where it can be accessed by
+	 *         GameObjects (Like as a static property in a BobView).
+	 */
+	public Graphic getGraphic(int drawable) {
+		return getGraphic(drawable, true);
+	}
+
+	/**
+	 * Create a usable graphic from a drawable image.
+	 * 
+	 * @param drawable
+	 *            - Drawable resource in R.drawable.&#42;
+     * @param shouldLoad
+     *            - Can be set to false if you don't want the graphic to be loaded right away.
+	 * @return A Graphic object containing information about the newly created
+	 *         graphic. Store this somewhere where it can be accessed by
+	 *         GameObjects (Like as a static property in a BobView).
+	 */
+	@Deprecated
+	public Graphic addGraphic(int drawable, boolean shouldLoad) {
+		return getGraphic(drawable, shouldLoad);
 	}
 
     /**
@@ -186,8 +226,9 @@ public class GraphicsHelper {
      *         graphic. Store this somewhere where it can be accessed by
      *         GameObjects (Like as a static property in a BobView).
      */
+	@Deprecated
     public Graphic addGraphic(int drawable) {
-        return addGraphic(drawable, true);
+        return getGraphic(drawable, true);
     }
 
 	/**
@@ -198,7 +239,7 @@ public class GraphicsHelper {
 		// Data
 		int g = 1;
 
-		Graphic alreadyAdded = findGraphic(graphic.drawable, graphic.useMipMaps, graphic.minFilter, graphic.magFilter);
+		Graphic alreadyAdded = findGraphic(graphic.drawable, graphic.useMipMaps, graphic.minFilter, graphic.magFilter, graphic.repeating);
 		if (alreadyAdded != null) {
 			graphic.id = alreadyAdded.id;
 			graphic.indicateUsed(cleanupsTilRemoval);
@@ -260,13 +301,14 @@ public class GraphicsHelper {
 	 * @param drawable The drawable to find
 	 * @return A graphic object created from the drawable or null if the drawable has not been added.
 	 */
-	public Graphic findGraphic(int drawable, boolean useMipMaps, int minFilter, int magFilter) {
+	public Graphic findGraphic(int drawable, boolean useMipMaps, int minFilter, int magFilter, boolean repeating) {
 		for (int i = 0; i < graphics.length; i++) {
 			if (graphics[i] != null
 					&& graphics[i].drawable == drawable
 					&& graphics[i].useMipMaps == useMipMaps
 					&& graphics[i].minFilter == minFilter
-					&& graphics[i].magFilter == magFilter) {
+					&& graphics[i].magFilter == magFilter
+					&& graphics[i].repeating == repeating) {
 				return graphics[i];
 			}
 		}
@@ -405,10 +447,15 @@ public class GraphicsHelper {
 		if (graphics[g].useMipMaps) gl.glTexParameterx(GL11.GL_TEXTURE_2D, GL11.GL_GENERATE_MIPMAP, GL11.GL_TRUE); // Use mipmapping
 
 		// Texture wrapping
-		gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP_TO_EDGE);
-		gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP_TO_EDGE);
+		if (graphics[g].repeating) {
+			gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+			gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+		} else {
+			gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP_TO_EDGE);
+			gl.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP_TO_EDGE);
+		}
 
-		// This assigns bmp to the texture ID we are working with (g)
+		// This assigns bmp to the texture we are working with (g)
 		GLUtils.texImage2D(GL11.GL_TEXTURE_2D, 0, bmp, 0);
 
 		// Set the face rotation

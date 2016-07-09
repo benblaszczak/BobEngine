@@ -27,6 +27,7 @@ import com.bobbyloujo.bobengine.systems.input.touch.Touch;
 import com.bobbyloujo.bobengine.systems.input.touch.TouchInputHandler;
 import com.bobbyloujo.bobengine.systems.quadrenderer.AnimatedGraphicAreaTransform;
 import com.bobbyloujo.bobengine.systems.quadrenderer.GraphicAreaTransformation;
+import com.bobbyloujo.bobengine.systems.quadrenderer.Quad;
 import com.bobbyloujo.bobengine.systems.quadrenderer.QuadRenderSystem;
 import com.bobbyloujo.bobengine.view.BobRenderer;
 
@@ -35,7 +36,7 @@ import com.bobbyloujo.bobengine.view.BobRenderer;
  *
  * @author Ben
  */
-public class GameObject extends Entity implements Updatable, Transformation, GraphicAreaTransformation, TouchInputHandler, GamepadInputHandler {
+public class GameObject extends Entity implements Updatable, Quad, Transformation, GraphicAreaTransformation, TouchInputHandler, GamepadInputHandler {
 
 	/* TRANSFORM DATA */
 
@@ -71,7 +72,7 @@ public class GameObject extends Entity implements Updatable, Transformation, Gra
 
 	private int frameRows;
 
-	private int fps = 0;
+	private double fps = 0;
 	private int start = 0;
 	private int end = 0;
 	private int gameFramesPassed = 0;
@@ -186,7 +187,7 @@ public class GameObject extends Entity implements Updatable, Transformation, Gra
 		frameRows = params.rows;
 
 		QuadRenderSystem r = getRoom().getQuadRenderSystem(params.graphic);
-		r.addTransform(this, this);
+		r.addQuad(this);
 		renderSystem = r;
 	}
 
@@ -212,8 +213,10 @@ public class GameObject extends Entity implements Updatable, Transformation, Gra
 		gfxHeight = (float) height / (float) graphic.height;
 		this.frameRows = frameRows;
 
+		removeFromRenderer();
+
 		QuadRenderSystem r = getRoom().getQuadRenderSystem(graphic);
-		r.addTransform(this, this);
+		r.addQuad(this);
 		renderSystem = r;
 	}
 
@@ -235,9 +238,21 @@ public class GameObject extends Entity implements Updatable, Transformation, Gra
 		gfxHeight = height;
 		this.frameRows = frameRows;
 
+		removeFromRenderer();
+
 		QuadRenderSystem r = getRoom().getQuadRenderSystem(graphicSheet);
-		r.addTransform(this, this);
+		r.addQuad(this);
 		renderSystem = r;
+	}
+
+	/**
+	 * Remove this game object from it's current render system. You will want to do this if you are deleting this
+	 * object.
+	 */
+	public void removeFromRenderer() {
+		if (renderSystem != null) {
+			renderSystem.removeQuad(this);
+		}
 	}
 
 	/**
@@ -288,7 +303,7 @@ public class GameObject extends Entity implements Updatable, Transformation, Gra
 	 * @param end end frame
 	 * @param loop times to play
 	 */
-	public void animate(int fps, int start, int end, int loop) {
+	public void animate(double fps, int start, int end, int loop) {
 		if (this.fps != fps || this.start != start || this.end != end || this.loop != loop) {
 			timesPlayed = 0;
 		}
@@ -320,6 +335,7 @@ public class GameObject extends Entity implements Updatable, Transformation, Gra
 	 * Returns the screen width correction ratio for dealing with different size screens.
 	 * This ratio is based off of the initial orientation of the device when the BobView is initialized!
 	 */
+	@Deprecated
 	public double getRatioX() {
 		return getView().getRatioX();
 	}
@@ -328,6 +344,7 @@ public class GameObject extends Entity implements Updatable, Transformation, Gra
 	 * Returns the screen height correction ratio for dealing with different size screens.
 	 * This ratio is based off of the initial orientation of the device when the BobView is initialized!
 	 */
+	@Deprecated
 	public double getRatioY() {
 		return getView().getRatioY();
 	}
@@ -562,5 +579,15 @@ public class GameObject extends Entity implements Updatable, Transformation, Gra
 	 */
 	public void released(final int player, final int button) {
 
+	}
+
+	@Override
+	public Transformation getTransformation() {
+		return this;
+	}
+
+	@Override
+	public GraphicAreaTransformation getGraphicAreaTransformation() {
+		return this;
 	}
 }

@@ -1,5 +1,8 @@
 package com.bobbyloujo.jumpybug;
 
+import com.bobbyloujo.bobengine.extra.ScrollingImage;
+import com.bobbyloujo.bobengine.graphics.GraphicsHelper;
+import com.bobbyloujo.bobengine.systems.Updatable;
 import com.bobbyloujo.bobengine.view.BobView;
 import com.bobbyloujo.bobengine.entities.GameObject;
 import com.bobbyloujo.bobengine.entities.Room;
@@ -12,7 +15,8 @@ public class StartRoom extends Room {
 	// Objects
 	private GameObject title;           // The title graphic
 	private GameObject playButton;      // The Play button
-	private Background background;      // Background panels
+	//private Background background;      // Background panels
+	private ScrollingImage background;
 
 	public StartRoom(BobView container) {
 		super(container);
@@ -31,7 +35,16 @@ public class StartRoom extends Room {
 		title = new GameObject(this);
 		playButton = new GameObject(this);
 
-		background = new Background(this);
+		//background = new Background(this);
+		background = new ScrollingImage(this);
+		getView().getGraphicsHelper().setParameters(true, GraphicsHelper.MIN_PIXEL_MIPMAP, GraphicsHelper.MAG_PIXEL, true);
+		background.setGraphic(getView().getGraphicsHelper().getGraphic(R.drawable.background));
+		background.addComponent(new Updatable() {
+			@Override
+			public void update(double deltaTime) {
+				background.graphic.transform.x += 0.01;
+			}
+		});
 	}
 
 	/**
@@ -61,7 +74,7 @@ public class StartRoom extends Room {
 		playButton.height = playButton.width / 2;
 		playButton.setGraphic(GameView.play, 2);  // Play button has 2 frames: one for pressed and one for not pressed.
 
-		background.set();
+		//background.set();
 	}
 
 	/**

@@ -164,7 +164,7 @@ public class Room extends Entity {
 		r = findQuadRenderSystem(g);
 
 		if (r == null) {
-			r = createQuadRenderSystem(g, QuadRenderSystem.DEF_INIT_TRANSFORMS);
+			r = createQuadRenderSystem(g, QuadRenderSystem.DEF_INIT_QUADS);
 		}
 
 		return r;
@@ -347,8 +347,12 @@ public class Room extends Entity {
 	 * is the current Room.
 	 */
 	public void indicateGraphicsUsed() {
-		for (Renderable r: renderables) {
-			if (r.getGraphic() != null) r.getGraphic().indicateUsed(getView().getGraphicsHelper().getCleanupsTilRemoval());
+		for (int i = 0; i < renderables.size(); i++) {
+			Renderable r = renderables.get(i);
+
+			if (r.getGraphic() != null) {
+				r.getGraphic().indicateUsed(getView().getGraphicsHelper().getCleanupsTilRemoval());
+			}
 		}
 	}
 
@@ -358,8 +362,12 @@ public class Room extends Entity {
 	 * have been through a cleanup.
 	 */
 	public void clearAllGraphics() {
-		for (Renderable r: renderables) {
-			if (r.getGraphic() != null) r.getGraphic().forceCleanup();
+		for (int i = 0; i < renderables.size(); i++) {
+			Renderable r = renderables.get(i);
+
+			if (r.getGraphic() != null) {
+				r.getGraphic().forceCleanup();
+			}
 		}
 	}
 

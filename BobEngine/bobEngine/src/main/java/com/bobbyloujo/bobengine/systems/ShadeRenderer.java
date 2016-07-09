@@ -44,7 +44,7 @@ public class ShadeRenderer extends Entity implements Renderable, ParentAssignmen
 
     @Override
     public void onParentAssigned(Entity parent) {
-        int layers = getRoom().getNumLayers();
+        int layers = getRoom().getNumLayers(); // todo room not necessarily assigned at this point. Will cause null pointer exception!
         float[] r,g,b,a;
 
         r = red;

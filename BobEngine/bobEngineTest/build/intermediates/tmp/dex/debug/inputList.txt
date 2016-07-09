@@ -1,3 +1,0 @@
-D:\Repositories\BobEngine\BobEngine\bobEngineTest\build\intermediates\classes\debug
-D:\Repositories\BobEngine\BobEngine\bobEngineTest\build\intermediates\pre-dexed\debug\classes-ebc4226905f27129a4bdf5741af97421846e0488.jar
-D:\Repositories\BobEngine\BobEngine\bobEngineTest\build\intermediates\pre-dexed\debug\support-v4-19.1.0-29cbb9634a5288c62fafd71d132a47c501b317ce.jar

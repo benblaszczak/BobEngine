@@ -34,7 +34,7 @@ public class CollisionHandlingObject extends SimpleGameObject implements Collisi
 		super(room);
 
 		/* Your average, everyday initialization stuff */
-		getView().getGraphicsHelper().setParameters(false, GL10.GL_NEAREST, GL10.GL_NEAREST);
+		getView().getGraphicsHelper().setParameters(false, GL10.GL_NEAREST, GL10.GL_NEAREST, false);
 		Graphic g = getView().getGraphicsHelper().addGraphic(R.drawable.collisionsquare);
 
 		setGraphic(g);

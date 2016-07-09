@@ -38,7 +38,7 @@ public class AnimatedGraphicAreaTransform implements GraphicAreaTransformation, 
 
 	private int rows;
 
-	private int fps = 0;
+	private double fps = 0;
 	private int start = 0;
 	private int end = 0;
 	private int gameFramesPassed = 0;
@@ -159,7 +159,7 @@ public class AnimatedGraphicAreaTransform implements GraphicAreaTransformation, 
 	 * @param end end frame
 	 * @param loop times to play
 	 */
-	public void animate(int fps, int start, int end, int loop) {
+	public void animate(double fps, int start, int end, int loop) {
 		if (this.fps != fps || this.start != start || this.end != end || this.loop != loop) {
 			timesPlayed = 0;
 		}
@@ -253,7 +253,7 @@ public class AnimatedGraphicAreaTransform implements GraphicAreaTransformation, 
 	public static class Animation {
 		public int startFrame;
 		public int endFrame;
-		public int fps;
+		public double fps;
 		public int loop;
 
 		/**
@@ -264,7 +264,7 @@ public class AnimatedGraphicAreaTransform implements GraphicAreaTransformation, 
 		 * @param fps frames per second
 		 * @param loop number of times to loop
 		 */
-		public Animation(int start, int end, int fps, int loop) {
+		public Animation(int start, int end, double fps, int loop) {
 			startFrame = start;
 			endFrame = end;
 			this.fps = fps;

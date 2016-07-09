@@ -1,3 +1,0 @@
-C:\Users\Benjamin\Mailbox\BobEngine\touchInput\build\intermediates\classes\debug
-C:\Users\Benjamin\Mailbox\BobEngine\touchInput\build\intermediates\pre-dexed\debug\classes-0ab4c4f28fd3b16ce6ee1381f47f4a8fc7506f4e.jar
-C:\Users\Benjamin\Mailbox\BobEngine\touchInput\build\intermediates\pre-dexed\debug\support-v4-19.1.0-29cbb9634a5288c62fafd71d132a47c501b317ce.jar

@@ -1,3 +1,0 @@
-C:\Users\Benjamin\Mailbox\BobEngine\template\build\intermediates\classes\debug
-C:\Users\Benjamin\Mailbox\BobEngine\template\build\intermediates\pre-dexed\debug\classes-adee8f7b92ba3f154c1c96e10abcb36d9e03e108.jar
-C:\Users\Benjamin\Mailbox\BobEngine\template\build\intermediates\pre-dexed\debug\support-v4-19.1.0-29cbb9634a5288c62fafd71d132a47c501b317ce.jar

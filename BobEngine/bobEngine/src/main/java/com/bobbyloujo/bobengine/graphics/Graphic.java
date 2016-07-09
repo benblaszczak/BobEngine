@@ -35,6 +35,7 @@ public class Graphic {
 	public int magFilter;       // OpenGL upscale filter
 	public int minFilter;       // OpenGL downscale filter
 	public boolean useMipMaps;  // OpenGL use mipmaps
+	public boolean repeating;   // Texture should repeat instead of clamp to edge
 	public boolean persistent;  // Indicates whether this graphic can be during a cleanup.
 
 	private boolean isLoaded;   // Flag that indicates if this graphic is loaded
@@ -67,13 +68,14 @@ public class Graphic {
 	 * @param magFilter    OpenGL upscale filter. (eg. GL11.GL_NEAREST)
 	 * @param useMipMaps   Should this texture use mipmaps. true for better performance.
 	 */
-	public Graphic (int drawable, int height, int width, int minFilter, int magFilter, boolean useMipMaps) {
+	public Graphic (int drawable, int height, int width, int minFilter, int magFilter, boolean useMipMaps, boolean repeating) {
 		this.drawable = drawable;
 		this.width = width;
 		this.height = height;
 		this.magFilter = magFilter;
 		this.minFilter = minFilter;
 		this.useMipMaps = useMipMaps;
+		this.repeating = repeating;
 		isLoaded = false;
 
 		cleanupsTilRemoval = GraphicsHelper.DEF_CLEANUPS;

@@ -19,9 +19,12 @@
  */
 package com.bobbyloujo.bobengine.entities;
 
+import com.bobbyloujo.bobengine.components.Transformation;
 import com.bobbyloujo.bobengine.systems.quadrenderer.AnimatedGraphicAreaTransform;
 import com.bobbyloujo.bobengine.components.Transform;
 import com.bobbyloujo.bobengine.graphics.Graphic;
+import com.bobbyloujo.bobengine.systems.quadrenderer.GraphicAreaTransformation;
+import com.bobbyloujo.bobengine.systems.quadrenderer.Quad;
 import com.bobbyloujo.bobengine.systems.quadrenderer.QuadRenderSystem;
 
 /**
@@ -29,7 +32,7 @@ import com.bobbyloujo.bobengine.systems.quadrenderer.QuadRenderSystem;
  *
  * Created by Benjamin on 11/20/2015.
  */
-public class SimpleGameObject extends Entity {
+public class SimpleGameObject extends Entity implements Quad {
 	/** Transform data for this object*/
 	public Transform transform;
 	/** Graphic sheet transform data for this object */
@@ -48,7 +51,7 @@ public class SimpleGameObject extends Entity {
 		addComponent(transform);
 		addComponent(graphic);
 
-		setGraphic(getView().getGraphicsHelper().getDefaultGraphic(), false);
+		// todo setGraphic(getView().getGraphicsHelper().getDefaultGraphic(), false);
 	}
 
 	public SimpleGameObject(Entity parent) {
@@ -68,7 +71,7 @@ public class SimpleGameObject extends Entity {
 		if (renderSystem == null || renderSystem.getGraphic() != g) {
 			removeFromRenderer();
 			renderSystem = getRoom().getQuadRenderSystem(g);
-			renderSystem.addEntity(this);
+			renderSystem.addQuad(this);
 		}
 	}
 
@@ -185,10 +188,11 @@ public class SimpleGameObject extends Entity {
 
 		g = graphic;
 
+		removeFromRenderer();
+
 		if (getRoom() != null && addToRenderer) {
-			removeFromRenderer();
 			renderSystem = getRoom().getQuadRenderSystem(graphic);
-			renderSystem.addEntity(this);
+			renderSystem.addQuad(this);
 		}
 	}
 
@@ -211,10 +215,11 @@ public class SimpleGameObject extends Entity {
 
 		g = graphic;
 
+		removeFromRenderer();
+
 		if (getRoom() != null && addToRenderer) {
-			removeFromRenderer();
 			renderSystem = getRoom().getQuadRenderSystem(g);
-			renderSystem.addEntity(this);
+			renderSystem.addQuad(this);
 		}
 	}
 
@@ -224,7 +229,7 @@ public class SimpleGameObject extends Entity {
 	 */
 	public void removeFromRenderer() {
 		if (renderSystem != null) {
-			renderSystem.removeEntity(this);
+			renderSystem.removeQuad(this);
 		}
 	}
 
@@ -234,5 +239,15 @@ public class SimpleGameObject extends Entity {
 	 */
 	public boolean onScreen() {
 		return transform.onScreen(getRoom());
+	}
+
+	@Override
+	public Transformation getTransformation() {
+		return transform;
+	}
+
+	@Override
+	public GraphicAreaTransformation getGraphicAreaTransformation() {
+		return graphic;
 	}
 }

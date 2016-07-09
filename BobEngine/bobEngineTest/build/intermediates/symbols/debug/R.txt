@@ -7,7 +7,7 @@ int id Splash 0x7f080000
 int id SplashImage 0x7f080001
 int layout splash 0x7f030000
 int raw pop 0x7f050000
-int string app_name 0x7f060000
-int string splashImageDescription 0x7f060001
-int style AppBaseTheme 0x7f070000
-int style AppTheme 0x7f070001
+int string app_name 0x7f070000
+int string splashImageDescription 0x7f070001
+int style AppBaseTheme 0x7f060000
+int style AppTheme 0x7f060001

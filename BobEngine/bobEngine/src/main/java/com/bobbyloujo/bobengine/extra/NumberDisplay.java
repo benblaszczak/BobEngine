@@ -119,8 +119,8 @@ public class NumberDisplay extends Entity implements Updatable, Transformation {
 	@Override
 	public void onParentAssigned() {
 		if (graphic == null) {
-			getView().getGraphicsHelper().setParameters(true, GL10.GL_LINEAR_MIPMAP_LINEAR, GL10.GL_LINEAR_MIPMAP_LINEAR);
-			setGraphic(getView().getGraphicsHelper().addGraphic(R.drawable.numbers), 12, 1);
+			getView().getGraphicsHelper().setParameters(true, GL10.GL_LINEAR_MIPMAP_LINEAR, GL10.GL_LINEAR_MIPMAP_LINEAR, false);
+			setGraphic(getView().getGraphicsHelper().getGraphic(R.drawable.numbers), 12, 1);
 		}
 	}
 

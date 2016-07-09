@@ -37,17 +37,17 @@ import com.bobbyloujo.bobengine.systems.Renderable;
 import com.bobbyloujo.bobengine.graphics.Graphic;
 
 /**
- * This render system renders quads defined by transformables. Each quad has two transformables:
- * <p/>
- * Transformation: defines the position, size, angle, etc. to show the quad on the screen.
- * <p/>
- * GraphicTransformable: defines the rectangular area of the graphic to use to texture the quad.
- * <p/>
+ * This render system renders quads defined by transformations. Each quad has two transformations:
+ * <br>
+ * <b>Transformation:</b> defines the position, size, angle, etc. to show the quad on the screen.
+ * <br>
+ * <b>GraphicTransformation:</b> defines the rectangular area of the graphic to use to texture the quad.
+ * <br>
  * Created by Benjamin on 9/25/2015.
  */
 public class QuadRenderSystem extends Entity implements Renderable {
 
-	public static final int DEF_INIT_TRANSFORMS = 3;
+	public static final int DEF_INIT_QUADS = 3;
 
 	public static final int GFX_VERTICES = 8;
 	private static final int VERTICES = 8;
@@ -59,9 +59,8 @@ public class QuadRenderSystem extends Entity implements Renderable {
 
 	private Graphic graphic;
 
-	private int numTransforms;
-	private ArrayList<Transformation> transforms;
-	private ArrayList<GraphicAreaTransformation> graphicTransforms;
+	private int numQuads;             // The number of quads in this system.
+	private ArrayList<Quad> quads;    // The quads in this system.
 
 	private short indices[] = new short[6];                 // The order in which to draw the vertices
 	private int lastIndex[];                                // The number of indices last frame for each layer
@@ -79,20 +78,29 @@ public class QuadRenderSystem extends Entity implements Renderable {
 	private float blue[];         // Blue values for each layer
 	private float alpha[];        // alpha values for each layer
 
+    /**
+     * Make a new QuadRenderSystem.
+     * @param graphic The graphic used to render the quads.
+     */
 	public QuadRenderSystem(Graphic graphic) {
-		init(graphic, DEF_INIT_TRANSFORMS);
+		init(graphic, DEF_INIT_QUADS);
 	}
 
-	public QuadRenderSystem(Graphic graphic, int initTransforms) {
-		init(graphic, initTransforms);
+    /**
+     * Make a new QuadRenderSystem.
+     * @param graphic The graphic used to render the quads.
+     * @param initBufferSize The initial number of Quads that can be held in the buffer. This will
+     *                       automatically expand if more Quads are added.
+     */
+	public QuadRenderSystem(Graphic graphic, int initBufferSize) {
+		init(graphic, initBufferSize);
 	}
 
-	private void init(Graphic graphic, int initTransforms) {
+	private void init(Graphic graphic, int initBufferSize) {
 		this.graphic = graphic;
 
-		numTransforms = 0;
-		transforms = new ArrayList<Transformation>(initTransforms);
-		graphicTransforms = new ArrayList<GraphicAreaTransformation>(initTransforms);
+		numQuads = 0;
+		quads = new ArrayList<Quad>(initBufferSize);
 	}
 
 	@Override
@@ -124,7 +132,7 @@ public class QuadRenderSystem extends Entity implements Renderable {
 			}
 		}
 
-		resizeBuffers(transforms.size());
+		resizeBuffers(quads.size());
 	}
 
 	/**
@@ -223,134 +231,33 @@ public class QuadRenderSystem extends Entity implements Renderable {
 	}
 
 	/**
-	 * Add an Entity which has Transformation and GraphicAreaTransformation components to this QuadRenderSystem.
-	 * @param entity An Entity with transformables to add to this render system.
-	 * @return True if Tranformables were added to this system, false otherwise.
-	 */
-	public boolean addEntity(Entity entity) {
-		boolean success = false;
-		ArrayList<Transformation> transforms = entity.getComponentsOfType(Transformation.class);
-		ArrayList<GraphicAreaTransformation> graphicAreaTransformations = entity.getComponentsOfType(GraphicAreaTransformation.class);
+	 * Add a quad to this render system.
+	 * @param quad The quad to add.
+     */
+	public void addQuad(Quad quad) {
+		quads.add(quad);
+		numQuads++;
 
-		if (!transforms.isEmpty()) {
-			for (int i = 0; i < transforms.size() && i < graphicAreaTransformations.size(); i++) {
-				addTransform(transforms.get(i), graphicAreaTransformations.get(i));
-			}
-
-			success = true;
+		if (numQuads > bufferSize) {
+			resizeBuffers(numQuads);
 		}
-
-		return success;
 	}
 
 	/**
-	 * Remove an Entity from this system.
-	 * @param entity The Entity to remove.
-	 * @return True if the Entity had transforms that were removed from this system.
-	 */
-	public boolean removeEntity(Entity entity) {
-		boolean success = false;
-
-		ArrayList<Transformation> transforms = entity.getComponentsOfType(Transformation.class);
-
-		if (!transforms.isEmpty()) {
-			for (int i = 0; i < transforms.size(); i++) {
-				int t = this.transforms.indexOf(transforms.get(i));
-				if (t != -1) {
-					removeTransform(t);
-					success = true;
-				}
-			}
-		}
-
-		return success;
+	 * Remove a quad to this render system.
+	 * @param quad The quad to remove.
+     */
+	public void removeQuad(Quad quad) {
+		quads.remove(quad);
+		numQuads--;
 	}
 
 	/**
-	 * Add a pair of transforms that define a quad to this render system for rendering.
-	 *
-	 * @param transform The transformable defining where to render the quad on (or off) the screen.
-	 * @param graphicTransform The transformable defining the portion of the image to use.
-	 * @return A value to identify this pair of transforms for quick and easy removal
+	 * Removes all Quads from this QuadRenderSystem.
 	 */
-	public int addTransform(Transformation transform, GraphicAreaTransformation graphicTransform) {
-		int i = 0;
-
-		while (i < transforms.size()) {
-			if (transforms.get(i) == transform && graphicTransforms.get(i) == graphicTransform) {
-				return i;
-			}
-
-			i++;
-		}
-
-		i = 0;
-
-		while (i < transforms.size() && transforms.get(i) == null) {
-			i++;
-		}
-
-		transforms.add(i, transform);
-		graphicTransforms.add(i, graphicTransform);
-
-		numTransforms++;
-
-		if (numTransforms > bufferSize) {
-			resizeBuffers(numTransforms);
-		}
-
-		return i;
-	}
-
-	/**
-	 * Remove a pair of transforms from this render system using the ID number return by
-	 * addTransform(...).
-	 *
-	 * @param transform The ID of the transform pair to remove
-	 * @return True if the pair was removed, false if the pair was not in the render system.
-	 */
-	public boolean removeTransform(int transform) {
-		if (transform < transforms.size() && (transforms.get(transform) != null || graphicTransforms.get(transform) != null)) {
-			transforms.remove(transform);
-			graphicTransforms.remove(transform);
-
-			numTransforms--;
-
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Remove a transform pair if you were silly and didn't keep track of the ID given to you by
-	 * addTransform(...).
-	 *
-	 * @param transformation The Transformation to search for
-	 * @param graphicAreaTransformation The GraphicTransformable to search for
-	 * @return True if the pair was removed, false if the pair wasn't found.
-	 */
-	public boolean removeTransform(Transformation transformation, GraphicAreaTransformation graphicAreaTransformation) {
-		for (int i = 0; i < transforms.size(); i++) {
-			if (transforms.get(i) == transformation && graphicTransforms.get(i) == graphicAreaTransformation) {
-				transforms.remove(i);
-				graphicTransforms.remove(i);
-
-				numTransforms--;
-
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * Removes all Transformables and GraphicAreaTransformables from this QuadRenderSystem.
-	 */
-	public void removeAllTransforms() {
-		transforms.clear();
-		graphicTransforms.clear();
+	public void removeAllQuads() {
+		quads.clear();
+		numQuads = 0;
 	}
 
 	/**
@@ -362,8 +269,8 @@ public class QuadRenderSystem extends Entity implements Renderable {
 		// Set up vertex buffer
 		ByteBuffer vertexByteBuffer = ByteBuffer.allocateDirect(VERTEX_BYTES * quads);    // a float has 4 bytes so we allocate for each coordinate 4 bytes
 		vertexByteBuffer.order(ByteOrder.nativeOrder());
-		vertexBuffer = vertexByteBuffer.order(ByteOrder.nativeOrder()).asFloatBuffer();   // allocates the memory from the bytebuffer
-		vertexBuffer.position(0);                                                         // puts the curser position at the beginning of the buffer
+		vertexBuffer = vertexByteBuffer.order(ByteOrder.nativeOrder()).asFloatBuffer();   // allocates the memory from the byte buffer
+		vertexBuffer.position(0);                                                         // puts the cursor position at the beginning of the buffer
 
 		// Set up texture buffer
 		vertexByteBuffer = ByteBuffer.allocateDirect(TEX_BYTES * quads);
@@ -415,9 +322,9 @@ public class QuadRenderSystem extends Entity implements Renderable {
 			gID = graphic.id;
 		}
 
-		for (int i = 0; i < numTransforms; i++) {
-			Transformation t = transforms.get(i);
-			GraphicAreaTransformation g = graphicTransforms.get(i);
+		for (int i = 0; i < numQuads; i++) {
+			Transformation t = quads.get(i).getTransformation();
+			GraphicAreaTransformation g = quads.get(i).getGraphicAreaTransformation();
 
 			if (t.getLayer() == layer && onScreen(t, getRoom()) && Transform.getRealVisibility(t)) {
 				if (!obFound) {

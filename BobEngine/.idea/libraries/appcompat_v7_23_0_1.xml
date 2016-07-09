@@ -5,7 +5,7 @@
     </ANNOTATIONS>
     <CLASSES>
       <root url="file://$PROJECT_DIR$/draggameobject/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.1/res" />
-      <root url="jar://$PROJECT_DIR$/draggameobject/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.1/classes.jar!/" />
+      <root url="jar://$PROJECT_DIR$/draggameobject/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.1/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

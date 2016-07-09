@@ -25,6 +25,8 @@ import com.bobbyloujo.bobengine.entities.Entity;
 import com.bobbyloujo.bobengine.graphics.Graphic;
 import com.bobbyloujo.bobengine.systems.Updatable;
 import com.bobbyloujo.bobengine.systems.quadrenderer.AnimatedGraphicAreaTransform;
+import com.bobbyloujo.bobengine.systems.quadrenderer.GraphicAreaTransformation;
+import com.bobbyloujo.bobengine.systems.quadrenderer.Quad;
 import com.bobbyloujo.bobengine.systems.quadrenderer.QuadRenderSystem;
 
 import java.util.ArrayList;
@@ -78,11 +80,25 @@ public class CollisionSystem implements Updatable {
 			renderSystem.setLayerColor(2, 1, 0, 0, 0.5f);
 
 			if (show) {
-				for (HitBox h : hitBoxes) {
-					renderSystem.addTransform(h.c.getBoxTransformation(), new AnimatedGraphicAreaTransform());
+				for (final HitBox h : hitBoxes) {
+					final GraphicAreaTransformation graphic = new AnimatedGraphicAreaTransform();
+
+					Quad q = new Quad() {
+						@Override
+						public Transformation getTransformation() {
+							return h.c.getBoxTransformation();
+						}
+
+						@Override
+						public GraphicAreaTransformation getGraphicAreaTransformation() {
+							return graphic;
+						}
+					};
+
+					renderSystem.addQuad(q);
 				}
 			} else {
-				renderSystem.removeAllTransforms();
+				renderSystem.removeAllQuads();
 			}
 		}
 	}
@@ -224,6 +240,18 @@ public class CollisionSystem implements Updatable {
 				return owner;
 			}
 		};
+	}
+
+	public static boolean checkPosition(CollisionBox c, double x, double y) {
+		Transformation t = c.getBoxTransformation();
+
+		int x1 = (int) (Transform.getRealX(t) - Math.abs(t.getWidth()) * Transform.getRealScale(t) / 2);
+		int y1 = (int) (Transform.getRealY(t) + Math.abs(t.getHeight()) * Transform.getRealScale(t) / 2);
+
+		int x2 = (int) (Transform.getRealX(t) + Math.abs(t.getWidth()) * Transform.getRealScale(t) / 2);
+		int y2 = (int) (Transform.getRealY(t) - Math.abs(t.getHeight()) * Transform.getRealScale(t) / 2);
+
+		return x >= x1 && x <= x2 && y <= y1 && y >= y2;
 	}
 
 	/**

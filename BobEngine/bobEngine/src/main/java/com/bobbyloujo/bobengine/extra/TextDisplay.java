@@ -129,7 +129,7 @@ public class TextDisplay extends Entity implements Transformation, Updatable {
 	@Override
 	public void onParentAssigned() {
 		if (graphic == null) {
-			Graphic g = getView().getGraphicsHelper().addGraphic(R.drawable.characters);
+			Graphic g = getView().getGraphicsHelper().getGraphic(R.drawable.characters);
 			setGraphic(g, 6, 13);
 		}
 	}
@@ -290,7 +290,7 @@ public class TextDisplay extends Entity implements Transformation, Updatable {
 	}
 
 	public void setFont(Font f) {
-		this.graphic = getView().getGraphicsHelper().addGraphic(f.drawable);
+		this.graphic = getView().getGraphicsHelper().getGraphic(f.drawable);
 		setKerning(f.getKerning());
 		setOrder(f.getOrder());
 

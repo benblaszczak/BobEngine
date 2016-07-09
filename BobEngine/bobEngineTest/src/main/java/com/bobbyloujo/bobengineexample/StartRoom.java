@@ -1,9 +1,13 @@
 package com.bobbyloujo.bobengineexample;
 
+import com.bobbyloujo.bobengine.extra.ScrollingImage;
+import com.bobbyloujo.bobengine.systems.Updatable;
 import com.bobbyloujo.bobengine.view.BobView;
 import com.bobbyloujo.bobengine.entities.Room;
 import com.bobbyloujo.bobengine.extra.NumberDisplay;
 import com.bobbyloujo.bobengine.extra.TextDisplay;
+
+import javax.microedition.khronos.opengles.GL11;
 
 public class StartRoom extends Room {
 
@@ -61,6 +65,23 @@ public class StartRoom extends Room {
 		big.transform.y = getHeight() / 2;
 
 		addComponent(big);
+
+		final ScrollingImage s = new ScrollingImage(this);
+		s.transform.layer = 0;
+		s.graphic.transform.width = 2;
+		s.graphic.transform.height = 2;
+		s.graphic.transform.x = 0;
+
+		s.addComponent(new Updatable() {
+			@Override
+			public void update(double deltaTime) {
+				s.graphic.transform.x += 0.01;
+			}
+		});
+
+
+		getView().getGraphicsHelper().setParameters(true, GL11.GL_LINEAR_MIPMAP_LINEAR, GL11.GL_LINEAR, true);
+		s.setGraphic(getView().getGraphicsHelper().getGraphic(R.drawable.ic_launcher));
 
 	}
 
