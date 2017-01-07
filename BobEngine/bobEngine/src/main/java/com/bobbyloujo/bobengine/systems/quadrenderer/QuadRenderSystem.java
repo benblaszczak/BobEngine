@@ -144,6 +144,10 @@ public class QuadRenderSystem extends Entity implements Renderable {
 		return graphic;
 	}
 
+	public void setGraphic(Graphic graphic) {
+		this.graphic = graphic;
+	}
+
 	/**
 	 * Set the color of a particular layer.
 	 *

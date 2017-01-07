@@ -68,8 +68,8 @@ public class Entity implements ParentAssignmentHandler {
 
 	/**
 	 * Add a Component to this Entity.
-	 * @param component
-	 * @return
+	 * @param component The component to add.
+	 * @return Always true
 	 */
     public boolean addComponent(Component component) {
 		boolean success = false;
@@ -191,6 +191,16 @@ public class Entity implements ParentAssignmentHandler {
 				((Entity) c).getEntireComponentTree(allComponents);
 			}
 		}
+	}
+
+	/**
+	 * This method will return this Entity's parent Entity if it has one. If it does not have a
+	 * parent Entity, this method will return null. This Entity will not have a parent if it was
+	 * initialized without one and was never added to another Entity as a component.
+	 * @return This Entity's parent Entity if it exists, null otherwise.
+     */
+	public Entity getParentEntity() {
+		return parent;
 	}
 
 	/**

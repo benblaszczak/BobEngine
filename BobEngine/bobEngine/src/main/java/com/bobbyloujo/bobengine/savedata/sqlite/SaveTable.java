@@ -85,7 +85,7 @@ public class SaveTable extends SQLiteOpenHelper {
         /* Create the table if necessary */
         String create = "CREATE TABLE IF NOT EXISTS ";
         create = create.concat(SaveDatabaseContract.SaveTableSchema.TABLE_NAME + " (");
-        create = create.concat(SaveDatabaseContract.SaveTableSchema.COLUMN_KEY + " STRING PRIMARY KEY, ");
+        create = create.concat(SaveDatabaseContract.SaveTableSchema.COLUMN_KEY + " STRING, ");
         create = create.concat(SaveDatabaseContract.SaveTableSchema.COLUMN_VALUE + " BLOB, ");
         create = create.concat(SaveDatabaseContract.SaveTableSchema.COLUMN_SAVE_NAME + " TEXT");
         create = create.concat(") ");
