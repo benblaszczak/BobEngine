@@ -2,8 +2,6 @@ BobEngine
 =========
 *BobEngine* is an **entity-component** 2D game engine for Android based on OpenGL ES 1.1.  *BobEngine* is made for use with Android Studio.
 
-For news about *BobEngine* and other projects check the creator's developer blog at www.bobbyloujo.com
-
 # Usage
 In this repository you will find an Android Studio project called "BobEngine". In this project there are many modules. The module called **bobEngine** is a library module that may be imported into your own projects and will allow you to use *BobEngine*. All the other modules are examples that show how to use various features of *BobEngine*.
 
