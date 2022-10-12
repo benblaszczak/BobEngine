@@ -38,8 +38,4 @@ In short, you may use *BobEngine* in any of your projects - open- or closed- sou
 Please be sure to credit *BobEngine* in your projects.
 
 # Credits and Contact
-*BobEngine* is developed solely by Benjamin Blaszczak who often goes by the alias Bobby Lou Jo online. You can contact Ben on social media or by emailing him:
-
-[Twitter](https://twitter.com/Bobbyloujo)  
-[Facebook](https://www.facebook.com/bobbyloujo)  
-Email: bobbyloujo@gmail.com  
+*BobEngine* is developed solely by Benjamin Blaszczak.
